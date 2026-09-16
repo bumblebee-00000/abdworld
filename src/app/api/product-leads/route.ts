@@ -4,7 +4,7 @@ import { productLeadSchema } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 
-const gmailUser = process.env.GMAIL_USER || 'contact@abdworld.in';
+const gmailUser = process.env.GMAIL_USER || 'abdworldinfo@gmail.com';
 const gmailPassword = process.env.GMAIL_APP_PASSWORD;
 
 const transporter = nodemailer.createTransport({
