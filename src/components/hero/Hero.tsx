@@ -86,7 +86,7 @@ export default function Hero() {
 
       <RiceGrainParticles intensity="high" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-start justify-center px-6 pt-20 pb-28 sm:px-10 lg:px-16">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-1rem)] max-w-7xl flex-col items-start justify-center px-4 pt-28 pb-24 sm:min-h-screen sm:px-10 sm:pt-20 sm:pb-28 lg:px-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -103,13 +103,13 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <h1 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)] sm:text-6xl lg:text-8xl">
+          <h1 className="text-balance font-heading text-4xl font-black leading-[0.98] tracking-tight text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)] sm:text-6xl lg:text-8xl">
             <span className="block overflow-hidden py-1">
               {headingWords.slice(0, 2).map((word, i) => (
                 <motion.span
                   key={i}
                   variants={wordVariants}
-                  className="mr-4 inline-block"
+                  className="mr-2 inline-block sm:mr-4"
                 >
                   {word}
                 </motion.span>
@@ -120,7 +120,7 @@ export default function Hero() {
                 <motion.span
                   key={i}
                   variants={wordVariants}
-                  className="mr-4 inline-block text-gradient"
+                  className="mr-2 inline-block text-gradient sm:mr-4"
                 >
                   {word}
                 </motion.span>

@@ -56,6 +56,7 @@
     font-family: var(--font-body);
     background-color: #fffdf8;
     color: #1a1a1a;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -109,10 +110,16 @@
   }
 
   .section-padding {
-    padding: 6rem 1.5rem;
+    padding: 4rem 1rem;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
+    .section-padding {
+      padding: 5rem 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
     .section-padding {
       padding: 6rem 2rem;
     }

@@ -162,7 +162,7 @@ export function Navbar() {
               <div className="flex items-center gap-5">
                 <a
                   href={`tel:${PHONE_TEL}`}
-                  className="inline-flex items-center gap-1.5 text-cream-100/80 transition-colors hover:text-gold-400"
+                  className="hidden items-center gap-1.5 text-cream-100/80 transition-colors hover:text-gold-400 sm:inline-flex"
                 >
                   <Phone size={12} aria-hidden="true" />
                   {PHONE_DISPLAY}

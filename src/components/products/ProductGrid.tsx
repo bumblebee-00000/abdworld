@@ -125,7 +125,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
               </div>
 
               {/* Actions */}
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                 <Link
                   href={`/products/${product.slug}`}
                   className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-emerald-700 bg-transparent px-4 py-2.5 text-sm font-semibold text-emerald-700 transition-all duration-300 hover:bg-emerald-700 hover:text-white"
