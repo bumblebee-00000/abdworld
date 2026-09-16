@@ -9,9 +9,9 @@ import type { Product } from '@/types';
 export const metadata: Metadata = {
   title: 'Rice Collection',
   description:
-    'Browse our premium rice collection. Basmati, Non-Basmati, and specialty rice varieties available for wholesale. ABD World Rice - trusted quality.',
+    'Browse our premium rice collection. Basmati, Non-Basmati, and specialty rice varieties available for wholesale. ABD WORLD - trusted quality.',
   openGraph: {
-    title: 'Rice Collection | ABD World Rice',
+    title: 'Rice Collection | ABD WORLD',
     description: 'Browse our premium rice collection at wholesale prices.',
   },
 };

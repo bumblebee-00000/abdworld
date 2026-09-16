@@ -156,7 +156,7 @@ export default function WholesalePage() {
                 Wholesale Solutions for Every Business
               </h2>
               <p className="text-emerald-900/60 max-w-xl mx-auto">
-                Wherever rice is served or sold, ABD World Rice is there to power it.
+                Wherever rice is served or sold, ABD WORLD is there to power it.
               </p>
             </div>
 

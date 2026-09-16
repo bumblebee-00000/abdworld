@@ -73,14 +73,14 @@ export default function AboutPreview() {
               variants={textVariants}
               className="mt-4 text-4xl font-bold leading-snug text-emerald-950 sm:text-5xl"
             >
-              About ABD World Rice
+              About ABD WORLD
             </motion.h2>
 
             <motion.p
               variants={textVariants}
               className="mt-6 text-lg leading-relaxed text-emerald-900/80"
             >
-              ABD World Rice is a trusted rice wholesaler dedicated to bringing
+              ABD WORLD is a trusted rice wholesaler dedicated to bringing
               the finest grains to businesses across India and beyond. We partner
               directly with carefully selected farms to ensure every grain we
               supply is consistent, aromatic, and delivered at wholesale value.

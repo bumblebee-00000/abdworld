@@ -97,7 +97,7 @@ export default function WhyChooseUs() {
           </h2>
           <p className="mt-4 text-lg text-emerald-900/75">
             Built on trust, consistency, and a genuine passion for rice — here
-            is why distributors rely on ABD World Rice.
+            is why distributors rely on ABD WORLD.
           </p>
         </motion.div>
 

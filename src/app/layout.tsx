@@ -17,8 +17,8 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "ABD World Rice - Premium Rice Wholesaler & Supplier",
-    template: "%s | ABD World Rice",
+    default: "ABD WORLD - Premium Rice Wholesaler & Supplier",
+    template: "%s | ABD WORLD",
   },
   description:
     "Premium quality rice wholesaler and supplier. We offer Basmati, Non-Basmati, and specialty rice varieties at wholesale prices. Trusted quality for retailers, restaurants, and businesses.",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "wholesale rice",
     "bulk rice",
     "rice distributor",
-    "ABD World Rice",
+    "ABD WORLD",
   ],
   icons: {
     icon: "/company-logo.png",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "ABD World Rice",
+    siteName: "ABD WORLD",
   },
 };
 

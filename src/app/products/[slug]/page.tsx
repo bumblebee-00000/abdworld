@@ -96,7 +96,7 @@ export default async function ProductDetailPage({ params }: Props) {
     name: product.name,
     description: product.short_description,
     image: product.main_image,
-    brand: { '@type': 'Brand', name: 'ABD World Rice' },
+    brand: { '@type': 'Brand', name: 'ABD WORLD' },
     category: product.category,
     offers: product.price
       ? {

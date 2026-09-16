@@ -17,7 +17,7 @@ import {
 export const metadata: Metadata = {
   title: 'Contact Us',
   description:
-    'Get in touch with ABD World Rice. Call, WhatsApp, email, or visit us for wholesale rice pricing and supply details.',
+    'Get in touch with ABD WORLD. Call, WhatsApp, email, or visit us for wholesale rice pricing and supply details.',
 };
 
 const contactCards = [

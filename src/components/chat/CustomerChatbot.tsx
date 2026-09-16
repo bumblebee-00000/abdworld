@@ -52,7 +52,7 @@ export default function CustomerChatbot() {
     {
       id: 1,
       from: 'bot',
-      text: 'Hello. I am the ABD World Rice assistant. How can I help with your rice requirement today?',
+      text: 'Hello. I am the ABD WORLD assistant. How can I help with your rice requirement today?',
     },
   ]);
   const [input, setInput] = useState('');
@@ -103,7 +103,7 @@ export default function CustomerChatbot() {
             exit={{ opacity: 0, y: 18, scale: 0.96 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
             className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-emerald-900/10 bg-[#fffdf8] shadow-2xl shadow-emerald-950/25"
-            aria-label="ABD World Rice customer assistant"
+            aria-label="ABD WORLD customer assistant"
           >
             <div className="premium-gradient relative overflow-hidden px-5 pb-5 pt-5 text-white">
               <div className="absolute -right-8 -top-10 h-28 w-28 rounded-full border border-gold-300/20" aria-hidden="true" />

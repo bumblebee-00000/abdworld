@@ -86,7 +86,7 @@ export default function WholesaleForm() {
 
   const buildWhatsAppMessage = () => {
     const lines = [
-      'Hello ABD World Rice, I would like to make a wholesale enquiry.',
+      'Hello ABD WORLD, I would like to make a wholesale enquiry.',
       '',
       `Name: ${values.name}`,
       `Business: ${values.business_name}`,

@@ -7,7 +7,7 @@ import { Wheat } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'Privacy Policy of ABD World Rice. Learn how we collect, use, and protect your information.',
+    'Privacy Policy of ABD WORLD. Learn how we collect, use, and protect your information.',
 };
 
 export default function PrivacyPage() {
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
         <section className="section-padding">
           <div className="mx-auto max-w-3xl">
             <p className="mb-10 text-emerald-700/80">
-              ABD World Rice is committed to protecting your privacy. This policy explains how we
+              ABD WORLD is committed to protecting your privacy. This policy explains how we
               handle information we collect from our website visitors and customers.
             </p>
             <div className="space-y-8">

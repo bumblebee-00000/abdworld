@@ -19,7 +19,7 @@ import {
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about ABD World Rice, our sourcing process, quality checks, wholesale supply, and customer delivery service.',
+    'Learn about ABD WORLD, our sourcing process, quality checks, wholesale supply, and customer delivery service.',
 };
 
 const values = [
@@ -47,7 +47,7 @@ const owner = {
   name: 'ABDUR JOHIR ALOM',
   role: 'Owner',
   description:
-    'The visionary behind ABD World Rice, leading the brand with hands-on direction and a commitment to honest, reliable service.',
+    'The visionary behind ABD WORLD, leading the brand with hands-on direction and a commitment to honest, reliable service.',
 };
 
 export default function AboutPage() {
@@ -98,7 +98,7 @@ export default function AboutPage() {
 
                 <div className="space-y-6 text-lg leading-relaxed text-emerald-900/70">
                   <p>
-                    ABD World Rice began with a simple belief - that the rice
+                    ABD WORLD began with a simple belief - that the rice
                     businesses serve their customers with should be nothing less
                     than exceptional. What started as a small trading operation
                     has blossomed into one of the region&apos;s most trusted premium

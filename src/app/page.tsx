@@ -13,7 +13,7 @@ import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
 import type { Product } from '@/types';
 
 export const metadata: Metadata = {
-  title: 'ABD World Rice - Premium Rice Wholesaler & Supplier',
+  title: 'ABD WORLD - Premium Rice Wholesaler & Supplier',
   description:
     'Premium quality rice wholesaler and supplier. We offer Basmati, Non-Basmati, and specialty rice varieties at wholesale prices. Trusted quality for retailers, restaurants, and businesses.',
 };

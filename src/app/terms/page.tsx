@@ -7,7 +7,7 @@ import { Wheat } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
-    'Terms and Conditions for using the ABD World Rice website and placing orders.',
+    'Terms and Conditions for using the ABD WORLD website and placing orders.',
 };
 
 export default function TermsPage() {
@@ -20,7 +20,7 @@ export default function TermsPage() {
     {
       title: '2. Orders and Enquiries',
       content:
-        'Orders placed through this website are considered order enquiries. Final confirmation, pricing, and delivery details are agreed upon between the customer and ABD World Rice directly, typically via phone or WhatsApp.',
+        'Orders placed through this website are considered order enquiries. Final confirmation, pricing, and delivery details are agreed upon between the customer and ABD WORLD directly, typically via phone or WhatsApp.',
     },
     {
       title: '3. Pricing and Availability',
@@ -35,7 +35,7 @@ export default function TermsPage() {
     {
       title: '5. Payment',
       content:
-        'Payment terms are agreed upon between the customer and ABD World Rice for each order. We do not process online payments at this time unless otherwise agreed.',
+        'Payment terms are agreed upon between the customer and ABD WORLD for each order. We do not process online payments at this time unless otherwise agreed.',
     },
     {
       title: '6. Delivery and Shipping',
@@ -45,7 +45,7 @@ export default function TermsPage() {
     {
       title: '7. Limitation of Liability',
       content:
-        'To the maximum extent permitted by law, ABD World Rice shall not be liable for any indirect, incidental, or consequential damages arising from the use of this website or its products.',
+        'To the maximum extent permitted by law, ABD WORLD shall not be liable for any indirect, incidental, or consequential damages arising from the use of this website or its products.',
     },
     {
       title: '8. Contact',
