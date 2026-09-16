@@ -131,7 +131,7 @@ export function Navbar() {
   const drawerLinkClasses = (item: NavItem) =>
     cx(
       "relative flex w-full items-center justify-between rounded-xl px-4 py-3 font-heading text-lg font-semibold transition-colors",
-      isActive(item) ? "text-gold-400" : "text-emerald-950 hover:text-emerald-800",
+      isActive(item) ? "text-gold-400" : "text-cream-100 hover:bg-white/5 hover:text-white",
     );
 
   return (
@@ -185,7 +185,7 @@ export function Navbar() {
           <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02]">
             <img src={LOGO_URL} alt={`${BUSINESS_NAME} logo`} className="h-9 w-9 object-contain" />
           </span>
-          <span className="flex flex-col leading-none">
+          <span className="hidden flex-col leading-none sm:flex">
             <span
               className={cx(
                 "font-heading text-lg font-black tracking-[0.08em] transition-colors duration-300 sm:text-xl",
@@ -281,7 +281,7 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat with us on WhatsApp"
-            className={iconButton(solid)}
+            className={cx(iconButton(solid), "mobile-header-secondary")}
           >
             <MessageCircle size={18} aria-hidden="true" />
           </a>
@@ -290,7 +290,7 @@ export function Navbar() {
             variant="secondary"
             size="sm"
             rightIcon={<ArrowRight size={14} aria-hidden="true" />}
-            className="hidden md:inline-flex"
+            className="mobile-header-secondary hidden md:inline-flex"
           >
             Enquire Now
           </Button>

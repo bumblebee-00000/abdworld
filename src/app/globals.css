@@ -50,6 +50,7 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
@@ -162,6 +163,12 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  @media (max-width: 767px) {
+    .mobile-header-secondary {
+      display: none !important;
+    }
   }
 }
 
