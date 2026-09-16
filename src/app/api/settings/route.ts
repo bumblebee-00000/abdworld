@@ -12,7 +12,7 @@ export async function GET() {
           logo_url: '/company-logo.png',
           phone: process.env.NEXT_PUBLIC_BUSINESS_PHONE || '+919999999999',
           whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919999999999',
-          email: process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'abdworldinfo@gmail.com',
+          email: process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'contact@abdworld.in',
           address: 'Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423',
           city: 'Barasat',
           state: 'West Bengal',

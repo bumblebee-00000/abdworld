@@ -23,7 +23,7 @@ import { generateWhatsAppUrl } from '@/lib/utils';
 type Errors = Record<string, string>;
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919999999999';
-const BUSINESS_EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'abdworldinfo@gmail.com';
+const BUSINESS_EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'contact@abdworld.in';
 
 interface WholesaleFormValues {
   name: string;

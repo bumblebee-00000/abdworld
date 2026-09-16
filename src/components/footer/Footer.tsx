@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { Clock, Mail, MapPin, MessageCircle, Phone, Wheat } from "lucide-react";
 
 const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
-const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "abdworldinfo@gmail.com";
+const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
 const PHONE_DISPLAY = process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? "+91 99999 99999";
 const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
 const WHATSAPP_URL = `https://wa.me/${

@@ -36,8 +36,8 @@ const contactCards = [
   {
     icon: Mail,
     title: 'Email',
-    lines: ['abdworldinfo@gmail.com'],
-    href: 'mailto:abdworldinfo@gmail.com',
+    lines: ['contact@abdworld.in'],
+    href: 'mailto:contact@abdworld.in',
   },
   {
     icon: MapPin,

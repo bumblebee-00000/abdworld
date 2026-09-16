@@ -316,7 +316,7 @@ export default function WholesalePage() {
                     </li>
                     <li>
                       <a
-                        href="mailto:abdworldinfo@gmail.com"
+                        href="mailto:contact@abdworld.in"
                         className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
                       >
                         <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
@@ -324,7 +324,7 @@ export default function WholesalePage() {
                         </span>
                         <span>
                           <strong className="block text-emerald-950">Email Us</strong>
-                          abdworldinfo@gmail.com
+                          contact@abdworld.in
                         </span>
                       </a>
                     </li>

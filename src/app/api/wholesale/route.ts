@@ -5,7 +5,7 @@ import { wholesaleSchema } from '@/lib/validation';
 
 export const runtime = 'nodejs';
 
-const gmailUser = process.env.GMAIL_USER || 'abdworldinfo@gmail.com';
+const gmailUser = process.env.GMAIL_USER || 'contact@abdworld.in';
 const gmailPassword = process.env.GMAIL_APP_PASSWORD;
 
 const transporter = nodemailer.createTransport({
@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
     `;
 
     await transporter.sendMail({
-      from: 'abdworldinfo@gmail.com',
-      to: 'abdworldinfo@gmail.com',
+      from: gmailUser,
+      to: gmailUser,
       replyTo: parsed.data.email || parsed.data.phone,
       subject: `Wholesale Enquiry from ${parsed.data.business_name}`,
       html: emailHtml,
