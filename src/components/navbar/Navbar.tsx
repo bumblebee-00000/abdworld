@@ -278,10 +278,10 @@ export function Navbar() {
             <Search size={18} aria-hidden="true" />
           </button>
           <a
-            href={WHATSAPP_URL}
+            href={WHATSAPP_CHANNEL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Chat with us on WhatsApp"
+            aria-label="Open WhatsApp channel"
             className={cx(iconButton(solid), "mobile-header-secondary")}
           >
             <MessageCircle size={18} aria-hidden="true" />
