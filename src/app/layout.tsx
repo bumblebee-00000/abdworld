@@ -67,7 +67,7 @@ export default function RootLayout({
           className="fixed bottom-5 left-5 z-[79] inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-sm font-semibold text-white shadow-xl shadow-emerald-900/20 ring-4 ring-white/80 transition-transform duration-200 hover:scale-[1.02] hover:bg-[#1ebe5d] sm:bottom-7 sm:left-7"
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">WhatsApp</span>
+          <span>WhatsApp Channel</span>
         </a>
         <CustomerChatbot />
       </body>

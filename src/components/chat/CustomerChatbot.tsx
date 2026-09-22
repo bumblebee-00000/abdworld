@@ -17,7 +17,8 @@ import {
 const PHONE_DISPLAY = process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? '+91 99999 99999';
 const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, '');
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '919999999999';
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+const WHATSAPP_CHANNEL_URL =
+  process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? `https://wa.me/${WHATSAPP_NUMBER}`;
 
 type ChatMessage = {
   id: number;
@@ -161,8 +162,8 @@ export default function CustomerChatbot() {
                 <a href={`tel:${PHONE_TEL}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-900 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-emerald-800">
                   <Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call owner
                 </a>
-                <a href={`${WHATSAPP_URL}?text=${ownerMessage}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#25d366] px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#1ebe5d]">
-                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp order
+                <a href={`${WHATSAPP_CHANNEL_URL}?text=${ownerMessage}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#25d366] px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#1ebe5d]">
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp Channel
                 </a>
               </div>
             </div>
