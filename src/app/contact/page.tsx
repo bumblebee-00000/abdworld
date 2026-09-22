@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     'Get in touch with ABD WORLD. Call, WhatsApp, email, or visit us for wholesale rice pricing and supply details.',
 };
 
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://wa.me/919999999999';
+
 const contactCards = [
   {
     icon: Phone,
@@ -30,8 +32,8 @@ const contactCards = [
   {
     icon: MessageCircle,
     title: 'WhatsApp',
-    lines: ['+91 99999 99999'],
-    href: 'https://wa.me/919999999999',
+    lines: ['Channel'],
+    href: WHATSAPP_CHANNEL_URL,
   },
   {
     icon: Mail,

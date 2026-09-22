@@ -25,6 +25,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
 const WHATSAPP_URL = `https://wa.me/${
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919999999999"
 }?text=${encodeURIComponent("Hello! I would like to enquire about your wholesale rice.")}`;
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? WHATSAPP_URL;
 const LOGO_URL = "/company-logo.png";
 
 interface NavChild {
@@ -451,7 +452,7 @@ export function Navbar() {
 
                 <div className="space-y-3 border-t border-white/10 p-4">
                   <a
-                    href={WHATSAPP_URL}
+                    href={WHATSAPP_CHANNEL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 rounded-xl bg-[#25d366] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5d]"

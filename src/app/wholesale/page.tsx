@@ -30,6 +30,8 @@ export const metadata: Metadata = {
     'Wholesale rice supply for retailers, restaurants, hotels, caterers, grocery stores, and distributors. Premium quality, bulk pricing, pan-India delivery.',
 };
 
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://wa.me/919999999999';
+
 const audiences = [
   {
     icon: Store,
@@ -300,7 +302,7 @@ export default function WholesalePage() {
                     </li>
                     <li>
                       <a
-                        href="https://wa.me/919999999999"
+                        href={WHATSAPP_CHANNEL_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
@@ -310,7 +312,7 @@ export default function WholesalePage() {
                         </span>
                         <span>
                           <strong className="block text-emerald-950">WhatsApp</strong>
-                          +91 99999 99999
+                          Channel link
                         </span>
                       </a>
                     </li>

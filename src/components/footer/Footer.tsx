@@ -9,6 +9,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
 const WHATSAPP_URL = `https://wa.me/${
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919999999999"
 }?text=${encodeURIComponent("Hello! I would like to enquire about your wholesale rice.")}`;
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? WHATSAPP_URL;
 const ADDRESS = "Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423";
 const BUSINESS_HOURS = "Mon – Sat: 9:00 AM – 7:00 PM";
 
@@ -40,13 +41,13 @@ interface ContactItem {
 
 const CONTACT_ITEMS: ContactItem[] = [
   { icon: Phone, label: "Call Us", value: PHONE_DISPLAY, href: `tel:${PHONE_TEL}` },
-  { icon: MessageCircle, label: "WhatsApp", value: "Chat with our sales team", href: WHATSAPP_URL, external: true },
+  { icon: MessageCircle, label: "WhatsApp", value: "Chat with our sales team", href: WHATSAPP_CHANNEL_URL, external: true },
   { icon: Mail, label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
   { icon: MapPin, label: "Address", value: ADDRESS },
 ];
 
 const SOCIALS: Array<{ icon: LucideIcon; label: string; href: string; external: boolean }> = [
-  { icon: MessageCircle, label: "WhatsApp", href: WHATSAPP_URL, external: true },
+  { icon: MessageCircle, label: "WhatsApp", href: WHATSAPP_CHANNEL_URL, external: true },
   { icon: Mail, label: "Email", href: `mailto:${EMAIL}`, external: false },
   { icon: Phone, label: "Call", href: `tel:${PHONE_TEL}`, external: false },
 ];
