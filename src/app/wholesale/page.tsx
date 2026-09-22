@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     'Wholesale rice supply for retailers, restaurants, hotels, caterers, grocery stores, and distributors. Premium quality, bulk pricing, pan-India delivery.',
 };
 
-const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://wa.me/919999999999';
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://whatsapp.com/channel/0029VbDNTNV1Hsq3Bmnk5U0n';
 
 const audiences = [
   {

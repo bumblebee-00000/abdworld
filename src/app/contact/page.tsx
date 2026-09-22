@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     'Get in touch with ABD WORLD. Call, WhatsApp, email, or visit us for wholesale rice pricing and supply details.',
 };
 
-const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://wa.me/919999999999';
+const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://whatsapp.com/channel/0029VbDNTNV1Hsq3Bmnk5U0n';
 
 const contactCards = [
   {
