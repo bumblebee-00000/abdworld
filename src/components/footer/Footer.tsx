@@ -1,14 +1,12 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Clock, Mail, MapPin, MessageCircle, Phone, Wheat } from "lucide-react";
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from "@/lib/business-config";
 
 const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
 const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
-const PHONE_DISPLAY = process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? "+91 99999 99999";
+const PHONE_DISPLAY = BUSINESS_PHONE;
 const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
-const WHATSAPP_CHANNEL_URL =
-  process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ??
-  "https://whatsapp.com/channel/0029VbDNTNV1Hsq3Bmnk5U0n";
 const ADDRESS = "Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423";
 const BUSINESS_HOURS = "Mon – Sat: 9:00 AM – 7:00 PM";
 

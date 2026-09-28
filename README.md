@@ -66,11 +66,11 @@ SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 ADMIN_EMAIL=your-admin@email.com
 ADMIN_INITIAL_PASSWORD=your-secure-password
 
-NEXT_PUBLIC_WHATSAPP_NUMBER=919999999999
 NEXT_PUBLIC_BUSINESS_NAME=ABD World Rice
-NEXT_PUBLIC_BUSINESS_PHONE=+919999999999
 NEXT_PUBLIC_BUSINESS_EMAIL=info@yourdomain.com
 ```
+
+The public business phone, WhatsApp number, and WhatsApp Channel URL are configured in `src/lib/business-config.ts`.
 
 > **Where to find Supabase keys:** Supabase Dashboard → **Settings → API**.
 > - `anon`/`publishable` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -126,9 +126,7 @@ In the project settings → **Environment Variables**, add the same values from 
 | `SUPABASE_SERVICE_ROLE_KEY`   | `eyJ...` (secret — server only)  |
 | `ADMIN_EMAIL`                 | `admin@yourdomain.com`           |
 | `ADMIN_INITIAL_PASSWORD`      | `your-secure-password`           |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | `919999999999`                   |
 | `NEXT_PUBLIC_BUSINESS_NAME`   | `ABD World Rice`                 |
-| `NEXT_PUBLIC_BUSINESS_PHONE`  | `+919999999999`                  |
 | `NEXT_PUBLIC_BUSINESS_EMAIL`  | `info@yourdomain.com`            |
 
 > Add these to **Production**, and optionally **Preview** / **Development** environments too.

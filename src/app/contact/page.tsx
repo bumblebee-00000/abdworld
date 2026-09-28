@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import ContactForm from '@/components/forms/ContactForm';
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from '@/lib/business-config';
 import {
   ChevronRight,
   Phone,
@@ -20,14 +21,12 @@ export const metadata: Metadata = {
     'Get in touch with ABD WORLD. Call, WhatsApp, email, or visit us for wholesale rice pricing and supply details.',
 };
 
-const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://whatsapp.com/channel/0029VbDNTNV1Hsq3Bmnk5U0n';
-
 const contactCards = [
   {
     icon: Phone,
     title: 'Phone',
-    lines: ['+91 99999 99999'],
-    href: 'tel:+919999999999',
+    lines: [BUSINESS_PHONE],
+    href: `tel:${BUSINESS_PHONE.replace(/[\s-]/g, '')}`,
   },
   {
     icon: MessageCircle,

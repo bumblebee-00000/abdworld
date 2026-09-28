@@ -4,6 +4,7 @@ import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import WholesaleForm from '@/components/forms/WholesaleForm';
 import CTASection from '@/components/home/CTASection';
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from '@/lib/business-config';
 import {
   ChevronRight,
   Store,
@@ -29,8 +30,6 @@ export const metadata: Metadata = {
   description:
     'Wholesale rice supply for retailers, restaurants, hotels, caterers, grocery stores, and distributors. Premium quality, bulk pricing, pan-India delivery.',
 };
-
-const WHATSAPP_CHANNEL_URL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL ?? 'https://whatsapp.com/channel/0029VbDNTNV1Hsq3Bmnk5U0n';
 
 const audiences = [
   {
@@ -288,7 +287,7 @@ export default function WholesalePage() {
                   <ul className="space-y-4">
                     <li>
                       <a
-                        href="tel:+919999999999"
+                        href={`tel:${BUSINESS_PHONE.replace(/[\s-]/g, '')}`}
                         className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
                       >
                         <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
@@ -296,7 +295,7 @@ export default function WholesalePage() {
                         </span>
                         <span>
                           <strong className="block text-emerald-950">Call Us</strong>
-                          +91 99999 99999
+                          {BUSINESS_PHONE}
                         </span>
                       </a>
                     </li>

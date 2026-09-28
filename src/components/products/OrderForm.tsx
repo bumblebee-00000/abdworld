@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageCircle, Loader2, CheckCircle2, AlertCircle, User, Phone, Mail, MapPin, Hash } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { cn, generateWhatsAppUrl, generateOrderMessage, formatPrice } from '@/lib/utils';
+import { WHATSAPP_NUMBER } from '@/lib/business-config';
 import type { Product } from '@/types';
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
 
 interface OrderFormProps {
   product: Product;

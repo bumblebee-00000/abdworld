@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/server';
+import { BUSINESS_PHONE, WHATSAPP_NUMBER } from '@/lib/business-config';
 
 export const runtime = 'nodejs';
 
@@ -10,8 +11,8 @@ export async function GET() {
         settings: {
           business_name: 'ABD WORLD',
           logo_url: '/company-logo.png',
-          phone: process.env.NEXT_PUBLIC_BUSINESS_PHONE || '+919999999999',
-          whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919999999999',
+          phone: BUSINESS_PHONE,
+          whatsapp_number: WHATSAPP_NUMBER,
           email: process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'contact@abdworld.in',
           address: 'Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423',
           city: 'Barasat',

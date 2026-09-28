@@ -243,7 +243,7 @@ export default function AdminSettingsPage() {
                 name="phone"
                 value={values.phone}
                 onChange={handleChange}
-                placeholder="+91 99999 99999"
+                placeholder="+91 92462 51399"
                 className={`${inputClass('phone')} pl-11`}
               />
             </div>
@@ -259,7 +259,7 @@ export default function AdminSettingsPage() {
                 name="whatsapp_number"
                 value={values.whatsapp_number}
                 onChange={handleChange}
-                placeholder="919999999999"
+                placeholder="919246251399"
                 className={`${inputClass('whatsapp_number')} pl-11`}
               />
             </div>
