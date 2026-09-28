@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Clock, Mail, MapPin, MessageCircle, Phone, Wheat } from "lucide-react";
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from "@/lib/business-config";
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from "@/lib/business-config";
 
 const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
 const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
@@ -38,13 +38,13 @@ interface ContactItem {
 
 const CONTACT_ITEMS: ContactItem[] = [
   { icon: Phone, label: "Call Us", value: PHONE_DISPLAY, href: `tel:${PHONE_TEL}` },
-  { icon: MessageCircle, label: "WhatsApp", value: "Chat with our sales team", href: WHATSAPP_CHANNEL_URL, external: true },
+  { icon: MessageCircle, label: "WhatsApp", value: "Message our sales team", href: WHATSAPP_DIRECT_URL, external: true },
   { icon: Mail, label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
   { icon: MapPin, label: "Address", value: ADDRESS },
 ];
 
 const SOCIALS: Array<{ icon: LucideIcon; label: string; href: string; external: boolean }> = [
-  { icon: MessageCircle, label: "WhatsApp", href: WHATSAPP_CHANNEL_URL, external: true },
+  { icon: MessageCircle, label: "WhatsApp Channel", href: WHATSAPP_CHANNEL_URL, external: true },
   { icon: Mail, label: "Email", href: `mailto:${EMAIL}`, external: false },
   { icon: Phone, label: "Call", href: `tel:${PHONE_TEL}`, external: false },
 ];

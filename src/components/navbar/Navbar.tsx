@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from "@/lib/business-config";
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from "@/lib/business-config";
 
 const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
 const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
@@ -279,6 +279,7 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Open WhatsApp channel"
+            title="WhatsApp Channel"
             className={cx(iconButton(solid), "mobile-header-secondary")}
           >
             <MessageCircle size={18} aria-hidden="true" />
@@ -449,13 +450,22 @@ export function Navbar() {
 
                 <div className="space-y-3 border-t border-white/10 p-4">
                   <a
-                    href={WHATSAPP_CHANNEL_URL}
+                    href={WHATSAPP_DIRECT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 rounded-xl bg-[#25d366] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5d]"
                   >
                     <MessageCircle size={16} aria-hidden="true" />
-                    WhatsApp Us
+                    WhatsApp Message
+                  </a>
+                  <a
+                    href={WHATSAPP_CHANNEL_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#25d366]/60 py-3 text-sm font-semibold text-cream-100 transition-colors hover:bg-white/5"
+                  >
+                    <MessageCircle size={16} aria-hidden="true" />
+                    WhatsApp Channel
                   </a>
                   <a
                     href={`tel:${PHONE_TEL}`}

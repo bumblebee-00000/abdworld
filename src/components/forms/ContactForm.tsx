@@ -38,6 +38,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  const [reference, setReference] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,6 +93,7 @@ export default function ContactForm() {
         return;
       }
 
+      setReference(data.reference || '');
       setStatus('success');
       setValues(initialValues);
     } catch {
@@ -123,8 +125,9 @@ export default function ContactForm() {
           Message Sent!
         </h3>
         <p className="text-emerald-900/80 mb-8 max-w-md mx-auto">
-          Thank you for reaching out. We will get back to you within 24 hours.
+          Thank you for reaching out. We will reply within 24 hours. This message does not confirm an order.
         </p>
+        {reference && <p className="-mt-4 mb-6 text-sm font-semibold text-emerald-800">Reference: {reference}</p>}
         <button
           onClick={() => setStatus('idle')}
           className="px-6 py-3 bg-emerald-800 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors"

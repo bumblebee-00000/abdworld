@@ -53,6 +53,7 @@ export default function WholesaleForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  const [reference, setReference] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -126,6 +127,7 @@ export default function WholesaleForm() {
         return;
       }
 
+      setReference(data.reference || '');
       setStatus('success');
       setValues(initialValues);
     } catch {
@@ -155,12 +157,12 @@ export default function WholesaleForm() {
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
           </div>
           <h3 className="text-2xl font-bold text-emerald-950 font-[var(--font-heading)] mb-3">
-            Enquiry Submitted Successfully!
+            Quote Request Received
           </h3>
           <p className="text-emerald-900/80 mb-8 max-w-md mx-auto">
-            Thank you for your interest. Our wholesale team will contact you
-            within 24 hours with pricing and availability.
+            Thank you. This is not a confirmed order. Our wholesale team will check availability and contact you within 24 hours with pricing and delivery details.
           </p>
+          {reference && <p className="-mt-4 mb-6 text-sm font-semibold text-emerald-800">Reference: {reference}</p>}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
               href={generateWhatsAppUrl(

@@ -158,6 +158,14 @@ Click **Deploy**. Vercel builds and serves the site at a `*.vercel.app` URL.
 - **Never expose the SUPABASE_SERVICE_ROLE_KEY** to frontend code. It is only used server-side in API routes.
 - All admin API routes verify the JWT session before doing anything.
 - Login is rate-limited (5 attempts / 15 min per IP).
+- Public enquiry endpoints apply a best-effort per-instance submission limit. For high-volume production traffic, use a shared rate-limit service because serverless instances do not share memory.
+
+## Operations Without Online Payments
+
+- Website submissions are requests only. Confirm stock, final price, delivery, and payment terms directly with the customer before treating an enquiry as an order.
+- Update each request's status in Admin after you contact the customer so new requests remain easy to find.
+- Keep a periodic export of the Supabase database in a secure location. Use the Supabase dashboard's export/backup tools available on your plan, and test a restore to a separate project before relying on a backup.
+- Never commit `.env.local`, database exports, or service-role keys to GitHub.
 - User inputs are validated with **zod** and Supabase uses **parameterized queries** (no raw SQL string injection).
 - Uploaded file validation happens in the admin upload flow (MIME type, extension, and size checks — no executable files).
 

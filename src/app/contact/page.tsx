@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import ContactForm from '@/components/forms/ContactForm';
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from '@/lib/business-config';
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from '@/lib/business-config';
 import {
   ChevronRight,
   Phone,
@@ -31,7 +31,13 @@ const contactCards = [
   {
     icon: MessageCircle,
     title: 'WhatsApp',
-    lines: ['Channel'],
+    lines: ['Message us directly'],
+    href: WHATSAPP_DIRECT_URL,
+  },
+  {
+    icon: MessageCircle,
+    title: 'WhatsApp Channel',
+    lines: ['Follow channel updates'],
     href: WHATSAPP_CHANNEL_URL,
   },
   {
@@ -77,7 +83,7 @@ export default function ContactPage() {
         {/* Contact Cards */}
         <section className="section-padding bg-cream-50">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
               {contactCards.map((card) => (
                 <div
                   key={card.title}

@@ -1,23 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 import { getSupabaseAdmin } from '@/lib/supabase/server';
-import { sanitizeInput } from '@/lib/utils';
+import { escapeHtml, sanitizeInput } from '@/lib/utils';
+import { checkSubmissionRateLimit } from '@/lib/rate-limit';
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
-    return true;
-  }
-
-  if (entry.count >= 10) return false;
-
-  entry.count++;
-  return true;
-}
+const gmailUser = process.env.GMAIL_USER || 'abdworldinfo@gmail.com';
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: gmailUser, pass: process.env.GMAIL_APP_PASSWORD || '' },
+});
 
 function validateOrderData(data: Record<string, unknown>): {
   valid: boolean;
@@ -73,7 +64,7 @@ export async function POST(request: NextRequest) {
     const forwarded = request.headers.get('x-forwarded-for');
     const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
 
-    if (!checkRateLimit(ip)) {
+    if (!checkSubmissionRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429 }
@@ -92,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseAdmin();
 
-    const { error } = await supabase.from('orders').insert({
+    const { data: order, error } = await supabase.from('orders').insert({
       customer_name: validation.sanitized.customer_name,
       phone: validation.sanitized.phone,
       email: validation.sanitized.email || null,
@@ -106,7 +97,7 @@ export async function POST(request: NextRequest) {
       quantity: validation.sanitized.quantity,
       message: validation.sanitized.message || null,
       status: 'new',
-    });
+    }).select('id').single();
 
     if (error) {
       return NextResponse.json(
@@ -115,7 +106,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, message: 'Order submitted successfully' });
+    const reference = order.id.slice(0, 8).toUpperCase();
+    const orderSummary = `${validation.sanitized.product_name} / ${validation.sanitized.pack_size} / ${validation.sanitized.quantity}`;
+
+    try {
+      await transporter.sendMail({
+        from: gmailUser,
+        to: gmailUser,
+        replyTo: String(validation.sanitized.email || validation.sanitized.phone),
+        subject: `Order enquiry ${reference}: ${validation.sanitized.product_name}`,
+        html: `<p>New order enquiry ${reference}</p><p>${escapeHtml(String(orderSummary))}</p><p>Customer: ${escapeHtml(String(validation.sanitized.customer_name))}</p><p>Phone: ${escapeHtml(String(validation.sanitized.phone))}</p>`,
+      });
+    } catch (emailError) {
+      console.error('Order enquiry notification email failed:', emailError);
+    }
+
+    if (validation.sanitized.email) {
+      try {
+        await transporter.sendMail({
+          from: gmailUser,
+          to: String(validation.sanitized.email),
+          subject: `We received your ABD WORLD request (${reference})`,
+          html: `<p>Hello ${escapeHtml(String(validation.sanitized.customer_name))},</p><p>We received your request for ${escapeHtml(String(orderSummary))}.</p><p>Reference: <strong>${reference}</strong></p><p>This is a request only, not a confirmed order. We will contact you to confirm availability, pricing, and delivery.</p>`,
+        });
+      } catch (emailError) {
+        console.error('Order enquiry receipt email failed:', emailError);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      reference,
+      message: 'Request submitted successfully.',
+    });
   } catch {
     return NextResponse.json(
       { error: 'An unexpected error occurred. Please try again.' },

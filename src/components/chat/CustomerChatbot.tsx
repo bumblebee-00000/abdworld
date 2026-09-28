@@ -13,7 +13,7 @@ import {
   Wheat,
   X,
 } from 'lucide-react';
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from '@/lib/business-config';
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, getWhatsAppMessageUrl } from '@/lib/business-config';
 
 const PHONE_DISPLAY = BUSINESS_PHONE;
 const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, '');
@@ -90,8 +90,6 @@ export default function CustomerChatbot() {
     window.setTimeout(() => addMessage(answerFor(intent), 'bot'), 250);
   };
 
-  const ownerMessage = encodeURIComponent('Hello, I need help with a wholesale rice order.');
-
   return (
     <div className="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7">
       <AnimatePresence>
@@ -160,7 +158,10 @@ export default function CustomerChatbot() {
                 <a href={`tel:${PHONE_TEL}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-900 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-emerald-800">
                   <Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call owner
                 </a>
-                <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#25d366] px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#1ebe5d]">
+                <a href={getWhatsAppMessageUrl('Hello, I need help with a wholesale rice order.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#25d366] px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#1ebe5d]">
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp message
+                </a>
+                <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-700/20 bg-white px-3 py-2.5 text-xs font-bold text-emerald-900 transition-colors hover:bg-emerald-50">
                   <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp channel
                 </a>
               </div>

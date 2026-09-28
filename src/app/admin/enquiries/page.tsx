@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   FileText,
   Scale,
+  MessageCircle,
 } from 'lucide-react';
 import type { OrderStatus } from '@/types';
 
@@ -268,7 +269,32 @@ export default function AdminEnquiriesPage() {
                     <ContactDetails enquiry={enquiry as ContactEnquiryData} />
                   )}
 
-                  <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="mt-6 flex flex-wrap items-center gap-2">
+                    <a
+                      href={`tel:${enquiry.phone.replace(/[^\d+]/g, '')}`}
+                      className="inline-flex items-center gap-2 rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+                    >
+                      <Phone className="h-4 w-4" /> Call
+                    </a>
+                    <a
+                      href={`https://wa.me/${enquiry.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${enquiry.name}, I'm following up on your ABD WORLD enquiry.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-3 py-2 text-sm font-semibold text-white hover:bg-[#1ebe5d]"
+                    >
+                      <MessageCircle className="h-4 w-4" /> WhatsApp
+                    </a>
+                    {enquiry.email && (
+                      <a
+                        href={`mailto:${enquiry.email}`}
+                        className="inline-flex items-center gap-2 rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+                      >
+                        <Mail className="h-4 w-4" /> Email
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="mt-5 flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <span className="text-sm font-semibold text-emerald-950">
                       Update Status:
                     </span>

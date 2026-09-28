@@ -319,6 +319,12 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
               )}
             </div>
 
+            {product.min_order_quantity > 0 && (
+              <p className="mt-3 text-sm text-emerald-900/65">
+                Minimum order quantity: <strong>{product.min_order_quantity} kg</strong>
+              </p>
+            )}
+
             {/* Action Buttons */}
             <div id="order" className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
@@ -326,7 +332,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-950/15 transition-all hover:bg-emerald-800 hover:shadow-xl"
               >
                 <ShoppingCart className="h-5 w-5" />
-                Order Now
+                Request Quote
               </button>
               <button
                 onClick={() => handleOrderClick()}

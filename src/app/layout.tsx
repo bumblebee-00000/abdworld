@@ -16,6 +16,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.abdworld.in'),
   title: {
     default: "ABD WORLD - Premium Rice Wholesaler & Supplier",
     template: "%s | ABD WORLD",

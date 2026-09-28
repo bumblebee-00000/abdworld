@@ -4,7 +4,7 @@ import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import WholesaleForm from '@/components/forms/WholesaleForm';
 import CTASection from '@/components/home/CTASection';
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL } from '@/lib/business-config';
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from '@/lib/business-config';
 import {
   ChevronRight,
   Store,
@@ -301,6 +301,22 @@ export default function WholesalePage() {
                     </li>
                     <li>
                       <a
+                        href={WHATSAPP_DIRECT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
+                      >
+                        <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
+                          <MessageCircle className="w-4 h-4 text-emerald-600" />
+                        </span>
+                        <span>
+                          <strong className="block text-emerald-950">WhatsApp Message</strong>
+                          Chat with our sales team
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
                         href={WHATSAPP_CHANNEL_URL}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -310,8 +326,8 @@ export default function WholesalePage() {
                           <MessageCircle className="w-4 h-4 text-emerald-600" />
                         </span>
                         <span>
-                          <strong className="block text-emerald-950">WhatsApp</strong>
-                          Channel link
+                          <strong className="block text-emerald-950">WhatsApp Channel</strong>
+                          Follow our channel
                         </span>
                       </a>
                     </li>

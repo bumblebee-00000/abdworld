@@ -71,6 +71,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [reference, setReference] = useState('');
 
   const updateField = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -108,6 +109,8 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
         throw new Error(data.error || 'Something went wrong');
       }
 
+      const data = await res.json();
+      setReference(data.reference || '');
       setStatus('success');
     } catch (err) {
       setStatus('error');
@@ -146,11 +149,12 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               <CheckCircle2 className="h-10 w-10 text-emerald-600" />
             </div>
             <h3 className="font-heading text-2xl font-bold text-emerald-950">
-              Order Submitted!
+              Request Received
             </h3>
             <p className="mt-3 max-w-sm text-sm text-emerald-700/70">
-              Thank you! We have received your order enquiry and will contact you shortly with pricing and delivery details.
+              Thank you. This is a request, not a confirmed order. We will check availability and contact you with pricing and delivery details.
             </p>
+            {reference && <p className="mt-3 text-xs font-semibold text-emerald-800">Reference: {reference}</p>}
             <div className="mt-8 flex gap-3">
               <button
                 onClick={onClose}

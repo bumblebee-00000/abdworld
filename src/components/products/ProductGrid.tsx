@@ -124,6 +124,12 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 )}
               </div>
 
+              {product.min_order_quantity > 0 && (
+                <p className="mt-3 text-xs text-emerald-900/55">
+                  Minimum order: {product.min_order_quantity} kg
+                </p>
+              )}
+
               {/* Actions */}
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                 <Link
@@ -138,7 +144,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-emerald-800"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  Order Now
+                  Request Quote
                 </Link>
               </div>
             </div>

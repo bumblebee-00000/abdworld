@@ -61,6 +61,15 @@ export function sanitizeInput(input: string): string {
     .replace(/'/g, '&#039;');
 }
 
+export function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const ALLOWED_IMAGE_TYPES = [
   'image/jpeg',
   'image/png',
