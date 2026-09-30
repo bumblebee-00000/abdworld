@@ -55,11 +55,10 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
             <span className="h-px w-8 bg-gold-500" />
           </span>
           <h2 className="mt-4 text-4xl font-bold text-emerald-950 sm:text-5xl">
-            Our Rice Collection
+            Curated rice for premium buyers
           </h2>
           <p className="mt-4 text-lg text-emerald-900/75">
-            Handpicked grains, sorted and packed with care. Explore our most
-            sought-after wholesale varieties.
+            Handpicked grains, refined for quality, trust, and repeat bulk orders. Explore the collection built for restaurants, retailers, and serious wholesale buyers.
           </p>
           <div className="gold-gradient mx-auto mt-6 h-1 w-16 rounded-full" />
         </motion.div>
@@ -75,7 +74,7 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
             <motion.article
               key={product.id}
               variants={cardVariants}
-              className="group flex flex-col overflow-hidden rounded-3xl border border-cream-300/50 bg-white shadow-[0_4px_24px_rgba(2,44,34,0.06)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_24px_50px_rgba(2,44,34,0.16)]"
+              className="group flex flex-col overflow-hidden rounded-[2rem] border border-cream-300/50 bg-white shadow-[0_8px_30px_rgba(2,44,34,0.08)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_28px_60px_rgba(2,44,34,0.18)]"
             >
               <div className="relative flex h-56 items-center justify-center overflow-hidden">
                 <div className="premium-gradient absolute inset-0" />
@@ -125,17 +124,17 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <Link
                     href={`/products/${product.slug}`}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-emerald-700/20 text-sm font-semibold text-emerald-800 transition-all duration-300 hover:border-emerald-700 hover:bg-emerald-700 hover:text-white"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-emerald-700/20 bg-white text-sm font-semibold text-emerald-800 transition-all duration-300 hover:border-emerald-700 hover:bg-emerald-700 hover:text-white"
                   >
                     <Eye className="h-4 w-4" />
                     View Details
                   </Link>
                   <Link
                     href={`/products/${product.slug}?order=1`}
-                    className="gold-gradient inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold text-emerald-950 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(234,179,8,0.4)]"
+                    className="gold-gradient inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold text-emerald-950 transition-all duration-300 hover:shadow-[0_10px_25px_rgba(234,179,8,0.45)]"
                   >
                     <ShoppingCart className="h-4 w-4" />
-                    Order Now
+                    Request Quote
                   </Link>
                 </div>
               </div>

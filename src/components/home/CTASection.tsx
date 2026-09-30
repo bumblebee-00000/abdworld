@@ -29,7 +29,7 @@ export default function CTASection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
-          className="premium-gradient relative overflow-hidden rounded-[3rem] px-8 py-20 text-center shadow-[0_40px_90px_rgba(2,44,34,0.35)] sm:px-14 lg:px-24"
+          className="premium-gradient relative overflow-hidden rounded-[3rem] border border-gold-400/25 px-8 py-20 text-center shadow-[0_40px_90px_rgba(2,44,34,0.35)] sm:px-14 lg:px-24"
         >
           <div
             className="pointer-events-none absolute inset-0"
@@ -82,15 +82,14 @@ export default function CTASection() {
             variants={itemVariants}
             className="mx-auto mt-6 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl"
           >
-            Ready to Order Premium Rice?
+            Your next bulk rice order starts here.
           </motion.h2>
 
           <motion.p
             variants={itemVariants}
             className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-emerald-100/80"
           >
-            Get the best wholesale rates on premium basmati and non-basmati rice.
-            Speak directly with our supply team and lock in your order today.
+            Get premium wholesale rice, fast response times, and pricing that fits your business. Talk to our team and lock in the right grain for your next supply run.
           </motion.p>
 
           <motion.div
@@ -101,7 +100,7 @@ export default function CTASection() {
               href="/products"
               className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-gold-400 px-9 text-base font-semibold text-emerald-950 shadow-[0_8px_30px_rgba(250,204,21,0.35)] transition-all duration-300 hover:bg-gold-300 hover:shadow-[0_8px_40px_rgba(250,204,21,0.5)]"
             >
-              Browse Collection
+              Browse Rice Collection
               <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
@@ -109,7 +108,7 @@ export default function CTASection() {
               className="inline-flex h-14 items-center justify-center gap-2 rounded-full border-2 border-white/50 px-9 text-base font-semibold text-white transition-all duration-300 hover:border-gold-400 hover:bg-white/5 hover:text-gold-300"
             >
               <PhoneCall className="h-5 w-5" />
-              Contact Us
+              Request a Quote
             </Link>
           </motion.div>
         </motion.div>

@@ -92,11 +92,24 @@
 
 @layer components {
   .premium-gradient {
-    background: linear-gradient(135deg, #071f1b 0%, #0b4538 48%, #106b55 100%);
+    background:
+      radial-gradient(circle at top left, rgba(250, 204, 21, 0.22), transparent 24%),
+      linear-gradient(135deg, #071f1b 0%, #0b4538 48%, #106b55 100%);
   }
 
   .gold-gradient {
     background: linear-gradient(135deg, var(--color-gold-400) 0%, var(--color-gold-500) 50%, var(--color-gold-600) 100%);
+  }
+
+  .luxury-panel {
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 25px 60px rgba(2, 44, 34, 0.26);
+  }
+
+  .brand-glow {
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.2), 0 0 34px rgba(250, 204, 21, 0.18), 0 20px 60px rgba(2, 44, 34, 0.25);
   }
 
   .highlight-gradient {
