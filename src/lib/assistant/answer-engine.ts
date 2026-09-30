@@ -75,6 +75,13 @@ function pickUseCaseLabel(primary: AssistantProduct | null) {
   return 'your business';
 }
 
+function isBusinessInfoQuery(question: string, context: string) {
+  const value = normalize(`${context} ${question}`);
+  const hasBusinessIntent = /\b(abd world|abdworld|business|company|who are you|about abd|about the business|contact abd|contact us|phone|whatsapp|email|delivery|bulk order|quote|wholesale information)\b/.test(value);
+  const hasRiceIntent = /\b(rice|basmati|sella|grain|variety|varieties|order|pack|quantity|moq|pricing|price)\b/.test(value);
+  return hasBusinessIntent && !hasRiceIntent;
+}
+
 function buildRecommendationSentence(primary: AssistantProduct | null, context: string, question: string) {
   const intent = inferBusinessIntent(`${context} ${question}`);
   if (!primary) {
@@ -158,6 +165,13 @@ export function answerQuestion(question: string, context: string, products: Assi
     };
   }
 
+  if (isBusinessInfoQuery(question, context)) {
+    return {
+      answer: 'ABD WORLD supplies rice for businesses including retailers, restaurants, hotels, caterers and bulk buyers. For the latest wholesale price, availability and the best fit for your requirement, contact ABD WORLD and our team will guide you based on your quantity and delivery location.',
+      products: [],
+    };
+  }
+
   if (suggestions.length) {
     return {
       answer: `I’d look at ${suggestions.map((product) => product.name).join(', ')} for your requirement. If you tell me whether you’re buying for a restaurant, retail shop, biryani business, or bulk supply, I can narrow this down to the best fit.`,
@@ -165,17 +179,8 @@ export function answerQuestion(question: string, context: string, products: Assi
     };
   }
 
-  const fallbackSuggestions = products.slice(0, 3).map(({ name, slug, category, short_description, pack_sizes, min_order_quantity }) => ({
-    name,
-    slug,
-    category,
-    short_description,
-    pack_sizes,
-    min_order_quantity,
-  }));
-
   return {
     answer: 'I can help you choose the right rice for your business, with the right quality, pack size, and minimum order to support your goals. Share your use case and quantity, and I’ll guide you toward the best option with confidence.',
-    products: fallbackSuggestions,
+    products: [],
   };
 }

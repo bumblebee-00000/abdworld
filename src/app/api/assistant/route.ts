@@ -320,6 +320,18 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  const normalizedQuestion = normalize(question);
+  const isBusinessInfoRequest = /\b(abd world|abdworld|business|company|who are you|contact|phone|whatsapp|email|delivery|bulk order|quote|wholesale information)\b/.test(normalizedQuestion)
+    && !/\b(rice|basmati|sella|grain|variety|varieties|pack|quantity|moq|price|pricing)\b/.test(normalizedQuestion);
+
+  if (isBusinessInfoRequest) {
+    return NextResponse.json({
+      answer: 'ABD WORLD supplies rice for businesses including retailers, restaurants, hotels, caterers and bulk buyers. For the latest wholesale price, availability and the best fit for your requirement, contact ABD WORLD and our team will guide you based on your quantity and delivery location.',
+      products: [],
+      provider: 'catalogue',
+    });
+  }
+
   if (
     process.env.GEMINI_API_KEY
     && !checkSubmissionRateLimit(`assistant-gemini:${ip}`, 12)
