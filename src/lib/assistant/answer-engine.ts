@@ -75,10 +75,29 @@ function pickUseCaseLabel(primary: AssistantProduct | null) {
   return 'your business';
 }
 
+function isContactQuery(question: string, context: string) {
+  const value = normalize(`${context} ${question}`);
+  const hasContactIntent = /\b(contact|call|phone|whatsapp|email|reach|talk to|quote|quotation|how can i contact|how to contact|reach us)\b/.test(value);
+  const hasRiceIntent = /\b(rice|basmati|sella|grain|variety|varieties|pack|quantity|moq|price|pricing)\b/.test(value);
+  return hasContactIntent && !hasRiceIntent;
+}
+
+function isDeliveryQuery(question: string, context: string) {
+  const value = normalize(`${context} ${question}`);
+  return /\b(delivery|deliver|dispatch|shipping|transport|logistics|how do you deliver|how is delivery|delivery process)\b/.test(value);
+}
+
+function isWholesaleInfoQuery(question: string, context: string) {
+  const value = normalize(`${context} ${question}`);
+  const hasWholesaleIntent = /\b(wholesale information|wholesale|bulk order|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(value);
+  const hasSpecificProductIntent = /\b(help me choose|recommend|which rice|what rice|best rice|specific variety|basmati|sella|non basmati|golden rice|premium basmati|1121)\b/.test(value);
+  return hasWholesaleIntent && !hasSpecificProductIntent;
+}
+
 function isBusinessInfoQuery(question: string, context: string) {
   const value = normalize(`${context} ${question}`);
-  const hasBusinessIntent = /\b(abd world|abdworld|business|company|who are you|about abd|about the business|contact abd|contact us|phone|whatsapp|email|delivery|bulk order|quote|wholesale information)\b/.test(value);
-  const hasRiceIntent = /\b(rice|basmati|sella|grain|variety|varieties|order|pack|quantity|moq|pricing|price)\b/.test(value);
+  const hasBusinessIntent = /\b(abd world|abdworld|business|company|who are you|about abd|about the business|contact abd|contact us|bulk order|wholesale information|supplier)\b/.test(value);
+  const hasRiceIntent = /\b(rice|basmati|sella|grain|variety|varieties|order|pack|quantity|moq|price|pricing)\b/.test(value);
   return hasBusinessIntent && !hasRiceIntent;
 }
 
@@ -120,6 +139,34 @@ export function answerQuestion(question: string, context: string, products: Assi
   const asksPrice = /\b(price|pricing|rate|rates|cost|quote|quotation)\b/.test(currentQuestion);
   const asksDelivery = /\b(deliver|delivery|shipping|ship|dispatch|location|pin code|city|state)\b/.test(currentQuestion);
   const asksQuality = /\b(quality|grade|origin|aroma|grain|texture|cook|cooking|pure|fluffy|long grain)\b/.test(currentQuestion);
+
+  if (isContactQuery(question, context)) {
+    return {
+      answer: 'You can contact ABD WORLD on +91 92462 51399 or email contact@abdworld.in for wholesale enquiries, pricing, and quote requests. Our team will guide you based on your quantity, rice type, and delivery location.',
+      products: [],
+    };
+  }
+
+  if (isDeliveryQuery(question, context)) {
+    return {
+      answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      products: [],
+    };
+  }
+
+  if (isWholesaleInfoQuery(question, context)) {
+    return {
+      answer: 'For wholesale information, ABD WORLD can support retailers, restaurants, hotels, caterers, and bulk buyers. Please share your quantity, rice type, and delivery location, and our team will guide you on the right supply option and quote.',
+      products: [],
+    };
+  }
+
+  if (isBusinessInfoQuery(question, context)) {
+    return {
+      answer: 'ABD WORLD supplies rice for retailers, restaurants, hotels, caterers, and bulk buyers. If you want pricing, availability, or a quote for your requirement, contact ABD WORLD and our team will guide you based on your quantity, rice type, and delivery location.',
+      products: [],
+    };
+  }
 
   if (primary && asksMinimum) {
     return {
@@ -165,9 +212,30 @@ export function answerQuestion(question: string, context: string, products: Assi
     };
   }
 
+  if (isContactQuery(question, context)) {
+    return {
+      answer: 'You can contact ABD WORLD on +91 92462 51399 or email contact@abdworld.in for wholesale enquiries, pricing, and quote requests. Our team will guide you based on your quantity, rice type, and delivery location.',
+      products: [],
+    };
+  }
+
+  if (isDeliveryQuery(question, context)) {
+    return {
+      answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      products: [],
+    };
+  }
+
+  if (isWholesaleInfoQuery(question, context)) {
+    return {
+      answer: 'For wholesale information, ABD WORLD can support retailers, restaurants, hotels, caterers, and bulk buyers. Please share your quantity, rice type, and delivery location, and our team will guide you on the right supply option and quote.',
+      products: [],
+    };
+  }
+
   if (isBusinessInfoQuery(question, context)) {
     return {
-      answer: 'ABD WORLD supplies rice for businesses including retailers, restaurants, hotels, caterers and bulk buyers. For the latest wholesale price, availability and the best fit for your requirement, contact ABD WORLD and our team will guide you based on your quantity and delivery location.',
+      answer: 'ABD WORLD supplies rice for retailers, restaurants, hotels, caterers, and bulk buyers. If you want pricing, availability, or a quote for your requirement, contact ABD WORLD and our team will guide you based on your quantity, rice type, and delivery location.',
       products: [],
     };
   }
