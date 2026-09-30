@@ -186,6 +186,10 @@
 }
 
 @layer utilities {
+  .animate-drift {
+    animation: drift 16s ease-in-out infinite;
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }

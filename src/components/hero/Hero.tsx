@@ -44,11 +44,6 @@ const ctaVariants = {
   },
 };
 
-const decorativeDivider = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 1, delay: 1.5 } },
-};
-
 export default function Hero() {
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-emerald-950 grain-grid">
@@ -171,74 +166,6 @@ export default function Hero() {
           Trusted rice supply for growing businesses
         </motion.div>
       </div>
-
-      <motion.div
-        variants={decorativeDivider}
-        initial="hidden"
-        animate="visible"
-        className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 lg:block xl:right-16"
-        aria-hidden="true"
-      >
-        <div className="animate-float-slow relative">
-          <div className="luxury-panel relative flex h-[18rem] w-[15rem] flex-col justify-between rounded-[2rem] p-5 text-left text-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-100/80">
-              <span>Wholesale</span>
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-gold-400 shadow-[0_0_18px_rgba(250,204,21,0.9)]" />
-            </div>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-emerald-100/75">Premium supply</p>
-              <p className="mt-3 text-3xl font-black text-gold-300">10k+</p>
-              <p className="mt-1 text-xs text-emerald-50/80">business orders handled</p>
-            </div>
-
-            <div className="flex items-end justify-between">
-              <div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/60">Daily service</div>
-                <div className="mt-2 text-xl font-bold text-white">Fast quote</div>
-              </div>
-              <div className="rounded-full border border-white/15 bg-white/5 p-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M5 12.5L9.5 17L19 7.5" stroke="#FACC15" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <svg
-            width="220"
-            height="280"
-            viewBox="0 0 220 280"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute -bottom-10 -left-6 drop-shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
-          >
-            <defs>
-              <linearGradient id="grainGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#fef08a" />
-                <stop offset="50%" stopColor="#facc15" />
-                <stop offset="100%" stopColor="#eab308" />
-              </linearGradient>
-              <filter id="grainGlow">
-                <feGaussianBlur stdDeviation="6" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <g filter="url(#grainGlow)" opacity="0.9">
-              <ellipse cx="110" cy="60" rx="38" ry="13" fill="url(#grainGrad)" />
-              <ellipse cx="55" cy="130" rx="34" ry="12" fill="url(#grainGrad)" transform="rotate(-18 55 130)" />
-              <ellipse cx="160" cy="150" rx="36" ry="12" fill="url(#grainGrad)" transform="rotate(14 160 150)" />
-              <ellipse cx="100" cy="205" rx="32" ry="11" fill="url(#grainGrad)" transform="rotate(-8 100 205)" />
-              <ellipse cx="150" cy="245" rx="30" ry="10" fill="url(#grainGrad)" transform="rotate(20 150 245)" />
-            </g>
-          </svg>
-          <div className="absolute -left-24 top-24 h-3 w-3 animate-pulse-soft rounded-full bg-gold-400/70" />
-          <div className="absolute -right-6 top-40 h-2 w-2 animate-float rounded-full bg-emerald-300/60" />
-        </div>
-      </motion.div>
 
       <svg
         className="absolute bottom-0 left-0 z-10 w-full"
