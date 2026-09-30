@@ -162,7 +162,7 @@ export default function AdminOrdersPage() {
               <tr className="bg-cream-50 text-left text-xs uppercase tracking-wider text-emerald-900/50">
                 <th className="px-6 py-4 font-semibold">Customer</th>
                 <th className="px-6 py-4 font-semibold">Product</th>
-                <th className="px-6 py-4 font-semibold">Quantity</th>
+                <th className="px-6 py-4 font-semibold">Packs</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
                 <th className="px-6 py-4 font-semibold">Date</th>
                 <th className="px-6 py-4 font-semibold w-10"></th>
@@ -250,10 +250,11 @@ export default function AdminOrdersPage() {
                                 Delivery Details
                               </h4>
                               <ul className="space-y-2 text-sm text-emerald-900/70">
-                                <li>{order.address}</li>
-                                <li>
-                                  {order.city}, {order.state} - {order.pin_code}
-                                </li>
+                                <li>{order.address || 'Not provided at quote stage'}</li>
+                                {(order.city || order.state) && (
+                                  <li>{[order.city, order.state].filter(Boolean).join(', ')}</li>
+                                )}
+                                {order.pin_code && <li>PIN: {order.pin_code}</li>}
                               </ul>
                             </div>
                             <div>
@@ -266,7 +267,7 @@ export default function AdminOrdersPage() {
                                   {order.product_name} ({order.pack_size})
                                 </li>
                                 <li>
-                                  <strong className="text-emerald-950">Quantity:</strong>{' '}
+                                  <strong className="text-emerald-950">Number of packs:</strong>{' '}
                                   {order.quantity}
                                 </li>
                                 {order.message && (

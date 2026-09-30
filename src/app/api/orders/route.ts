@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { getSupabaseAdmin } from '@/lib/supabase/server';
-import { escapeHtml, sanitizeInput } from '@/lib/utils';
+import { escapeHtml, sanitizeInput, parsePackWeightKg } from '@/lib/utils';
 import { checkSubmissionRateLimit } from '@/lib/rate-limit';
 
 const gmailUser = process.env.GMAIL_USER || 'abdworldinfo@gmail.com';
@@ -18,7 +18,7 @@ function validateOrderData(data: Record<string, unknown>): {
   const errors: string[] = [];
   const sanitized: Record<string, unknown> = {};
 
-  const requiredFields = ['customer_name', 'phone', 'address', 'city', 'state', 'pin_code', 'product_id', 'product_name', 'pack_size', 'quantity'];
+  const requiredFields = ['customer_name', 'phone', 'product_id', 'product_name', 'pack_size', 'quantity'];
 
   for (const field of requiredFields) {
     if (!data[field] || (typeof data[field] === 'string' && (data[field] as string).trim() === '')) {
@@ -39,6 +39,10 @@ function validateOrderData(data: Record<string, unknown>): {
 
   if (data.quantity && (typeof data.quantity !== 'number' || (data.quantity as number) < 1)) {
     errors.push('Quantity must be at least 1');
+  }
+
+  if (typeof data.quantity === 'number' && (!Number.isInteger(data.quantity) || data.quantity > 10000)) {
+    errors.push('Quantity must be a whole number no greater than 10000');
   }
 
   if (data.product_id && typeof data.product_id === 'string') {
@@ -82,18 +86,47 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = getSupabaseAdmin();
+    const productId = String(validation.sanitized.product_id);
+    const selectedPackSize = String(validation.sanitized.pack_size);
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('name, pack_sizes, min_order_quantity')
+      .eq('id', productId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (productError) {
+      return NextResponse.json({ error: 'Could not verify this product. Please try again.' }, { status: 500 });
+    }
+
+    if (!product || !product.pack_sizes.includes(selectedPackSize)) {
+      return NextResponse.json({ error: 'This product or pack size is no longer available.' }, { status: 400 });
+    }
+
+    const packWeightKg = parsePackWeightKg(selectedPackSize);
+    if (!packWeightKg) {
+      return NextResponse.json({ error: 'Please contact us to confirm the minimum for this pack size.' }, { status: 400 });
+    }
+
+    const minimumOrderKg = Math.max(1, Number(product.min_order_quantity) || 1);
+    const minimumPackCount = Math.ceil(minimumOrderKg / packWeightKg);
+    if (Number(validation.sanitized.quantity) < minimumPackCount) {
+      return NextResponse.json({
+        error: `Minimum order is ${minimumOrderKg} kg (${minimumPackCount} packs of ${selectedPackSize}).`,
+      }, { status: 400 });
+    }
 
     const { data: order, error } = await supabase.from('orders').insert({
       customer_name: validation.sanitized.customer_name,
       phone: validation.sanitized.phone,
       email: validation.sanitized.email || null,
-      address: validation.sanitized.address,
-      city: validation.sanitized.city,
-      state: validation.sanitized.state,
-      pin_code: validation.sanitized.pin_code,
+      address: validation.sanitized.address || '',
+      city: validation.sanitized.city || '',
+      state: validation.sanitized.state || '',
+      pin_code: validation.sanitized.pin_code || '',
       product_id: validation.sanitized.product_id,
-      product_name: validation.sanitized.product_name,
-      pack_size: validation.sanitized.pack_size,
+      product_name: product.name,
+      pack_size: selectedPackSize,
       quantity: validation.sanitized.quantity,
       message: validation.sanitized.message || null,
       status: 'new',
@@ -107,7 +140,7 @@ export async function POST(request: NextRequest) {
     }
 
     const reference = order.id.slice(0, 8).toUpperCase();
-    const orderSummary = `${validation.sanitized.product_name} / ${validation.sanitized.pack_size} / ${validation.sanitized.quantity}`;
+    const orderSummary = `${product.name} / ${selectedPackSize} / ${validation.sanitized.quantity} packs`;
 
     try {
       await transporter.sendMail({

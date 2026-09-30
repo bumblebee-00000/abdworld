@@ -68,6 +68,9 @@ ADMIN_INITIAL_PASSWORD=your-secure-password
 
 NEXT_PUBLIC_BUSINESS_NAME=ABD World Rice
 NEXT_PUBLIC_BUSINESS_EMAIL=info@yourdomain.com
+
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
 The public business phone, WhatsApp number, and WhatsApp Channel URL are configured in `src/lib/business-config.ts`.
@@ -77,6 +80,8 @@ The public business phone, WhatsApp number, and WhatsApp Channel URL are configu
 > - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (**server-only — never expose it to the browser**)
 
 > **Never commit `.env.local`.** It is already in `.gitignore`.
+
+> **Gemini assistant:** Create an API key in [Google AI Studio](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY`. Keep it server-side; do not prefix it with `NEXT_PUBLIC_`. `GEMINI_MODEL` is optional. Gemini usage may be subject to Google's quotas and billing; check your account's current limits and pricing.
 
 ### 4. Run locally
 
@@ -128,6 +133,8 @@ In the project settings → **Environment Variables**, add the same values from 
 | `ADMIN_INITIAL_PASSWORD`      | `your-secure-password`           |
 | `NEXT_PUBLIC_BUSINESS_NAME`   | `ABD World Rice`                 |
 | `NEXT_PUBLIC_BUSINESS_EMAIL`  | `info@yourdomain.com`            |
+| `GEMINI_API_KEY`              | Secret from Google AI Studio (server only) |
+| `GEMINI_MODEL`                | `gemini-3.8-flash`               |
 
 > Add these to **Production**, and optionally **Preview** / **Development** environments too.
 

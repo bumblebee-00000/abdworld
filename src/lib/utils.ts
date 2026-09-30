@@ -12,6 +12,19 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
+export function parsePackWeightKg(packSize: string): number | null {
+  const match = /(\d+(?:\.\d+)?)\s*(kg|kilograms?|g|grams?|tonnes?|tons?|t)\b/i.exec(packSize);
+  if (!match) return null;
+
+  const weight = Number(match[1]);
+  if (!Number.isFinite(weight) || weight <= 0) return null;
+
+  const unit = match[2].toLowerCase();
+  if (unit === 'g' || unit.startsWith('gram')) return weight / 1000;
+  if (unit === 't' || unit.startsWith('ton')) return weight * 1000;
+  return weight;
+}
+
 export function generateWhatsAppUrl(
   phone: string,
   message: string
@@ -32,7 +45,7 @@ export function generateOrderMessage(data: {
     ``,
     `Product: ${data.product_name}`,
     `Pack Size: ${data.pack_size}`,
-    `Quantity: ${data.quantity}`,
+    `Number of packs: ${data.quantity}`,
   ];
 
   if (data.customer_name) lines.push(`Name: ${data.customer_name}`);

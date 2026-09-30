@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShoppingCart, MessageCircle, Package, Shield, Truck, Star, User, Phone, Mail, MapPin } from 'lucide-react';
+import { ShoppingCart, MessageCircle, Package, Shield, Truck } from 'lucide-react';
 import ImageGallery from '@/components/products/ImageGallery';
 import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
 import OrderForm from '@/components/products/OrderForm';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, generateWhatsAppUrl } from '@/lib/utils';
+import { WHATSAPP_NUMBER } from '@/lib/business-config';
 import type { Product } from '@/types';
 
 interface ProductDetailClientProps {
@@ -16,212 +17,25 @@ interface ProductDetailClientProps {
   relatedProducts: Product[];
 }
 
-const LEAD_STORAGE_KEY = 'abd-world-product-lead';
-
 export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
   const [orderFormOpen, setOrderFormOpen] = useState(false);
   const [selectedPackSize, setSelectedPackSize] = useState<string | undefined>();
-  const [leadData, setLeadData] = useState({ name: '', phone: '', email: '', city: '' });
-  const [leadFormOpen, setLeadFormOpen] = useState(true);
-  const [leadStorageChecked, setLeadStorageChecked] = useState(false);
-  const [leadSubmitting, setLeadSubmitting] = useState(false);
-  const [leadError, setLeadError] = useState('');
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(LEAD_STORAGE_KEY);
-      if (!raw) return;
-
-      const parsed = JSON.parse(raw) as {
-        name?: string;
-        phone?: string;
-        email?: string;
-        city?: string;
-      };
-      if (parsed.name && parsed.phone) {
-        setLeadData({
-          name: parsed.name || '',
-          phone: parsed.phone || '',
-          email: parsed.email || '',
-          city: parsed.city || '',
-        });
-        setLeadFormOpen(false);
-      }
-    } catch {
-      window.localStorage.removeItem(LEAD_STORAGE_KEY);
-    } finally {
-      setLeadStorageChecked(true);
-    }
-  }, []);
 
   const handleOrderClick = (packSize?: string) => {
     setSelectedPackSize(packSize);
     setOrderFormOpen(true);
   };
 
-  const handleLeadChange = (field: keyof typeof leadData, value: string) => {
-    setLeadData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleLeadSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const name = leadData.name.trim();
-    const phone = leadData.phone.trim();
-    const email = leadData.email.trim();
-    const city = leadData.city.trim();
-
-    if (name.length < 2) {
-      alert('Please enter your full name.');
-      return;
-    }
-
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length < 10) {
-      alert('Please enter a valid phone number.');
-      return;
-    }
-
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-
-    const payload = {
-      name,
-      phone,
-      email,
-      city,
-    };
-
-    setLeadSubmitting(true);
-    setLeadError('');
-
-    try {
-      const response = await fetch('/api/product-leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...payload,
-          product_name: product.name,
-          product_slug: product.slug,
-        }),
-      });
-
-      const result = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        throw new Error(result.error || 'We could not send your details. Please try again.');
-      }
-
-      window.localStorage.setItem(LEAD_STORAGE_KEY, JSON.stringify(payload));
-      setLeadData(payload);
-      setLeadFormOpen(false);
-    } catch (error) {
-      setLeadError(error instanceof Error ? error.message : 'We could not send your details. Please try again.');
-    } finally {
-      setLeadSubmitting(false);
-    }
-  };
-
-  if (!leadStorageChecked) {
-    return <div className="section-padding" aria-hidden="true" />;
-  }
-
-  if (leadFormOpen) {
-    return (
-      <div className="section-padding">
-        <div className="mx-auto max-w-2xl">
-          <div className="rounded-3xl border border-cream-200 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
-            <div className="mb-6 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-600">Customer Details</p>
-              <h1 className="mt-3 font-heading text-3xl font-bold text-emerald-950 sm:text-4xl">
-                Please share your details
-              </h1>
-              <p className="mt-3 text-sm text-emerald-900/70">
-                We need your contact details before showing the product details, so we can reach you directly about this item.
-              </p>
-            </div>
-
-            <form onSubmit={handleLeadSubmit} className="space-y-5">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-emerald-950">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-900/40" />
-                  <input
-                    type="text"
-                    value={leadData.name}
-                    onChange={(e) => handleLeadChange('name', e.target.value)}
-                    placeholder="Your full name"
-                    className="w-full rounded-xl border border-cream-300 bg-cream-50 py-3 pl-11 pr-4 text-sm text-emerald-950 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-emerald-950">
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-900/40" />
-                  <input
-                    type="tel"
-                    value={leadData.phone}
-                    onChange={(e) => handleLeadChange('phone', e.target.value)}
-                    placeholder="+91 98765 43210"
-                    className="w-full rounded-xl border border-cream-300 bg-cream-50 py-3 pl-11 pr-4 text-sm text-emerald-950 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-emerald-950">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-900/40" />
-                  <input
-                    type="email"
-                    value={leadData.email}
-                    onChange={(e) => handleLeadChange('email', e.target.value)}
-                    placeholder="you@example.com"
-                    className="w-full rounded-xl border border-cream-300 bg-cream-50 py-3 pl-11 pr-4 text-sm text-emerald-950 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-emerald-950">City</label>
-                <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-900/40" />
-                  <input
-                    type="text"
-                    value={leadData.city}
-                    onChange={(e) => handleLeadChange('city', e.target.value)}
-                    placeholder="Your city"
-                    className="w-full rounded-xl border border-cream-300 bg-cream-50 py-3 pl-11 pr-4 text-sm text-emerald-950 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={leadSubmitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {leadSubmitting ? 'Sending Details...' : 'Continue to Product Details'}
-              </button>
-              {leadError && (
-                <p role="alert" className="text-center text-sm font-medium text-red-600">
-                  {leadError}
-                </p>
-              )}
-            </form>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const whatsappUrl = generateWhatsAppUrl(
+    WHATSAPP_NUMBER,
+    [
+      'Hello ABD WORLD, I have a question about this rice product.',
+      `Product: ${product.name}`,
+      `Available pack sizes: ${product.pack_sizes.join(', ')}`,
+      `Minimum order quantity: ${product.min_order_quantity} kg`,
+      'Please share current availability, wholesale pricing, and delivery details.',
+    ].join('\n'),
+  );
 
   return (
     <div className="section-padding">
@@ -257,14 +71,6 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             <h1 className="font-heading text-3xl font-bold leading-tight text-emerald-950 sm:text-4xl">
               {product.name}
             </h1>
-
-            {/* Rating Placeholder */}
-            <div className="mt-3 flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} className="h-4 w-4 fill-gold-400 text-gold-400" />
-              ))}
-              <span className="ml-2 text-xs text-cream-500">Premium Quality</span>
-            </div>
 
             <p className="mt-5 text-base leading-relaxed text-emerald-700/80">
               {product.short_description}
@@ -334,14 +140,19 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 <ShoppingCart className="h-5 w-5" />
                 Request Quote
               </button>
-              <button
-                onClick={() => handleOrderClick()}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-emerald-600 bg-transparent px-8 py-3.5 text-sm font-semibold text-emerald-700 transition-all hover:bg-emerald-50"
               >
                 <MessageCircle className="h-5 w-5" />
                 Enquire via WhatsApp
-              </button>
+              </a>
             </div>
+            <p className="mt-3 text-sm text-emerald-800/70">
+              A quote request is not a confirmed order. We will contact you to answer questions and confirm availability, pricing, and delivery.
+            </p>
 
             {/* Trust Badges */}
             <div className="mt-8 grid grid-cols-3 gap-3">
@@ -458,12 +269,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
       </div>
 
       {/* Order Form Modal */}
-      <OrderForm
-        product={product}
-        isOpen={orderFormOpen}
-        onClose={() => setOrderFormOpen(false)}
-        selectedPackSize={selectedPackSize}
-      />
+      {orderFormOpen && (
+        <OrderForm
+          product={product}
+          isOpen={true}
+          onClose={() => setOrderFormOpen(false)}
+          selectedPackSize={selectedPackSize}
+        />
+      )}
     </div>
   );
 }

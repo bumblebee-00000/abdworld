@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, MessageCircle, Loader2, CheckCircle2, AlertCircle, User, Phone, Mail, MapPin, Hash } from 'lucide-react';
+import { Send, MessageCircle, Loader2, CheckCircle2, AlertCircle, User, Phone, Mail, MapPin } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
-import { cn, generateWhatsAppUrl, generateOrderMessage, formatPrice } from '@/lib/utils';
+import { cn, generateWhatsAppUrl, generateOrderMessage, formatPrice, parsePackWeightKg } from '@/lib/utils';
 import { WHATSAPP_NUMBER } from '@/lib/business-config';
 import type { Product } from '@/types';
 
@@ -23,10 +23,7 @@ interface FormData {
   customer_name: string;
   phone: string;
   email: string;
-  address: string;
   city: string;
-  state: string;
-  pin_code: string;
   message: string;
 }
 
@@ -40,45 +37,68 @@ const initialFormData: FormData = {
   customer_name: '',
   phone: '',
   email: '',
-  address: '',
   city: '',
-  state: '',
-  pin_code: '',
   message: '',
 };
 
-function validateForm(data: FormData): FormErrors {
+function getMinimumPackCount(minimumOrderKg: number, packSize: string): number | null {
+  const packWeightKg = parsePackWeightKg(packSize);
+  return packWeightKg ? Math.ceil(minimumOrderKg / packWeightKg) : null;
+}
+
+function validateForm(data: FormData, minimumOrderKg: number): FormErrors {
   const errors: FormErrors = {};
+  const minimumPackCount = getMinimumPackCount(minimumOrderKg, data.pack_size);
 
   if (!data.pack_size) errors.pack_size = 'Please select a pack size';
   if (!data.quantity || data.quantity < 1) errors.quantity = 'Quantity must be at least 1';
+  else if (minimumPackCount === null) errors.pack_size = 'We cannot confirm the weight for this pack size. Please contact us.';
+  else if (data.quantity < minimumPackCount) {
+    errors.quantity = `Minimum order is ${minimumOrderKg} kg (${minimumPackCount} packs of ${data.pack_size}).`;
+  }
   if (!data.customer_name || data.customer_name.length < 2) errors.customer_name = 'Name is required';
-  if (!data.phone || data.phone.length < 10) errors.phone = 'Valid phone number is required';
+  if (data.phone.replace(/\D/g, '').length < 10) errors.phone = 'Valid phone number is required';
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = 'Invalid email address';
-  if (!data.address || data.address.length < 5) errors.address = 'Address is required';
-  if (!data.city || data.city.length < 2) errors.city = 'City is required';
-  if (!data.state || data.state.length < 2) errors.state = 'State is required';
-  if (!data.pin_code || data.pin_code.length < 4) errors.pin_code = 'Valid PIN code is required';
+  if (data.city && data.city.length < 2) errors.city = 'Enter a valid city';
 
   return errors;
 }
 
 export default function OrderForm({ product, isOpen, onClose, selectedPackSize }: OrderFormProps) {
-  const [formData, setFormData] = useState<FormData>({
+  const minimumOrderKg = Math.max(1, product.min_order_quantity || 1);
+  const initialPackSize = selectedPackSize || product.pack_sizes[0] || '';
+  const initialMinimumPackCount = getMinimumPackCount(minimumOrderKg, initialPackSize);
+  const [formData, setFormData] = useState<FormData>(() => ({
     ...initialFormData,
-    pack_size: selectedPackSize || product.pack_sizes[0] || '',
-  });
+    pack_size: initialPackSize,
+    quantity: initialMinimumPackCount || 1,
+  }));
+  const currentMinimumPackCount = getMinimumPackCount(minimumOrderKg, formData.pack_size);
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [reference, setReference] = useState('');
 
   const updateField = (field: keyof FormData, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
+    setFormData((prev) => {
+      if (field !== 'pack_size') return { ...prev, [field]: value };
+
+      const nextPackSize = String(value);
+      const previousMinimum = getMinimumPackCount(minimumOrderKg, prev.pack_size);
+      const nextMinimum = getMinimumPackCount(minimumOrderKg, nextPackSize);
+      const quantity = nextMinimum === null
+        ? prev.quantity
+        : previousMinimum !== null && prev.quantity <= previousMinimum
+          ? nextMinimum
+          : Math.max(prev.quantity, nextMinimum);
+
+      return { ...prev, pack_size: nextPackSize, quantity };
+    });
+    if (errors[field] || (field === 'pack_size' && errors.quantity)) {
       setErrors((prev) => {
         const next = { ...prev };
         delete next[field];
+        if (field === 'pack_size') delete next.quantity;
         return next;
       });
     }
@@ -86,7 +106,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validationErrors = validateForm(formData);
+    const validationErrors = validateForm(formData, minimumOrderKg);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -119,6 +139,17 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
   };
 
   const handleWhatsApp = () => {
+    const minimumPackCount = getMinimumPackCount(minimumOrderKg, formData.pack_size);
+    if (minimumPackCount === null || formData.quantity < minimumPackCount) {
+      setErrors((prev) => ({
+        ...prev,
+        [minimumPackCount === null ? 'pack_size' : 'quantity']: minimumPackCount === null
+          ? 'We cannot confirm the weight for this pack size. Please contact us.'
+          : `Minimum order is ${minimumOrderKg} kg (${minimumPackCount} packs of ${formData.pack_size}).`,
+      }));
+      return;
+    }
+
     const message = generateOrderMessage({
       product_name: product.name,
       pack_size: formData.pack_size,
@@ -232,20 +263,25 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                  Quantity *
+                  Number of Packs *
                 </label>
                 <input
                   type="number"
-                  min={1}
+                  min={currentMinimumPackCount || 1}
+                  step={1}
                   max={10000}
                   value={formData.quantity}
-                  onChange={(e) => updateField('quantity', parseInt(e.target.value) || 1)}
+                  onChange={(e) => updateField('quantity', parseInt(e.target.value, 10) || 0)}
                   className={cn(
                     'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all',
                     errors.quantity ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
                   )}
                 />
                 {errors.quantity && <p className="mt-1 text-xs text-red-500">{errors.quantity}</p>}
+                <p className="mt-1 text-xs text-emerald-800/70">
+                  Minimum: {minimumOrderKg} kg
+                  {formData.pack_size && currentMinimumPackCount && ` (${currentMinimumPackCount} packs of ${formData.pack_size})`}
+                </p>
               </div>
             </div>
 
@@ -302,73 +338,21 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               </div>
             </div>
 
-            {/* Address */}
             <div>
               <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                <MapPin className="h-3.5 w-3.5" /> Delivery Address *
+                <MapPin className="h-3.5 w-3.5" /> City (Optional)
               </label>
-              <textarea
-                value={formData.address}
-                onChange={(e) => updateField('address', e.target.value)}
-                placeholder="Full delivery address"
-                rows={2}
+              <input
+                type="text"
+                value={formData.city}
+                onChange={(e) => updateField('city', e.target.value)}
+                placeholder="Your city"
                 className={cn(
-                  'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400 resize-none',
-                  errors.address ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
+                  'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
+                  errors.city ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
                 )}
               />
-              {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                  City *
-                </label>
-                <input
-                  type="text"
-                  value={formData.city}
-                  onChange={(e) => updateField('city', e.target.value)}
-                  placeholder="City"
-                  className={cn(
-                    'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
-                    errors.city ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
-                  )}
-                />
-                {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                  State *
-                </label>
-                <input
-                  type="text"
-                  value={formData.state}
-                  onChange={(e) => updateField('state', e.target.value)}
-                  placeholder="State"
-                  className={cn(
-                    'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
-                    errors.state ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
-                  )}
-                />
-                {errors.state && <p className="mt-1 text-xs text-red-500">{errors.state}</p>}
-              </div>
-              <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                  <Hash className="h-3.5 w-3.5" /> PIN *
-                </label>
-                <input
-                  type="text"
-                  value={formData.pin_code}
-                  onChange={(e) => updateField('pin_code', e.target.value)}
-                  placeholder="PIN Code"
-                  className={cn(
-                    'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
-                    errors.pin_code ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
-                  )}
-                />
-                {errors.pin_code && <p className="mt-1 text-xs text-red-500">{errors.pin_code}</p>}
-              </div>
+              {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
             </div>
 
             {/* Message */}
@@ -385,6 +369,10 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               />
             </div>
 
+            <p className="text-xs leading-relaxed text-emerald-800/70">
+              Share your phone number so our team can confirm availability, pricing, and answer your questions. Delivery details can be provided later.
+            </p>
+
             {/* Submit Buttons */}
             <div className="flex flex-col gap-3 pt-2">
               <button
@@ -400,7 +388,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 ) : (
                   <>
                     <Send className="h-4 w-4" />
-                    Send Order Enquiry
+                    Send Quote Request
                   </>
                 )}
               </button>

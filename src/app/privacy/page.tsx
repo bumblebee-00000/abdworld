@@ -25,7 +25,7 @@ export default function PrivacyPage() {
     {
       title: '3. Information Sharing',
       content:
-        'We may share your information only with service providers who help us operate our business, such as delivery partners. We do not share your personal information for marketing purposes without your consent.',
+        'We may share your information with service providers who help us operate our business, such as delivery partners. If you use the AI assistant, your question and limited recent chat context are sent to Google Gemini to generate a reply. Do not include passwords, payment details, or sensitive personal information in chat. We do not share your personal information for marketing purposes without your consent.',
     },
     {
       title: '4. Data Security',
