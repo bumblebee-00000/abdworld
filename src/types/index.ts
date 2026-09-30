@@ -87,6 +87,7 @@ export interface SiteSettings {
   city: string;
   state: string;
   about_content: string;
+  certifications: string;
   business_hours: string;
   facebook_url: string | null;
   instagram_url: string | null;

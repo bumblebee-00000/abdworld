@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   city TEXT NOT NULL DEFAULT '',
   state TEXT NOT NULL DEFAULT '',
   about_content TEXT NOT NULL DEFAULT '',
+  certifications TEXT NOT NULL DEFAULT '',
   business_hours TEXT NOT NULL DEFAULT 'Mon - Sat: 9:00 AM - 6:00 PM',
   facebook_url TEXT,
   instagram_url TEXT,

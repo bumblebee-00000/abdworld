@@ -218,6 +218,20 @@ export default function AdminSettingsPage() {
             className={`${inputClass('about_content')} resize-none`}
           />
         </div>
+
+        <div className="mt-5">
+          <label className="block text-sm font-semibold text-emerald-950 mb-2">
+            Certifications
+          </label>
+          <textarea
+            name="certifications"
+            value={values.certifications || ''}
+            onChange={handleChange}
+            rows={4}
+            placeholder="Add one certification per line. Leave blank to hide this section."
+            className={`${inputClass('certifications')} resize-none`}
+          />
+        </div>
       </div>
 
       {/* Contact Info */}

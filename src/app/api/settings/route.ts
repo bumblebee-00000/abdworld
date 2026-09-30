@@ -18,6 +18,7 @@ export async function GET() {
           city: 'Barasat',
           state: 'West Bengal',
           about_content: '',
+          certifications: '',
           business_hours: 'Mon - Sat: 9:00 AM - 6:00 PM',
         },
       });

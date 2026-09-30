@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   let featuredProducts: Product[] = FALLBACK_PRODUCTS;
+  let certifications: string[] = [];
 
   try {
     const supabase = getSupabaseAdmin();
@@ -32,6 +33,19 @@ export default async function Home() {
       .limit(3);
 
     if (data && data.length > 0) featuredProducts = data as Product[];
+
+    const { data: settingsData } = await supabase
+      .from('site_settings')
+      .select('certifications')
+      .eq('id', '1')
+      .maybeSingle();
+
+    if (settingsData && typeof settingsData.certifications === 'string') {
+      certifications = settingsData.certifications
+        .split('\n')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
   } catch {
     // Keep the local catalogue visible when the database is unavailable.
   }
@@ -293,17 +307,28 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="border-y border-emerald-900/10 bg-emerald-950 py-6 text-white">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-4 text-sm font-medium uppercase tracking-[0.18em] text-emerald-50/80 sm:text-base">
-            <span>Basmati Rice</span>
-            <span className="text-gold-400">•</span>
-            <span>Non-Basmati Rice</span>
-            <span className="text-gold-400">•</span>
-            <span>Bulk Supply</span>
-            <span className="text-gold-400">•</span>
-            <span>Business Enquiries</span>
-          </div>
-        </section>
+        {certifications.length > 0 ? (
+          <section className="border-y border-emerald-900/10 bg-emerald-950 py-8 text-white">
+            <div className="mx-auto max-w-7xl px-4">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.18em] text-emerald-50/80 sm:text-base">
+                {certifications.map((certification, index) => (
+                  <span key={certification} className="inline-flex items-center gap-3">
+                    <span>{certification}</span>
+                    {index < certifications.length - 1 && <span className="text-gold-400">•</span>}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="border-y border-emerald-900/10 bg-emerald-950 py-6 text-white">
+            <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-4 text-sm font-medium uppercase tracking-[0.18em] text-emerald-50/80 sm:text-base">
+              <span>Certifications</span>
+              <span className="text-gold-400">•</span>
+              <span>Will appear here</span>
+            </div>
+          </section>
+        )}
 
         <section id="contact" className="section-padding bg-white">
           <div className="mx-auto max-w-6xl rounded-[2.25rem] border border-emerald-900/10 bg-gradient-to-br from-emerald-950 to-emerald-900 p-8 text-white shadow-[0_25px_60px_rgba(2,44,34,0.2)] lg:p-12">
