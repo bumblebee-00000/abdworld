@@ -143,21 +143,14 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={`${BUSINESS_NAME} — Home`}>
-          <Image
-            src={LOGO_URL}
-            alt={`${BUSINESS_NAME} logo`}
-            width={269}
-            height={64}
-            className="h-auto w-40 max-w-[calc(100vw-9rem)] rounded-md object-contain sm:hidden"
-          />
-          <span className="hidden h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02] sm:flex">
+        <Link href="/" className="group flex min-w-0 shrink items-center gap-2.5" aria-label={`${BUSINESS_NAME} — Home`}>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02]">
             <Image src={LOGO_URL} alt={`${BUSINESS_NAME} logo`} width={64} height={64} className="h-9 w-9 object-contain" />
           </span>
-          <span className="hidden flex-col leading-none sm:flex">
+          <span className="flex min-w-0 flex-col leading-none">
             <span
               className={cx(
-                "font-heading text-lg font-black tracking-[0.08em] transition-colors duration-300 sm:text-xl",
+                "truncate font-heading text-sm font-black tracking-[0.04em] transition-colors duration-300 sm:text-lg sm:tracking-[0.08em] lg:text-xl",
                 solid ? "text-emerald-950" : "text-white",
               )}
             >
@@ -165,7 +158,7 @@ export function Navbar() {
             </span>
             <span
               className={cx(
-                "mt-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] transition-colors duration-300",
+                "mt-0.5 hidden truncate text-[8px] font-semibold uppercase tracking-[0.15em] transition-colors duration-300 min-[350px]:block sm:text-[10px] sm:tracking-[0.28em]",
                 solid ? "text-gold-700" : "text-gold-300",
               )}
             >
