@@ -273,7 +273,7 @@ export default function AdminSettingsPage() {
                 name="whatsapp_number"
                 value={values.whatsapp_number}
                 onChange={handleChange}
-                placeholder="919246251399"
+                placeholder="Your WhatsApp number"
                 className={`${inputClass('whatsapp_number')} pl-11`}
               />
             </div>
@@ -289,7 +289,7 @@ export default function AdminSettingsPage() {
                 name="email"
                 value={values.email}
                 onChange={handleChange}
-                placeholder="Business email address"
+                placeholder="contact@abdworld.in"
                 className={`${inputClass('email')} pl-11`}
               />
             </div>

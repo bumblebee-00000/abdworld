@@ -240,7 +240,7 @@ export default async function Home() {
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-emerald-900">Phone / WhatsApp</span>
-                  <input type="tel" className="w-full rounded-2xl border border-emerald-900/10 bg-white px-4 py-3 text-sm text-emerald-950 outline-none ring-0 transition focus:border-emerald-700" placeholder="98753 51399" />
+                  <input type="tel" className="w-full rounded-2xl border border-emerald-900/10 bg-white px-4 py-3 text-sm text-emerald-950 outline-none ring-0 transition focus:border-emerald-700" placeholder="Your phone number" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-emerald-900">Location</span>
@@ -365,7 +365,7 @@ export default async function Home() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-400">Contact</p>
                 <div className="mt-3 space-y-2 text-sm text-emerald-50/80">
-                  <p><a href="tel:+919246251399">9875351399</a></p>
+                  <p><a href="tel:+919246251399">+91 92462 51399</a></p>
                   <p><a href="mailto:contact@abdworld.in">contact@abdworld.in</a></p>
                 </div>
               </div>
