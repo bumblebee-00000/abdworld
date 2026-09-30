@@ -42,9 +42,10 @@ type AssistantQuickReply = {
 };
 
 const QUICK_PROMPTS = [
-  { label: 'Browse rice', icon: Wheat, href: '/products' },
-  { label: 'Minimum order', icon: ShoppingBag, question: 'What is the minimum order quantity?' },
-  { label: 'Help me choose', icon: MessageCircle, question: 'Help me choose rice for my business.' },
+  { label: 'Explore Rice', icon: Wheat, href: '/products' },
+  { label: 'Wholesale Information', icon: ShoppingBag, question: 'I need wholesale information for rice supply.' },
+  { label: 'Bulk Orders', icon: MessageCircle, question: 'Tell me about bulk orders and quantities.' },
+  { label: 'Help Me Choose', icon: MessageCircle, question: 'Help me choose rice for my business.' },
 ];
 
 export default function CustomerChatbot() {
@@ -171,7 +172,7 @@ export default function CustomerChatbot() {
                     <p className="font-heading text-lg font-bold tracking-tight">ABD Rice Assistant</p>
                     <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-emerald-50/80">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
-                      {answerProvider === 'gemini' ? 'Gemini AI | Product-grounded answers' : answerProvider === 'catalogue' ? 'Product catalogue answers' : 'Product and wholesale help'}
+                      {answerProvider === 'gemini' ? 'Product & wholesale help' : answerProvider === 'catalogue' ? 'Product & wholesale help' : 'Product & wholesale help'}
                     </p>
                   </div>
                 </div>
@@ -254,7 +255,7 @@ export default function CustomerChatbot() {
               )}
 
               <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-2xl border border-emerald-900/10 bg-gradient-to-r from-white to-emerald-50 p-1.5 shadow-[0_10px_25px_rgba(5,60,46,0.08)]">
-                <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask about products, MOQ, or delivery..." className="min-w-0 flex-1 bg-transparent px-2 text-xs text-emerald-950 outline-none placeholder:text-emerald-900/40" aria-label="Ask the rice assistant" disabled={isThinking} />
+                <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask about rice, wholesale prices, MOQ or delivery..." className="min-w-0 flex-1 bg-transparent px-2 text-xs text-emerald-950 outline-none placeholder:text-emerald-900/40" aria-label="Ask the rice assistant" disabled={isThinking} />
                 <button type="submit" disabled={isThinking || !input.trim()} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-emerald-900 text-white shadow-md shadow-emerald-900/20 transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50" aria-label="Send message">
                   <Send className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

@@ -141,43 +141,6 @@ export function Navbar() {
           : "absolute bg-transparent",
       )}
     >
-      <AnimatePresence initial={false}>
-        {!solid && (
-          <motion.div
-            key="top-strip"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden bg-emerald-950/95 text-cream-100"
-          >
-            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 text-xs sm:px-6 lg:px-8">
-              <p className="inline-flex items-center gap-2">
-                <Wheat size={13} aria-hidden="true" className="text-gold-400" />
-                <span className="font-semibold text-gold-400/90">{BUSINESS_NAME}</span>
-                <span className="hidden text-cream-100/80 sm:inline">Premium wholesale rice supplier</span>
-              </p>
-              <div className="flex items-center gap-5">
-                <a
-                  href={`tel:${PHONE_TEL}`}
-                  className="hidden items-center gap-1.5 text-cream-100/80 transition-colors hover:text-gold-400 sm:inline-flex"
-                >
-                  <Phone size={12} aria-hidden="true" />
-                  {PHONE_DISPLAY}
-                </a>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="hidden items-center gap-1.5 text-cream-100/80 transition-colors hover:text-gold-400 md:inline-flex"
-                >
-                  <Mail size={12} aria-hidden="true" />
-                  {EMAIL}
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={`${BUSINESS_NAME} — Home`}>
           <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02]">

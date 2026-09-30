@@ -96,7 +96,7 @@ export default function Hero() {
           >
             <span className="h-2.5 w-2.5 rounded-full bg-highlight-400 shadow-[0_0_18px_rgba(251,146,60,0.8)]" />
             <span className="text-sm font-bold uppercase tracking-[0.28em] text-highlight-300">
-              ABD WORLD
+              B2B RICE SUPPLIER
             </span>
           </motion.div>
 
@@ -163,7 +163,7 @@ export default function Hero() {
           className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-emerald-50/85 backdrop-blur-sm"
         >
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.8)]" />
-          Trusted rice supply for growing businesses
+          Basmati • Non-Basmati • Specialty Rice
         </motion.div>
       </div>
 
