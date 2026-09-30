@@ -53,7 +53,15 @@ export default function CustomerChatbot() {
     {
       id: 'welcome',
       from: 'bot',
-      text: 'Hello. I can help you find rice for your business, check pack sizes and minimum quantities, or connect you with our team.',
+      text: "Hi! I'm the ABD WORLD AI Assistant. How can I help you?",
+      quickReplies: [
+        { label: '🌾 Explore Rice Varieties', question: 'Tell me about the rice varieties available for business supply.' },
+        { label: '💰 Get Wholesale Information', question: 'I need wholesale information for rice supply.' },
+        { label: '📦 Ask About Bulk Orders', question: 'I want to ask about bulk orders and quantities.' },
+        { label: '🚚 Delivery Information', question: 'How does delivery and supply work for wholesale orders?' },
+        { label: '🏢 About ABD WORLD', question: 'Tell me about ABD WORLD and the business.' },
+        { label: '📞 Contact ABD WORLD', question: 'How can I contact ABD WORLD for a quote?' },
+      ],
     },
   ]);
   const [input, setInput] = useState('');

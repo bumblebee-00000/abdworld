@@ -129,11 +129,8 @@ export function answerQuestion(question: string, context: string, products: Assi
   }
 
   if (primary && asksPrice) {
-    const priceText = primary.price === null
-      ? 'I can help you request a current quote from the sales team.'
-      : `The listed price is ${formatPrice(primary.price)} per kg.`;
     return {
-      answer: `${priceText} Final pricing for wholesale buyers depends on quantity and delivery location, so the best next step is to request a quote for your exact order.`,
+      answer: 'For the latest wholesale price and availability, please contact ABD WORLD. Final pricing depends on your quantity, rice type and delivery location, and our team can confirm the best option for your business.',
       products: suggestions,
     };
   }

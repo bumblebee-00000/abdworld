@@ -132,7 +132,7 @@ export default function Hero() {
           animate="visible"
           className="mt-6 max-w-2xl text-base leading-relaxed text-emerald-50/90 sm:text-lg"
         >
-          Premium rice supply for retailers, restaurants, hotels, and wholesale buyers who want consistent quality, dependable delivery, and pricing that protects margins.
+          Quality rice supply for retailers, restaurants, hotels and bulk buyers — with reliable sourcing, consistent quality and competitive wholesale pricing.
         </motion.p>
 
         <motion.div
@@ -142,17 +142,17 @@ export default function Hero() {
           className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center"
         >
           <Link
-            href="/products"
+            href="#bulk-quote"
             className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-gold-400 px-9 text-base font-bold text-emerald-950 shadow-[0_12px_35px_rgba(250,204,21,0.4)] transition-all duration-300 hover:-translate-y-1 hover:bg-gold-300 hover:shadow-[0_18px_45px_rgba(250,204,21,0.56)]"
           >
             Request Bulk Quote
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
           <Link
-            href="/contact"
+            href="/products"
             className="inline-flex h-14 items-center justify-center rounded-full border-2 border-white/70 bg-white/5 px-9 text-base font-semibold text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)] backdrop-blur-sm transition-all duration-300 hover:border-highlight-400 hover:bg-white/10 hover:text-highlight-300"
           >
-            Explore Collection
+            Explore Rice
           </Link>
         </motion.div>
 

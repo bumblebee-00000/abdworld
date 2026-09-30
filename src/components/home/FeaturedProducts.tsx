@@ -50,15 +50,15 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
           <span className="inline-flex items-center gap-3">
             <span className="h-px w-8 bg-gold-500" />
             <span className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-700">
-              Our Collection
+              Rice Collection
             </span>
             <span className="h-px w-8 bg-gold-500" />
           </span>
           <h2 className="mt-4 text-4xl font-bold text-emerald-950 sm:text-5xl">
-            Curated rice for premium buyers
+            Rice collection for business buyers
           </h2>
           <p className="mt-4 text-lg text-emerald-900/75">
-            Handpicked grains, refined for quality, trust, and repeat bulk orders. Explore the collection built for restaurants, retailers, and serious wholesale buyers.
+            Our current collection is being updated. Contact us for available varieties, packaging options and wholesale pricing.
           </p>
           <div className="gold-gradient mx-auto mt-6 h-1 w-16 rounded-full" />
         </motion.div>
