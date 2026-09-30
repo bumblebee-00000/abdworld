@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
@@ -143,8 +144,15 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={`${BUSINESS_NAME} — Home`}>
-          <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02]">
-            <img src={LOGO_URL} alt={`${BUSINESS_NAME} logo`} className="h-9 w-9 object-contain" />
+          <Image
+            src={LOGO_URL}
+            alt={`${BUSINESS_NAME} logo`}
+            width={269}
+            height={64}
+            className="h-auto w-40 max-w-[calc(100vw-9rem)] rounded-md object-contain sm:hidden"
+          />
+          <span className="hidden h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02] sm:flex">
+            <Image src={LOGO_URL} alt={`${BUSINESS_NAME} logo`} width={64} height={64} className="h-9 w-9 object-contain" />
           </span>
           <span className="hidden flex-col leading-none sm:flex">
             <span
