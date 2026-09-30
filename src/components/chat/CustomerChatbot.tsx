@@ -5,11 +5,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   Bot,
   ChevronDown,
+  DollarSign,
+  Lightbulb,
   Loader2,
   MessageCircle,
+  Package,
   Phone,
   Send,
-  ShoppingBag,
   Sparkles,
   Wheat,
   X,
@@ -24,7 +26,6 @@ type ChatMessage = {
   text: string;
   from: 'bot' | 'customer';
   products?: AssistantProduct[];
-  quickReplies?: AssistantQuickReply[];
 };
 
 type AssistantProduct = {
@@ -36,16 +37,11 @@ type AssistantProduct = {
   min_order_quantity: number;
 };
 
-type AssistantQuickReply = {
-  label: string;
-  question: string;
-};
-
 const QUICK_PROMPTS = [
   { label: 'Explore Rice', icon: Wheat, href: '/products' },
-  { label: 'Wholesale Information', icon: ShoppingBag, question: 'I need wholesale information for rice supply.' },
-  { label: 'Bulk Orders', icon: MessageCircle, question: 'Tell me about bulk orders and quantities.' },
-  { label: 'Help Me Choose', icon: MessageCircle, question: 'Help me choose rice for my business.' },
+  { label: 'Wholesale Information', icon: DollarSign, question: 'I need wholesale information for rice supply.' },
+  { label: 'Bulk Orders', icon: Package, question: 'I want to place a bulk rice order. What details do you need?' },
+  { label: 'Help Me Choose', icon: Lightbulb, question: 'Help me choose rice for my business.' },
 ];
 
 export default function CustomerChatbot() {
@@ -54,22 +50,11 @@ export default function CustomerChatbot() {
     {
       id: 'welcome',
       from: 'bot',
-      text: "Hi! I'm the ABD WORLD AI Assistant. How can I help you?",
-      quickReplies: [
-        { label: '🌾 Explore Rice Varieties', question: 'Tell me about the rice varieties available for business supply.' },
-        { label: '💰 Get Wholesale Information', question: 'I need wholesale information for rice supply.' },
-        { label: '📦 Ask About Bulk Orders', question: 'I want to ask about bulk orders and quantities.' },
-        { label: '🚚 Delivery Information', question: 'How does delivery and supply work for wholesale orders?' },
-        { label: '🏢 About ABD WORLD', question: 'Tell me about ABD WORLD and the business.' },
-        { label: '📞 Contact ABD WORLD', question: 'How can I contact ABD WORLD for a quote?' },
-      ],
+      text: "Hi! I'm ABD Rice Assistant. How can I help you?",
     },
   ]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-  const [answerProvider, setAnswerProvider] = useState<'gemini' | 'catalogue' | null>(null);
-  const [showQuickActions, setShowQuickActions] = useState(true);
-  const [showContactActions, setShowContactActions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,11 +65,10 @@ export default function CustomerChatbot() {
     text: string,
     from: ChatMessage['from'],
     products?: AssistantProduct[],
-    quickReplies?: AssistantQuickReply[],
   ) => {
     setMessages((current) => [
       ...current,
-      { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, text, from, products, quickReplies },
+      { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, text, from, products },
     ]);
   };
 
@@ -105,7 +89,6 @@ export default function CustomerChatbot() {
       const result = await response.json() as {
         answer?: string;
         products?: AssistantProduct[];
-        quickReplies?: AssistantQuickReply[];
         provider?: 'gemini' | 'catalogue';
         error?: string;
       };
@@ -114,12 +97,10 @@ export default function CustomerChatbot() {
         return;
       }
       if (!response.ok) throw new Error(result.error || 'Assistant request failed');
-      setAnswerProvider(result.provider || 'catalogue');
       addMessage(
         result.answer || 'I could not find an answer for that. Please contact our team.',
         'bot',
         result.products,
-        result.quickReplies,
       );
     } catch {
       addMessage('I could not reach the product catalogue just now. Browse the rice collection or message our team and include your question.', 'bot');
@@ -141,12 +122,6 @@ export default function CustomerChatbot() {
   const whatsappMessage = latestQuestion
     ? `Hello, I need help with this question about wholesale rice: ${latestQuestion}`
     : 'Hello, I need help with a wholesale rice order.';
-
-  useEffect(() => {
-    if (hasStartedConversation) {
-      setShowQuickActions(false);
-    }
-  }, [hasStartedConversation]);
 
   return (
     <div className="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7">
@@ -172,7 +147,7 @@ export default function CustomerChatbot() {
                     <p className="font-heading text-lg font-bold tracking-tight">ABD Rice Assistant</p>
                     <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-emerald-50/80">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
-                      {answerProvider === 'gemini' ? 'Product & wholesale help' : answerProvider === 'catalogue' ? 'Product & wholesale help' : 'Product & wholesale help'}
+                      Product &amp; wholesale help
                     </p>
                   </div>
                 </div>
@@ -199,21 +174,6 @@ export default function CustomerChatbot() {
                       ))}
                     </div>
                   )}
-                  {message.quickReplies && message.quickReplies.length > 0 && (
-                    <div className="mt-2 flex w-full flex-wrap gap-2">
-                      {message.quickReplies.map((reply) => (
-                        <button
-                          key={reply.label}
-                          type="button"
-                          disabled={isThinking}
-                          onClick={() => void askAssistant(reply.question, reply.label)}
-                          className="rounded-full border border-emerald-700/20 bg-gradient-to-r from-white to-emerald-50 px-2.5 py-1.5 text-[10px] font-semibold text-emerald-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
-                        >
-                          {reply.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
               {isThinking && (
@@ -226,31 +186,18 @@ export default function CustomerChatbot() {
 
             <div className="border-t border-emerald-900/10 px-4 py-3">
               {!hasStartedConversation && (
-                <div className="mb-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowQuickActions((current) => !current)}
-                    className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-white/80 px-2.5 py-1 text-[10px] font-semibold text-emerald-800 shadow-sm"
-                  >
-                    {showQuickActions ? 'Hide options' : 'Show options'}
-                    <ChevronDown className={`h-3 w-3 transition-transform ${showQuickActions ? 'rotate-180' : ''}`} aria-hidden="true" />
-                  </button>
-
-                  {showQuickActions && (
-                    <div className="flex flex-wrap gap-2">
-                      {QUICK_PROMPTS.map((prompt) => (
-                        prompt.href ? (
-                          <a key={prompt.label} href={prompt.href} onClick={() => setIsOpen(false)} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-white/80 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-700 hover:bg-emerald-50">
-                            <prompt.icon className="h-3.5 w-3.5" aria-hidden="true" /> {prompt.label}
-                          </a>
-                        ) : (
-                          <button key={prompt.label} type="button" disabled={isThinking} onClick={() => void askAssistant(prompt.question ?? '', prompt.label)} className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-white/80 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-700 hover:bg-emerald-50 disabled:opacity-50">
-                            <prompt.icon className="h-3.5 w-3.5" aria-hidden="true" /> {prompt.label}
-                          </button>
-                        )
-                      ))}
-                    </div>
-                  )}
+                <div className="mb-3 grid grid-cols-2 gap-2">
+                  {QUICK_PROMPTS.map((prompt) => (
+                    prompt.href ? (
+                      <a key={prompt.label} href={prompt.href} onClick={() => setIsOpen(false)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-emerald-700/15 bg-white/80 px-2.5 py-2 text-[10px] font-semibold text-emerald-800 shadow-sm transition-colors hover:border-emerald-700 hover:bg-emerald-50">
+                        <prompt.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> {prompt.label}
+                      </a>
+                    ) : (
+                      <button key={prompt.label} type="button" disabled={isThinking} onClick={() => void askAssistant(prompt.question ?? '', prompt.label)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-emerald-700/15 bg-white/80 px-2.5 py-2 text-left text-[10px] font-semibold text-emerald-800 shadow-sm transition-colors hover:border-emerald-700 hover:bg-emerald-50 disabled:opacity-50">
+                        <prompt.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> {prompt.label}
+                      </button>
+                    )
+                  ))}
                 </div>
               )}
 
@@ -260,33 +207,16 @@ export default function CustomerChatbot() {
                   <Send className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </form>
-              <p className="mt-2 text-[10px] leading-relaxed text-emerald-900/55">
-                Chat may be processed by Google Gemini. Please do not share passwords or payment details.
-              </p>
-
-              <div className="mt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowContactActions((current) => !current)}
-                  className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-white/80 px-2.5 py-1 text-[10px] font-semibold text-emerald-800 shadow-sm"
-                >
-                  {showContactActions ? 'Hide contact options' : 'Show contact options'}
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showContactActions ? 'rotate-180' : ''}`} aria-hidden="true" />
-                </button>
-
-                {showContactActions && (
-                  <div className="grid grid-cols-2 gap-2">
-                    <a href={`tel:${PHONE_TEL}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-900 to-emerald-800 px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-emerald-900/20 transition-transform hover:-translate-y-0.5">
-                      <Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call owner
-                    </a>
-                    <a href={getWhatsAppMessageUrl(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#25d366] to-[#18b657] px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-[#25d366]/20 transition-transform hover:-translate-y-0.5">
-                      <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp message
-                    </a>
-                    <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-700/20 bg-white px-2.5 py-2 text-[11px] font-bold text-emerald-900 shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-emerald-50">
-                      <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp channel
-                    </a>
-                  </div>
-                )}
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <a href={`tel:${PHONE_TEL}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-900 to-emerald-800 px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-emerald-900/20 transition-transform hover:-translate-y-0.5">
+                  <Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call Owner
+                </a>
+                <a href={getWhatsAppMessageUrl(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#25d366] to-[#18b657] px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-[#25d366]/20 transition-transform hover:-translate-y-0.5">
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp
+                </a>
+                <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-700/20 bg-white px-2.5 py-2 text-[11px] font-bold text-emerald-900 shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-emerald-50">
+                  <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp Channel
+                </a>
               </div>
             </div>
           </motion.section>

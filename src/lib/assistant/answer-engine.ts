@@ -89,9 +89,14 @@ function isDeliveryQuery(question: string, context: string) {
 
 function isWholesaleInfoQuery(question: string, context: string) {
   const value = normalize(`${context} ${question}`);
-  const hasWholesaleIntent = /\b(wholesale information|wholesale|bulk order|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(value);
+  const hasWholesaleIntent = /\b(wholesale information|wholesale|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(value);
   const hasSpecificProductIntent = /\b(help me choose|recommend|which rice|what rice|best rice|specific variety|basmati|sella|non basmati|golden rice|premium basmati|1121)\b/.test(value);
   return hasWholesaleIntent && !hasSpecificProductIntent;
+}
+
+function isBulkOrderQuery(question: string, context: string) {
+  const value = normalize(`${context} ${question}`);
+  return /\b(bulk (?:rice )?orders?|place (?:a )?bulk order|large orders?)\b/.test(value);
 }
 
 function isBusinessInfoQuery(question: string, context: string) {
@@ -150,6 +155,13 @@ export function answerQuestion(question: string, context: string, products: Assi
   if (isDeliveryQuery(question, context)) {
     return {
       answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      products: [],
+    };
+  }
+
+  if (isBulkOrderQuery(question, context)) {
+    return {
+      answer: 'To enquire about a bulk order, share the rice variety (or intended use), estimated quantity, preferred pack size, and delivery location. ABD WORLD will confirm current pricing, availability, minimum order, and delivery details with you. A chat enquiry is not a confirmed order.',
       products: [],
     };
   }

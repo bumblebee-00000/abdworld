@@ -324,7 +324,8 @@ export async function POST(request: NextRequest) {
   const isContactRequest = /\b(contact|call|phone|whatsapp|email|reach|talk to|quote|quotation|how can i contact|how to contact|reach us)\b/.test(normalizedQuestion)
     && !/\b(rice|basmati|sella|grain|variety|varieties|pack|quantity|moq|price|pricing)\b/.test(normalizedQuestion);
   const isDeliveryRequest = /\b(delivery|deliver|dispatch|shipping|transport|logistics|how do you deliver|how is delivery|delivery process)\b/.test(normalizedQuestion);
-  const isWholesaleInfoRequest = /\b(wholesale information|wholesale|bulk order|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(normalizedQuestion)
+  const isBulkOrderRequest = /\b(bulk (?:rice )?orders?|place (?:a )?bulk order|large orders?)\b/.test(normalizedQuestion);
+  const isWholesaleInfoRequest = /\b(wholesale information|wholesale|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(normalizedQuestion)
     && !/\b(help me choose|recommend|which rice|what rice|best rice|specific variety|basmati|sella|non basmati|golden rice|premium basmati|1121)\b/.test(normalizedQuestion);
   const isBusinessInfoRequest = /\b(abd world|abdworld|business|company|who are you|about abd|about the business|bulk order|wholesale information|supplier)\b/.test(normalizedQuestion)
     && !/\b(rice|basmati|sella|grain|variety|varieties|pack|quantity|moq|price|pricing)\b/.test(normalizedQuestion);
@@ -340,6 +341,14 @@ export async function POST(request: NextRequest) {
   if (isDeliveryRequest) {
     return NextResponse.json({
       answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      products: [],
+      provider: 'catalogue',
+    });
+  }
+
+  if (isBulkOrderRequest) {
+    return NextResponse.json({
+      answer: 'To enquire about a bulk order, share the rice variety (or intended use), estimated quantity, preferred pack size, and delivery location. ABD WORLD will confirm current pricing, availability, minimum order, and delivery details with you. A chat enquiry is not a confirmed order.',
       products: [],
       provider: 'catalogue',
     });
