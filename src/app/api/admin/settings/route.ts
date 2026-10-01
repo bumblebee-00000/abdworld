@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest) {
       'youtube_url',
     ];
 
-    const updateData: Record<string, string | null> = {
+    const updateData: Record<string, string> = {
       updated_at: new Date().toISOString(),
     };
 
@@ -106,9 +106,9 @@ export async function PUT(request: NextRequest) {
       if (field in body) {
         const value = body[field];
         if (typeof value === 'string') {
-          updateData[field] = value.trim() || null;
+          updateData[field] = value.trim();
         } else if (value === null) {
-          updateData[field] = null;
+          updateData[field] = '';
         }
       }
     }
