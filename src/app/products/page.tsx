@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 const PAGE_SIZE = 12;
+const normalizeCategory = (category: string) => category.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export default async function ProductsPage({
   searchParams,
@@ -36,38 +37,44 @@ export default async function ProductsPage({
   try {
     const supabase = getSupabaseAdmin();
 
-    let queryBuilder = supabase
-      .from('products')
-      .select('*', { count: 'exact' })
-      .eq('is_active', true);
-
-    if (query) {
-      queryBuilder = queryBuilder.or(
-        `name.ilike.%${query}%,short_description.ilike.%${query}%,category.ilike.%${query}%,rice_type.ilike.%${query}%`
-      );
-    }
-
-    if (filterCategories.length > 0) {
-      queryBuilder = queryBuilder.in('category', filterCategories);
-    }
-
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-
-    const { data: products, count } = await queryBuilder
-      .order('is_featured', { ascending: false })
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1;
-    allProducts = (products as Product[]) ?? [];
-
     const { data: categoryData } = await supabase
       .from('products')
       .select('category')
       .eq('is_active', true);
 
     allCategories = [...new Set((categoryData ?? []).map((c: { category: string }) => c.category))].sort();
+    const requestedCategories = new Set(filterCategories.map(normalizeCategory));
+    const matchingCategories = allCategories.filter((category) =>
+      requestedCategories.has(normalizeCategory(category))
+    );
+
+    if (filterCategories.length === 0 || matchingCategories.length > 0) {
+      let queryBuilder = supabase
+        .from('products')
+        .select('*', { count: 'exact' })
+        .eq('is_active', true);
+
+      if (query) {
+        queryBuilder = queryBuilder.or(
+          `name.ilike.%${query}%,short_description.ilike.%${query}%,category.ilike.%${query}%,rice_type.ilike.%${query}%`
+        );
+      }
+
+      if (filterCategories.length > 0) {
+        queryBuilder = queryBuilder.in('category', matchingCategories);
+      }
+
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data: products, count } = await queryBuilder
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1;
+      allProducts = (products as Product[]) ?? [];
+    }
   } catch {
     // Database unavailable — fall back to an empty catalogue view.
   }
