@@ -22,8 +22,9 @@ export default function SiteContactDetails({ variant }: SiteContactDetailsProps)
   const email = settings.email || '';
   const emailHref = email ? `mailto:${email}` : '';
   const address = [settings.address, settings.city, settings.state].filter(Boolean).join(', ');
+  const mapsCoordinates = '22.6717722,88.579711';
   const mapsHref = address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsCoordinates)}`
     : '';
   const whatsappHref = getWhatsAppMessageUrl(
     'Hello! I want to enquire about your rice products.',
@@ -87,17 +88,23 @@ export default function SiteContactDetails({ variant }: SiteContactDetailsProps)
               </div>
               <h3 className="font-heading text-xl font-bold text-emerald-950">Our Location</h3>
             </div>
+            <div className="aspect-[4/3] overflow-hidden rounded-xl border border-cream-200 bg-cream-100">
+              <iframe
+                title={`Map showing ${address}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(mapsCoordinates)}&z=17&output=embed`}
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
             <a
               href={mapsHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative block aspect-[4/3] overflow-hidden rounded-xl border border-cream-200 bg-cream-100 transition-transform hover:scale-[1.01]"
+              className="mt-3 inline-flex text-xs font-semibold uppercase tracking-widest text-emerald-800 transition-colors hover:text-emerald-600"
             >
-              <span className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <MapPin className="mb-3 h-10 w-10 text-emerald-600" />
-                <span className="font-semibold text-emerald-900">{address}</span>
-                <span className="mt-4 text-xs uppercase tracking-widest text-emerald-900/40">Open in Google Maps</span>
-              </span>
+              Open in Google Maps
             </a>
           </div>
         )}
