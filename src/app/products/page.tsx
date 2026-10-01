@@ -33,14 +33,17 @@ export default async function ProductsPage({
   let allProducts: Product[] = [];
   let totalPages = 1;
   let allCategories: string[] = [];
+  let catalogUnavailable = false;
 
   try {
     const supabase = getSupabaseAdmin();
 
-    const { data: categoryData } = await supabase
+    const { data: categoryData, error: categoryError } = await supabase
       .from('products')
       .select('category')
       .eq('is_active', true);
+
+    if (categoryError) throw categoryError;
 
     allCategories = [...new Set((categoryData ?? []).map((c: { category: string }) => c.category))].sort();
     const requestedCategories = new Set(filterCategories.map(normalizeCategory));
@@ -67,22 +70,38 @@ export default async function ProductsPage({
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data: products, count } = await queryBuilder
+      const { data: products, count, error } = await queryBuilder
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
         .range(from, to);
+
+      if (error) throw error;
 
       totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1;
       allProducts = (products as Product[]) ?? [];
     }
   } catch {
-    // Database unavailable — fall back to an empty catalogue view.
+    catalogUnavailable = true;
   }
 
-  if (allProducts.length === 0 && !query && filterCategories.length === 0) {
-    allProducts = FALLBACK_PRODUCTS;
-    totalPages = 1;
+  if (catalogUnavailable) {
     allCategories = [...new Set(FALLBACK_PRODUCTS.map((product) => product.category))].sort();
+    const normalizedQuery = query.toLowerCase();
+    const requestedCategories = new Set(filterCategories.map(normalizeCategory));
+    allProducts = FALLBACK_PRODUCTS.filter((product) => {
+      const matchesCategory =
+        requestedCategories.size === 0 || requestedCategories.has(normalizeCategory(product.category));
+      const searchableText = [
+        product.name,
+        product.short_description,
+        product.category,
+        product.rice_type,
+      ]
+        .join(' ')
+        .toLowerCase();
+      return matchesCategory && (!normalizedQuery || searchableText.includes(normalizedQuery));
+    });
+    totalPages = Math.max(1, Math.ceil(allProducts.length / PAGE_SIZE));
   }
 
   return (
