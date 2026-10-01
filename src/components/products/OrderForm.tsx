@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageCircle, Loader2, CheckCircle2, AlertCircle, User, Phone, Mail, MapPin } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { cn, generateWhatsAppUrl, generateOrderMessage, formatPrice, parsePackWeightKg } from '@/lib/utils';
-import { WHATSAPP_NUMBER } from '@/lib/business-config';
+import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
 interface OrderFormProps {
@@ -65,6 +65,7 @@ function validateForm(data: FormData, minimumOrderKg: number): FormErrors {
 }
 
 export default function OrderForm({ product, isOpen, onClose, selectedPackSize }: OrderFormProps) {
+  const settings = useSiteSettings();
   const minimumOrderKg = Math.max(1, product.min_order_quantity || 1);
   const initialPackSize = selectedPackSize || product.pack_sizes[0] || '';
   const initialMinimumPackCount = getMinimumPackCount(minimumOrderKg, initialPackSize);
@@ -157,7 +158,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       customer_name: formData.customer_name,
       city: formData.city,
     });
-    const url = generateWhatsAppUrl(WHATSAPP_NUMBER, message);
+    const url = generateWhatsAppUrl(normalizePhoneNumber(settings.whatsapp_number), message);
     window.open(url, '_blank');
   };
 

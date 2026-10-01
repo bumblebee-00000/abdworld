@@ -19,11 +19,9 @@ import {
 } from 'lucide-react';
 import { wholesaleSchema } from '@/lib/validation';
 import { generateWhatsAppUrl } from '@/lib/utils';
-import { WHATSAPP_NUMBER } from '@/lib/business-config';
+import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 
 type Errors = Record<string, string>;
-
-const BUSINESS_EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'contact@abdworld.in';
 
 interface WholesaleFormValues {
   name: string;
@@ -48,6 +46,7 @@ const initialValues: WholesaleFormValues = {
 };
 
 export default function WholesaleForm() {
+  const settings = useSiteSettings();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -166,7 +165,7 @@ export default function WholesaleForm() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
               href={generateWhatsAppUrl(
-                WHATSAPP_NUMBER,
+                normalizePhoneNumber(settings.whatsapp_number),
                 buildWhatsAppMessage()
               )}
               target="_blank"

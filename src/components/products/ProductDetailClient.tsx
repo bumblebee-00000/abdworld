@@ -9,7 +9,7 @@ import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
 import OrderForm from '@/components/products/OrderForm';
 import { formatPrice, generateWhatsAppUrl } from '@/lib/utils';
-import { WHATSAPP_NUMBER } from '@/lib/business-config';
+import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
 interface ProductDetailClientProps {
@@ -18,6 +18,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
+  const settings = useSiteSettings();
   const [orderFormOpen, setOrderFormOpen] = useState(false);
   const [selectedPackSize, setSelectedPackSize] = useState<string | undefined>();
 
@@ -27,7 +28,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
   };
 
   const whatsappUrl = generateWhatsAppUrl(
-    WHATSAPP_NUMBER,
+    normalizePhoneNumber(settings.whatsapp_number),
     [
       'Hello ABD WORLD, I have a question about this rice product.',
       `Product: ${product.name}`,

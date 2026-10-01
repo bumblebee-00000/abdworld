@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import Hero from '@/components/hero/Hero';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
-import WhyChooseUs from '@/components/home/WhyChooseUs';
 import QualityProcess from '@/components/home/QualityProcess';
 import AboutPreview from '@/components/home/AboutPreview';
 import Stats from '@/components/home/Stats';
 import CTASection from '@/components/home/CTASection';
 import { getSupabaseAdmin } from '@/lib/supabase/server';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
-import type { Product } from '@/types';
+import { getWhatsAppMessageUrl } from '@/lib/business-config';
+import type { Product, SiteSettings } from '@/types';
 
 export const metadata: Metadata = {
   title: 'ABD WORLD | Premium Rice Wholesaler & Supplier',
@@ -19,8 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  await connection();
+
   let featuredProducts: Product[] = FALLBACK_PRODUCTS;
   let certifications: string[] = [];
+  let siteSettings: SiteSettings | null = null;
 
   try {
     const supabase = getSupabaseAdmin();
@@ -36,12 +40,15 @@ export default async function Home() {
 
     const { data: settingsData } = await supabase
       .from('site_settings')
-      .select('certifications')
+      .select('*')
       .eq('id', '1')
       .maybeSingle();
 
-    if (settingsData && typeof settingsData.certifications === 'string') {
-      certifications = settingsData.certifications
+    siteSettings = settingsData as SiteSettings | null;
+
+    const certificationText: unknown = settingsData?.certifications;
+    if (typeof certificationText === 'string') {
+      certifications = certificationText
         .split('\n')
         .map((item) => item.trim())
         .filter(Boolean);
@@ -49,6 +56,19 @@ export default async function Home() {
   } catch {
     // Keep the local catalogue visible when the database is unavailable.
   }
+
+  const businessName = siteSettings?.business_name || 'ABD WORLD';
+  const phone = siteSettings?.phone || '';
+  const phoneHref = phone ? `tel:${phone.replace(/\D/g, '')}` : '';
+  const email = siteSettings?.email || '';
+  const address = [siteSettings?.address, siteSettings?.city, siteSettings?.state]
+    .filter(Boolean)
+    .join(', ');
+  const businessHours = siteSettings?.business_hours || 'Contact us for business hours';
+  const whatsappUrl = getWhatsAppMessageUrl(
+    'Hello ABD WORLD, I need a rice quotation.',
+    siteSettings?.whatsapp_number,
+  );
 
   return (
     <>
@@ -284,7 +304,7 @@ export default async function Home() {
             </span>
             <h2 className="mt-4 text-4xl font-bold text-emerald-950 sm:text-5xl">Looking for a specific rice variety?</h2>
             <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-emerald-900/75">
-              Tell us what you're looking for, your required quantity and your location. Our team can help you with available options and wholesale requirements.
+              Tell us what you&apos;re looking for, your required quantity and your location. Our team can help you with available options and wholesale requirements.
             </p>
             <a href="#bulk-quote" className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-emerald-900 px-8 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-emerald-800">Tell Us What You Need →</a>
           </div>
@@ -347,8 +367,8 @@ export default async function Home() {
                 </p>
               </div>
               <div className="grid gap-3 text-sm text-emerald-50/85">
-                <a href="tel:+919246251399" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10">Call Us</a>
-                <a href="https://wa.me/919246251399?text=Hello%20ABD%20WORLD%2C%20I%20need%20a%20rice%20quotation." target="_blank" rel="noreferrer" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10">WhatsApp Us</a>
+                {phoneHref && <a href={phoneHref} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10">Call Us</a>}
+                <a href={whatsappUrl} target="_blank" rel="noreferrer" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10">WhatsApp Us</a>
                 <a href="#bulk-quote" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10">Request a Quote</a>
               </div>
             </div>
@@ -356,22 +376,22 @@ export default async function Home() {
             <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-400">Business</p>
-                <h3 className="mt-3 font-heading text-2xl font-bold">ABD WORLD</h3>
+                <h3 className="mt-3 font-heading text-2xl font-bold">{businessName}</h3>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-400">Address</p>
-                <p className="mt-3 text-sm leading-relaxed text-emerald-50/80">Paltadanga, Golabari Boalghata Road<br />North 24 Parganas, West Bengal – 743423</p>
+                <p className="mt-3 text-sm leading-relaxed text-emerald-50/80">{address || 'Address not set'}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-400">Contact</p>
                 <div className="mt-3 space-y-2 text-sm text-emerald-50/80">
-                  <p><a href="tel:+919246251399">+91 92462 51399</a></p>
-                  <p><a href="mailto:contact@abdworld.in">contact@abdworld.in</a></p>
+                  {phoneHref && <p><a href={phoneHref}>{phone}</a></p>}
+                  {email && <p><a href={`mailto:${email}`}>{email}</a></p>}
                 </div>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-400">Hours</p>
-                <p className="mt-3 text-sm leading-relaxed text-emerald-50/80">Monday–Saturday<br />10 AM–8 PM</p>
+                <p className="mt-3 text-sm leading-relaxed text-emerald-50/80">{businessHours}</p>
               </div>
             </div>
           </div>
@@ -401,7 +421,7 @@ export default async function Home() {
         </section>
 
         <QualityProcess />
-        <AboutPreview />
+        <AboutPreview aboutContent={siteSettings?.about_content || undefined} />
         <Stats />
         <CTASection />
       </main>

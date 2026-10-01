@@ -147,7 +147,7 @@ export function answerQuestion(question: string, context: string, products: Assi
 
   if (isContactQuery(question, context)) {
     return {
-      answer: 'You can contact ABD WORLD on +91 92462 51399 or email contact@abdworld.in for wholesale enquiries, pricing, and quote requests. Our team will guide you based on your quantity, rice type, and delivery location.',
+      answer: 'For wholesale enquiries, pricing, and quotes, use the current Contact page or call and WhatsApp links on this site. Share your quantity, rice type, and delivery location so our team can guide you.',
       products: [],
     };
   }
@@ -226,7 +226,7 @@ export function answerQuestion(question: string, context: string, products: Assi
 
   if (isContactQuery(question, context)) {
     return {
-      answer: 'You can contact ABD WORLD on +91 92462 51399 or email contact@abdworld.in for wholesale enquiries, pricing, and quote requests. Our team will guide you based on your quantity, rice type, and delivery location.',
+      answer: 'For wholesale enquiries, pricing, and quotes, use the current Contact page or call and WhatsApp links on this site. Share your quantity, rice type, and delivery location so our team can guide you.',
       products: [],
     };
   }

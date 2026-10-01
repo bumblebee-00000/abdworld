@@ -9,7 +9,6 @@ import { AnimatePresence, motion, type Variants } from "framer-motion";
 import {
   ArrowRight,
   ChevronDown,
-  Mail,
   Menu,
   MessageCircle,
   Phone,
@@ -18,13 +17,8 @@ import {
   X,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from "@/lib/business-config";
-
-const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
-const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
-const PHONE_DISPLAY = BUSINESS_PHONE;
-const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
-const LOGO_URL = "/company-logo.png";
+import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, getWhatsAppMessageUrl } from "@/lib/business-config";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 
 interface NavChild {
   label: string;
@@ -69,6 +63,15 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 export function Navbar() {
+  const settings = useSiteSettings();
+  const businessName = settings.business_name || process.env.NEXT_PUBLIC_BUSINESS_NAME || "ABD WORLD";
+  const phoneDisplay = settings.phone || BUSINESS_PHONE;
+  const phoneTel = phoneDisplay.replace(/\D/g, "");
+  const logoUrl = settings.logo_url || "/company-logo.png";
+  const whatsappDirectUrl = getWhatsAppMessageUrl(
+    "Hello! I want to enquire about your rice products.",
+    settings.whatsapp_number,
+  );
   const pathname = usePathname();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
@@ -143,9 +146,9 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex min-w-0 shrink items-center gap-2.5" aria-label={`${BUSINESS_NAME} — Home`}>
+        <Link href="/" className="group flex min-w-0 shrink items-center gap-2.5" aria-label={`${businessName} — Home`}>
           <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-emerald-900/10 bg-white/90 shadow-md shadow-emerald-900/10 ring-2 ring-gold-300/60 transition-transform duration-200 group-hover:scale-[1.02]">
-            <Image src={LOGO_URL} alt={`${BUSINESS_NAME} logo`} width={64} height={64} className="h-9 w-9 object-contain" />
+            <Image src={logoUrl} alt={`${businessName} logo`} width={64} height={64} unoptimized={logoUrl.startsWith('http')} className="h-9 w-9 object-contain" />
           </span>
           <span className="flex min-w-0 flex-col leading-none">
             <span
@@ -154,7 +157,7 @@ export function Navbar() {
                 solid ? "text-emerald-950" : "text-white",
               )}
             >
-              {BUSINESS_NAME}
+              {businessName}
             </span>
             <span
               className={cx(
@@ -334,7 +337,7 @@ export function Navbar() {
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-800 text-gold-300">
                       <Wheat size={18} aria-hidden="true" />
                     </span>
-                    <span className="font-heading text-lg font-bold text-white">{BUSINESS_NAME}</span>
+                    <span className="font-heading text-lg font-bold text-white">{businessName}</span>
                   </Link>
                   <button
                     type="button"
@@ -414,7 +417,7 @@ export function Navbar() {
 
                 <div className="space-y-3 border-t border-white/10 p-4">
                   <a
-                    href={WHATSAPP_DIRECT_URL}
+                    href={whatsappDirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 rounded-xl bg-[#25d366] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5d]"
@@ -432,11 +435,11 @@ export function Navbar() {
                     WhatsApp Channel
                   </a>
                   <a
-                    href={`tel:${PHONE_TEL}`}
+                    href={`tel:${phoneTel}`}
                     className="flex items-center justify-center gap-2 rounded-xl border border-white/15 py-3 text-sm font-medium text-cream-100 transition-colors hover:bg-white/5"
                   >
                     <Phone size={15} aria-hidden="true" />
-                    {PHONE_DISPLAY}
+                    {phoneDisplay}
                   </a>
                 </div>
               </motion.aside>

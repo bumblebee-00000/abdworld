@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer/Footer';
 import WholesaleForm from '@/components/forms/WholesaleForm';
+import SiteContactDetails from '@/components/contact/SiteContactDetails';
 import CTASection from '@/components/home/CTASection';
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from '@/lib/business-config';
 import {
   ChevronRight,
   Store,
@@ -13,11 +13,6 @@ import {
   ChefHat,
   ShoppingCart,
   Truck,
-  Phone,
-  Mail,
-  MessageCircle,
-  MapPin,
-  Clock,
   Percent,
   Handshake,
   Boxes,
@@ -280,97 +275,7 @@ export default function WholesalePage() {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-white rounded-2xl border border-cream-200 p-6 shadow-lg shadow-emerald-900/5">
-                  <h3 className="font-bold text-emerald-950 font-[var(--font-heading)] text-lg mb-4">
-                    Prefer to Talk Directly?
-                  </h3>
-                  <ul className="space-y-4">
-                    <li>
-                      <a
-                        href={`tel:${BUSINESS_PHONE.replace(/[\s-]/g, '')}`}
-                        className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
-                          <Phone className="w-4 h-4 text-emerald-600" />
-                        </span>
-                        <span>
-                          <strong className="block text-emerald-950">Call Us</strong>
-                          {BUSINESS_PHONE}
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href={WHATSAPP_DIRECT_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
-                          <MessageCircle className="w-4 h-4 text-emerald-600" />
-                        </span>
-                        <span>
-                          <strong className="block text-emerald-950">WhatsApp Message</strong>
-                          Chat with our sales team
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href={WHATSAPP_CHANNEL_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
-                          <MessageCircle className="w-4 h-4 text-emerald-600" />
-                        </span>
-                        <span>
-                          <strong className="block text-emerald-950">WhatsApp Channel</strong>
-                          Follow our channel
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="mailto:contact@abdworld.in"
-                        className="flex items-start gap-3 text-sm text-emerald-900/70 hover:text-emerald-700 transition-colors group"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
-                          <Mail className="w-4 h-4 text-emerald-600" />
-                        </span>
-                        <span>
-                          <strong className="block text-emerald-950">Email Us</strong>
-                          contact@abdworld.in
-                        </span>
-                      </a>
-                    </li>
-                    <li className="flex items-start gap-3 text-sm text-emerald-900/70">
-                      <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                        <MapPin className="w-4 h-4 text-emerald-600" />
-                      </span>
-                      <a
-                        href="https://maps.app.goo.gl/EzTtBPpWs4yJ4PBF6"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-emerald-700 transition-colors"
-                      >
-                        <strong className="block text-emerald-950">Visit Us</strong>
-                        Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423
-                      </a>
-                    </li>
-                    <li className="flex items-start gap-3 text-sm text-emerald-900/70">
-                      <span className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                        <Clock className="w-4 h-4 text-emerald-600" />
-                      </span>
-                      <span>
-                        <strong className="block text-emerald-950">Business Hours</strong>
-                        Mon - Sat: 9:00 AM - 6:00 PM
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-
+                <SiteContactDetails variant="wholesale" />
                 <div className="rounded-2xl p-6 gold-gradient shadow-lg shadow-gold-500/20">
                   <h3 className="font-bold text-emerald-950 font-[var(--font-heading)] text-lg mb-2">
                     Bulk Order Specialists

@@ -16,10 +16,8 @@ import {
   Wheat,
   X,
 } from 'lucide-react';
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, getWhatsAppMessageUrl } from '@/lib/business-config';
-
-const PHONE_DISPLAY = BUSINESS_PHONE;
-const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, '');
+import { WHATSAPP_CHANNEL_URL, getWhatsAppMessageUrl } from '@/lib/business-config';
+import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 
 type ChatMessage = {
   id: string;
@@ -45,6 +43,9 @@ const QUICK_PROMPTS = [
 ];
 
 export default function CustomerChatbot() {
+  const settings = useSiteSettings();
+  const phoneTel = normalizePhoneNumber(settings.phone);
+  const whatsappNumber = normalizePhoneNumber(settings.whatsapp_number);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -208,10 +209,10 @@ export default function CustomerChatbot() {
                 </button>
               </form>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <a href={`tel:${PHONE_TEL}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-900 to-emerald-800 px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-emerald-900/20 transition-transform hover:-translate-y-0.5">
+                <a href={`tel:${phoneTel}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-900 to-emerald-800 px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-emerald-900/20 transition-transform hover:-translate-y-0.5">
                   <Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call Owner
                 </a>
-                <a href={getWhatsAppMessageUrl(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#25d366] to-[#18b657] px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-[#25d366]/20 transition-transform hover:-translate-y-0.5">
+                <a href={getWhatsAppMessageUrl(whatsappMessage, whatsappNumber)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#25d366] to-[#18b657] px-2.5 py-2 text-[11px] font-bold text-white shadow-md shadow-[#25d366]/20 transition-transform hover:-translate-y-0.5">
                   <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> WhatsApp
                 </a>
                 <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-700/20 bg-white px-2.5 py-2 text-[11px] font-bold text-emerald-900 shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-emerald-50">

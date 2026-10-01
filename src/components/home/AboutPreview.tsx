@@ -47,7 +47,9 @@ const badges = [
   },
 ];
 
-export default function AboutPreview() {
+export default function AboutPreview({ aboutContent }: { aboutContent?: string }) {
+  const paragraphs = aboutContent?.split(/\n\s*\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
+
   return (
     <section className="section-padding bg-cream-100">
       <div className="mx-auto max-w-7xl">
@@ -76,24 +78,28 @@ export default function AboutPreview() {
               About ABD WORLD
             </motion.h2>
 
-            <motion.p
-              variants={textVariants}
-              className="mt-6 text-lg leading-relaxed text-emerald-900/80"
-            >
-              ABD WORLD is a trusted rice wholesaler dedicated to bringing
-              the finest grains to businesses across India and beyond. We partner
-              directly with carefully selected farms to ensure every grain we
-              supply is consistent, aromatic, and delivered at wholesale value.
-            </motion.p>
-
-            <motion.p
-              variants={textVariants}
-              className="mt-4 text-lg leading-relaxed text-emerald-900/80"
-            >
-              From premium basmati to everyday staples, our storage, quality
-              checks, and hygienic packaging reflect a single promise — premium
-              quality in every single order, at every single delivery.
-            </motion.p>
+            {paragraphs && paragraphs.length > 0 ? (
+              paragraphs.map((paragraph, index) => (
+                <motion.p
+                  key={`${index}-${paragraph.slice(0, 20)}`}
+                  variants={textVariants}
+                  className={index === 0
+                    ? 'mt-6 text-lg leading-relaxed text-emerald-900/80'
+                    : 'mt-4 text-lg leading-relaxed text-emerald-900/80'}
+                >
+                  {paragraph}
+                </motion.p>
+              ))
+            ) : (
+              <>
+                <motion.p variants={textVariants} className="mt-6 text-lg leading-relaxed text-emerald-900/80">
+                  ABD WORLD is a trusted rice wholesaler dedicated to bringing the finest grains to businesses across India and beyond. We partner directly with carefully selected farms to ensure every grain we supply is consistent, aromatic, and delivered at wholesale value.
+                </motion.p>
+                <motion.p variants={textVariants} className="mt-4 text-lg leading-relaxed text-emerald-900/80">
+                  From premium basmati to everyday staples, our storage, quality checks, and hygienic packaging reflect a single promise — premium quality in every single order, at every single delivery.
+                </motion.p>
+              </>
+            )}
 
             <motion.div
               variants={textVariants}

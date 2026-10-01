@@ -1,14 +1,10 @@
+'use client';
+
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { Clock, Mail, MapPin, MessageCircle, Phone, Wheat } from "lucide-react";
-import { BUSINESS_PHONE, WHATSAPP_CHANNEL_URL, WHATSAPP_DIRECT_URL } from "@/lib/business-config";
-
-const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "ABD WORLD";
-const EMAIL = process.env.NEXT_PUBLIC_BUSINESS_EMAIL ?? "contact@abdworld.in";
-const PHONE_DISPLAY = BUSINESS_PHONE;
-const PHONE_TEL = PHONE_DISPLAY.replace(/[\s-]/g, "");
-const ADDRESS = "Aminpur Bazar, Boalghata Road, Paltadanga, West Bengal 743423";
-const BUSINESS_HOURS = "Mon – Sat: 9:00 AM – 7:00 PM";
+import { Clock, Globe, Mail, MapPin, MessageCircle, Phone, Wheat } from "lucide-react";
+import { useSiteSettings, normalizePhoneNumber } from "@/components/settings/SiteSettingsProvider";
+import { getWhatsAppMessageUrl, WHATSAPP_CHANNEL_URL } from "@/lib/business-config";
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
@@ -36,21 +32,35 @@ interface ContactItem {
   external?: boolean;
 }
 
-const CONTACT_ITEMS: ContactItem[] = [
-  { icon: Phone, label: "Call Us", value: PHONE_DISPLAY, href: `tel:${PHONE_TEL}` },
-  { icon: MessageCircle, label: "WhatsApp", value: "Message our sales team", href: WHATSAPP_DIRECT_URL, external: true },
-  { icon: Mail, label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
-  { icon: MapPin, label: "Address", value: ADDRESS },
-];
-
-const SOCIALS: Array<{ icon: LucideIcon; label: string; href: string; external: boolean }> = [
-  { icon: MessageCircle, label: "WhatsApp Channel", href: WHATSAPP_CHANNEL_URL, external: true },
-  { icon: Mail, label: "Email", href: `mailto:${EMAIL}`, external: false },
-  { icon: Phone, label: "Call", href: `tel:${PHONE_TEL}`, external: false },
-];
-
 export function Footer() {
   const year = new Date().getFullYear();
+  const settings = useSiteSettings();
+  const businessName = settings.business_name || 'ABD WORLD';
+  const email = settings.email || 'contact@abdworld.in';
+  const phoneDisplay = settings.phone || '';
+  const phoneTel = normalizePhoneNumber(phoneDisplay);
+  const address = [settings.address, [settings.city, settings.state].filter(Boolean).join(', ')]
+    .filter(Boolean)
+    .join(', ');
+  const businessHours = settings.business_hours || 'Contact us for business hours';
+  const whatsappUrl = getWhatsAppMessageUrl(
+    'Hello! I want to enquire about your rice products.',
+    settings.whatsapp_number,
+  );
+  const contactItems: ContactItem[] = [
+    { icon: Phone, label: 'Call Us', value: phoneDisplay, href: phoneDisplay ? `tel:${phoneTel}` : undefined },
+    { icon: MessageCircle, label: 'WhatsApp', value: 'Message our sales team', href: whatsappUrl, external: true },
+    { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
+    { icon: MapPin, label: 'Address', value: address || 'Address not set' },
+  ];
+  const socials: Array<{ icon: LucideIcon; label: string; href: string; external: boolean }> = [
+    { icon: MessageCircle, label: 'WhatsApp Channel', href: WHATSAPP_CHANNEL_URL, external: true },
+    { icon: Mail, label: 'Email', href: `mailto:${email}`, external: false },
+    ...(settings.facebook_url ? [{ icon: Globe, label: 'Facebook', href: settings.facebook_url, external: true }] : []),
+    ...(settings.instagram_url ? [{ icon: Globe, label: 'Instagram', href: settings.instagram_url, external: true }] : []),
+    ...(settings.youtube_url ? [{ icon: Globe, label: 'YouTube', href: settings.youtube_url, external: true }] : []),
+    ...(phoneDisplay ? [{ icon: Phone, label: 'Call', href: `tel:${phoneTel}`, external: false }] : []),
+  ];
 
   return (
     <footer className="premium-gradient relative overflow-hidden text-cream-100">
@@ -73,7 +83,7 @@ export function Footer() {
                 <Wheat size={22} strokeWidth={1.75} aria-hidden="true" />
               </span>
               <span className="flex flex-col leading-none">
-                <span className="font-heading text-xl font-bold tracking-tight text-white">{BUSINESS_NAME}</span>
+                <span className="font-heading text-xl font-bold tracking-tight text-white">{businessName}</span>
                 <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold-400">
                   Wholesale Excellence
                 </span>
@@ -85,7 +95,7 @@ export function Footer() {
               honest grading and reliable bulk delivery.
             </p>
             <ul className="mt-6 flex items-center gap-3">
-              {SOCIALS.map((social) => (
+              {socials.map((social) => (
                 <li key={social.label}>
                   <a
                     href={social.href}
@@ -144,7 +154,7 @@ export function Footer() {
           <div>
             <h3 className="font-heading text-sm font-bold uppercase tracking-[0.2em] text-gold-400">Get in Touch</h3>
             <ul className="mt-5 space-y-4">
-              {CONTACT_ITEMS.map((item) => {
+              {contactItems.map((item) => {
                 const inner = (
                   <>
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gold-400">
@@ -178,14 +188,14 @@ export function Footer() {
             </ul>
             <p className="mt-6 flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-cream-100/70">
               <Clock size={14} aria-hidden="true" className="shrink-0 text-gold-400" />
-              {BUSINESS_HOURS}
+              {businessHours}
             </p>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-cream-100/55 sm:flex-row">
           <p>
-            © {year} {BUSINESS_NAME}. All rights reserved.
+            © {year} {businessName}. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="transition-colors hover:text-gold-300">
