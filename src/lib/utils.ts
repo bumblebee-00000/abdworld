@@ -12,6 +12,16 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
+export function calculateResaleMargin(retailPrice: number | null, wholesalePrice: number | null) {
+  if (retailPrice == null || wholesalePrice == null || retailPrice <= 0) return null;
+
+  const profitPerKg = retailPrice - wholesalePrice;
+  return {
+    profitPerKg,
+    marginPercent: (profitPerKg / retailPrice) * 100,
+  };
+}
+
 export function parsePackWeightKg(packSize: string): number | null {
   const match = /(\d+(?:\.\d+)?)\s*(kg|kilograms?|g|grams?|tonnes?|tons?|t)\b/i.exec(packSize);
   if (!match) return null;

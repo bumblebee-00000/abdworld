@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Eye, ShoppingCart, Package } from 'lucide-react';
 import type { Product } from '@/types';
-import { formatPrice } from '@/lib/utils';
+import { calculateResaleMargin, formatPrice } from '@/lib/utils';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
 
 interface ProductGridProps {
@@ -111,17 +111,30 @@ export default function ProductGrid({ products }: ProductGridProps) {
               )}
 
               {/* Price */}
-              <div className="mt-4 flex items-baseline gap-2">
-                {product.price !== null ? (
-                  <>
-                    <span className="text-xl font-bold text-emerald-950">
-                      {formatPrice(product.price)}
-                    </span>
-                    <span className="text-xs text-emerald-700/60">/ kg</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-semibold text-gold-600">Contact for Price</span>
-                )}
+              <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-cream-200 pt-3">
+                <div>
+                  <p className="text-[11px] font-medium text-emerald-700/60">Retail / kg</p>
+                  <p className="text-lg font-bold text-emerald-950">
+                    {product.price !== null ? formatPrice(product.price) : 'On request'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium text-emerald-700/60">Wholesale / kg</p>
+                  <p className="text-lg font-bold text-emerald-950">
+                    {product.wholesale_price !== null
+                      ? formatPrice(product.wholesale_price)
+                      : 'On request'}
+                  </p>
+                </div>
+                {(() => {
+                  const margin = calculateResaleMargin(product.price, product.wholesale_price);
+                  return margin ? (
+                    <p className="col-span-2 mt-1 text-xs font-medium text-emerald-700">
+                      Potential reseller gross margin: {formatPrice(margin.profitPerKg)}/kg
+                      {' '}({margin.marginPercent.toFixed(1)}% of retail)
+                    </p>
+                  ) : null;
+                })()}
               </div>
 
               {product.min_order_quantity > 0 && (

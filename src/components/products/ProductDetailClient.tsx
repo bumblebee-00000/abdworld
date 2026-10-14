@@ -8,7 +8,7 @@ import ImageGallery from '@/components/products/ImageGallery';
 import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
 import OrderForm from '@/components/products/OrderForm';
-import { formatPrice, generateWhatsAppUrl } from '@/lib/utils';
+import { calculateResaleMargin, formatPrice, generateWhatsAppUrl } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
@@ -78,18 +78,51 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             </p>
 
             {/* Price */}
-            <div className="mt-6 flex items-baseline gap-3">
-              {product.price !== null ? (
-                <>
-                  <span className="text-3xl font-bold text-emerald-950">
-                    {formatPrice(product.price)}
-                  </span>
-                  <span className="text-sm text-emerald-700/60">per kg</span>
-                </>
-              ) : (
-                <span className="text-lg font-semibold text-gold-600">Contact for Price</span>
-              )}
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700/60">
+                  Retail price
+                </p>
+                <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                  {product.price !== null ? (
+                    <>
+                      <span className="text-2xl font-bold text-emerald-950">
+                        {formatPrice(product.price)}
+                      </span>
+                      <span className="text-sm text-emerald-700/60">per kg</span>
+                    </>
+                  ) : (
+                    <span className="text-base font-semibold text-gold-600">Contact for price</span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700/60">
+                  Wholesale price
+                </p>
+                <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                  {product.wholesale_price !== null ? (
+                    <>
+                      <span className="text-2xl font-bold text-emerald-950">
+                        {formatPrice(product.wholesale_price)}
+                      </span>
+                      <span className="text-sm text-emerald-700/60">per kg</span>
+                    </>
+                  ) : (
+                    <span className="text-base font-semibold text-gold-600">Contact for price</span>
+                  )}
+                </div>
+              </div>
             </div>
+            {(() => {
+              const margin = calculateResaleMargin(product.price, product.wholesale_price);
+              return margin ? (
+                <p className="mt-3 text-sm font-medium text-emerald-700">
+                  Potential reseller gross margin: {formatPrice(margin.profitPerKg)}/kg
+                  {' '}({margin.marginPercent.toFixed(1)}% of retail price)
+                </p>
+              ) : null;
+            })()}
 
             {/* Pack Sizes */}
             {product.pack_sizes.length > 0 && (
