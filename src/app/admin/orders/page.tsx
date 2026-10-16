@@ -10,6 +10,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types';
+import { formatExactPrice, formatPrice } from '@/lib/utils';
 
 const statuses: { value: OrderStatus; label: string; color: string }[] = [
   { value: 'new', label: 'New', color: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -28,6 +29,18 @@ function formatDate(iso: string) {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+function paymentLabel(status: Order['payment_status']) {
+  switch (status) {
+    case 'paid': return 'Paid';
+    case 'pending': return 'Awaiting payment';
+    case 'expired': return 'Payment expired';
+    case 'failed': return 'Payment setup failed';
+    case 'paid_late': return 'Paid late - review';
+    case 'review': return 'Payment review';
+    default: return 'Not collected';
+  }
 }
 
 export default function AdminOrdersPage() {
@@ -163,6 +176,7 @@ export default function AdminOrdersPage() {
                 <th className="px-6 py-4 font-semibold">Customer</th>
                 <th className="px-6 py-4 font-semibold">Product</th>
                 <th className="px-6 py-4 font-semibold">Packs</th>
+                <th className="px-6 py-4 font-semibold">Payment</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
                 <th className="px-6 py-4 font-semibold">Date</th>
                 <th className="px-6 py-4 font-semibold w-10"></th>
@@ -171,7 +185,7 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-cream-200">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
+                  <td colSpan={7} className="px-6 py-16 text-center">
                     <ShoppingCart className="w-12 h-12 text-emerald-900/20 mx-auto mb-4" />
                     <p className="text-emerald-900/50">No orders found.</p>
                   </td>
@@ -202,6 +216,16 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 text-emerald-900/70">
                         {order.quantity}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="block font-semibold text-emerald-950">
+                          {paymentLabel(order.payment_status)}
+                        </span>
+                        {order.total_amount != null && (
+                          <span className="block text-xs text-emerald-900/50">
+                            {formatExactPrice(order.total_amount)}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4">
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${statusColor(order.status)}`}
@@ -222,7 +246,7 @@ export default function AdminOrdersPage() {
                     </tr>
                     {expandedId === order.id && (
                       <tr className="bg-cream-50/50">
-                        <td colSpan={6} className="px-6 py-6">
+                        <td colSpan={7} className="px-6 py-6">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                               <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-900/50 mb-3">
@@ -270,6 +294,35 @@ export default function AdminOrdersPage() {
                                   <strong className="text-emerald-950">Number of packs:</strong>{' '}
                                   {order.quantity}
                                 </li>
+                                {order.unit_price != null && (
+                                  <li>
+                                    <strong className="text-emerald-950">Price per kg:</strong>{' '}
+                                    {formatPrice(order.unit_price)}
+                                  </li>
+                                )}
+                                {order.total_amount != null && (
+                                  <li>
+                                    <strong className="text-emerald-950">Rice subtotal:</strong>{' '}
+                                    {formatExactPrice(order.total_amount)}
+                                  </li>
+                                )}
+                                <li>
+                                  <strong className="text-emerald-950">Payment:</strong>{' '}
+                                  {paymentLabel(order.payment_status)}
+                                </li>
+                                {order.razorpay_payment_id && (
+                                  <li>
+                                    <strong className="text-emerald-950">Razorpay payment:</strong>{' '}
+                                    {order.razorpay_payment_id}
+                                  </li>
+                                )}
+                                {order.payment_link_url && order.payment_status === 'pending' && (
+                                  <li>
+                                    <a className="font-semibold text-emerald-700 underline" href={order.payment_link_url} target="_blank" rel="noreferrer">
+                                      Open payment link
+                                    </a>
+                                  </li>
+                                )}
                                 {order.message && (
                                   <li>
                                     <strong className="text-emerald-950">Message:</strong>{' '}

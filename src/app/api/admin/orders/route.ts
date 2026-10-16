@@ -76,6 +76,24 @@ export async function PUT(request: NextRequest) {
     }
 
     const supabase = getSupabaseAdmin();
+    if (['confirmed', 'processing', 'completed'].includes(status)) {
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .select('payment_status')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (orderError) {
+        return NextResponse.json({ error: 'Could not verify order payment.' }, { status: 500 });
+      }
+      if (!order) {
+        return NextResponse.json({ error: 'Order not found.' }, { status: 404 });
+      }
+      if (order.payment_status !== 'paid') {
+        return NextResponse.json({ error: 'Only paid orders can be confirmed or processed.' }, { status: 409 });
+      }
+    }
+
     const { data, error } = await supabase
       .from('orders')
       .update({ status, updated_at: new Date().toISOString() })

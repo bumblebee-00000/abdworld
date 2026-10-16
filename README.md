@@ -49,6 +49,8 @@ npm install
 3. Copy the entire contents and paste into the SQL Editor.
 4. Click **Run**.
 
+For an existing database, run `supabase-migrations/20261014_product_pricing_schedule.sql` and `supabase-migrations/20261016_order_payments.sql` in the Supabase SQL Editor before deploying the matching application changes.
+
 This creates all tables (`admins`, `products`, `orders`, `wholesale_enquiries`, `contact_messages`, `site_settings`), indexes, and **Row Level Security** policies.
 
 ### 3. Configure environment variables
@@ -57,6 +59,9 @@ Copy `.env.example` to `.env.local` and fill in the values:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook_secret
 
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
@@ -82,6 +87,8 @@ The public business phone, WhatsApp number, and WhatsApp Channel URL are configu
 > **Never commit `.env.local`.** It is already in `.gitignore`.
 
 > **Gemini assistant:** Create an API key in [Google AI Studio](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY`. Keep it server-side; do not prefix it with `NEXT_PUBLIC_`. `GEMINI_MODEL` is optional. Gemini usage may be subject to Google's quotas and billing; check your account's current limits and pricing.
+
+> **Razorpay checkout:** Add Razorpay Test keys first. In the Razorpay Dashboard, configure a webhook at `https://your-domain/api/webhooks/razorpay` for `payment_link.paid` and `payment_link.expired`; set its secret as `RAZORPAY_WEBHOOK_SECRET`. Keep all three Razorpay values server-side.
 
 ### 4. Run locally
 
@@ -126,6 +133,9 @@ In the project settings → **Environment Variables**, add the same values from 
 | Name                          | Example                          |
 | ----------------------------- | -------------------------------- |
 | `NEXT_PUBLIC_SITE_URL`        | `https://yourdomain.com`         |
+| `RAZORPAY_KEY_ID`             | Razorpay API key ID (server only) |
+| `RAZORPAY_KEY_SECRET`         | Razorpay API secret (server only) |
+| `RAZORPAY_WEBHOOK_SECRET`     | Razorpay webhook secret (server only) |
 | `NEXT_PUBLIC_SUPABASE_URL`    | `https://xxxx.supabase.co`       |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJ...`                       |
 | `SUPABASE_SERVICE_ROLE_KEY`   | `eyJ...` (secret — server only)  |
@@ -167,10 +177,11 @@ Click **Deploy**. Vercel builds and serves the site at a `*.vercel.app` URL.
 - Login is rate-limited (5 attempts / 15 min per IP).
 - Public enquiry endpoints apply a best-effort per-instance submission limit. For high-volume production traffic, use a shared rate-limit service because serverless instances do not share memory.
 
-## Operations Without Online Payments
+## Order Payments
 
-- Website submissions are requests only. Confirm stock, final price, delivery, and payment terms directly with the customer before treating an enquiry as an order.
-- Update each request's status in Admin after you contact the customer so new requests remain easy to find.
+- Online checkout charges the full rice subtotal; delivery charges and arrangements are confirmed separately before dispatch.
+- A scheduled retail price is available until its effective time. Only a captured payment confirms the order at that price; expired or unpaid checkouts do not reserve it.
+- Check `paid late` and `payment review` orders in Admin and reconcile them in Razorpay before fulfillment.
 - Keep a periodic export of the Supabase database in a secure location. Use the Supabase dashboard's export/backup tools available on your plan, and test a restore to a separate project before relying on a backup.
 - Never commit `.env.local`, database exports, or service-role keys to GitHub.
 - User inputs are validated with **zod** and Supabase uses **parameterized queries** (no raw SQL string injection).

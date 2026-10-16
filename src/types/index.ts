@@ -10,6 +10,10 @@ export interface Product {
   video_url: string | null;
   price: number | null;
   wholesale_price: number | null;
+  cost_price?: number | null;
+  scheduled_price?: number | null;
+  scheduled_wholesale_price?: number | null;
+  price_effective_at?: string | null;
   pack_sizes: string[];
   rice_type: string;
   origin: string;
@@ -42,6 +46,13 @@ export interface Order {
   pack_size: string;
   quantity: number;
   message: string | null;
+  unit_price?: number | null;
+  total_amount?: number | null;
+  currency?: string;
+  payment_status?: 'not_required' | 'pending' | 'paid' | 'expired' | 'failed' | 'paid_late' | 'review';
+  payment_expires_at?: string | null;
+  payment_link_url?: string | null;
+  razorpay_payment_id?: string | null;
   status: OrderStatus;
   created_at: string;
   updated_at: string;

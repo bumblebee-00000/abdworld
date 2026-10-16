@@ -12,6 +12,22 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
+export function formatExactPrice(price: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
+export function formatPriceEffectiveAt(value: string): string {
+  return new Intl.DateTimeFormat('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value));
+}
+
 export function calculateResaleMargin(retailPrice: number | null, wholesalePrice: number | null) {
   if (retailPrice == null || wholesalePrice == null || retailPrice <= 0) return null;
 

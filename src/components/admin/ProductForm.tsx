@@ -8,6 +8,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { productSchema } from '@/lib/validation';
+import { getEffectivePrices } from '@/lib/products/pricing';
 import { slugify } from '@/lib/utils';
 import type { Product } from '@/types';
 
@@ -24,6 +25,10 @@ interface ProductFormValues {
   video_url: string;
   price: string;
   wholesale_price: string;
+  cost_price: string;
+  scheduled_price: string;
+  scheduled_wholesale_price: string;
+  price_effective_at: string;
   pack_sizes: string;
   rice_type: string;
   origin: string;
@@ -56,6 +61,25 @@ const categories = [
   'other',
 ];
 
+function toDateTimeLocal(value?: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 16);
+}
+
+function getMarginLabel(sellingPrice: string, costPrice: string) {
+  if (!sellingPrice || !costPrice) return 'Enter cost and price to calculate';
+  const selling = Number(sellingPrice);
+  const cost = Number(costPrice);
+  if (!Number.isFinite(selling) || !Number.isFinite(cost) || selling <= 0) {
+    return 'Enter cost and price to calculate';
+  }
+  const profit = selling - cost;
+  return `₹${profit.toFixed(2)}/kg (${((profit / selling) * 100).toFixed(1)}%)`;
+}
+
 const emptyValues: ProductFormValues = {
   name: '',
   slug: '',
@@ -67,6 +91,10 @@ const emptyValues: ProductFormValues = {
   video_url: '',
   price: '',
   wholesale_price: '',
+  cost_price: '',
+  scheduled_price: '',
+  scheduled_wholesale_price: '',
+  price_effective_at: '',
   pack_sizes: '',
   rice_type: '',
   origin: '',
@@ -86,6 +114,13 @@ const emptyValues: ProductFormValues = {
 function buildInitialValues(initialData?: ProductFormProps['initialData']): ProductFormValues {
   if (!initialData) return emptyValues;
   const imagesRaw = initialData.images;
+  const effectivePrices = getEffectivePrices({
+    price: initialData.price ?? null,
+    wholesale_price: initialData.wholesale_price ?? null,
+    scheduled_price: initialData.scheduled_price,
+    scheduled_wholesale_price: initialData.scheduled_wholesale_price,
+    price_effective_at: initialData.price_effective_at,
+  });
   return {
     name: initialData.name || '',
     slug: initialData.slug || '',
@@ -95,10 +130,18 @@ function buildInitialValues(initialData?: ProductFormProps['initialData']): Prod
     main_image: initialData.main_image || '',
     images: typeof imagesRaw === 'string' ? imagesRaw : (imagesRaw || []).join(', '),
     video_url: initialData.video_url || '',
-    price: initialData.price ? String(initialData.price) : '',
-    wholesale_price: initialData.wholesale_price
-      ? String(initialData.wholesale_price)
+    price: effectivePrices.price != null ? String(effectivePrices.price) : '',
+    wholesale_price: effectivePrices.wholesale_price != null
+      ? String(effectivePrices.wholesale_price)
       : '',
+    cost_price: initialData.cost_price != null ? String(initialData.cost_price) : '',
+    scheduled_price: initialData.scheduled_price != null
+      ? String(initialData.scheduled_price)
+      : '',
+    scheduled_wholesale_price: initialData.scheduled_wholesale_price != null
+      ? String(initialData.scheduled_wholesale_price)
+      : '',
+    price_effective_at: toDateTimeLocal(initialData.price_effective_at),
     pack_sizes: (initialData.pack_sizes || []).join(', '),
     rice_type: initialData.rice_type || '',
     origin: initialData.origin || '',
@@ -156,46 +199,64 @@ export default function ProductForm({
     }
   };
 
-  const buildPayload = () => ({
-    name: values.name,
-    slug: values.slug || slugify(values.name),
-    category: values.category,
-    short_description: values.short_description,
-    full_description: values.full_description,
-    main_image: values.main_image,
-    images: values.images
-      ? values.images
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
-    video_url: values.video_url,
-    price: values.price ? parseFloat(values.price) : null,
-    wholesale_price: values.wholesale_price
-      ? parseFloat(values.wholesale_price)
-      : null,
-    pack_sizes: values.pack_sizes
-      ? values.pack_sizes
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
-    rice_type: values.rice_type,
-    origin: values.origin,
-    grain_length: values.grain_length,
-    aroma: values.aroma,
-    texture: values.texture,
-    cooking_info: values.cooking_info,
-    best_used_for: values.best_used_for,
-    min_order_quantity: values.min_order_quantity
-      ? parseInt(values.min_order_quantity, 10)
-      : 1,
-    stock_status: values.stock_status,
-    is_featured: values.is_featured,
-    is_active: values.is_active,
-    seo_title: values.seo_title,
-    seo_description: values.seo_description,
-  });
+  const buildPayload = () => {
+    const scheduleIsActive = Boolean(
+      values.price_effective_at &&
+      Date.parse(values.price_effective_at) <= Date.now()
+    );
+
+    return {
+      name: values.name,
+      slug: values.slug || slugify(values.name),
+      category: values.category,
+      short_description: values.short_description,
+      full_description: values.full_description,
+      main_image: values.main_image,
+      images: values.images
+        ? values.images
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      video_url: values.video_url,
+      price: values.price !== '' ? parseFloat(values.price) : null,
+      wholesale_price: values.wholesale_price !== ''
+        ? parseFloat(values.wholesale_price)
+        : null,
+      cost_price: values.cost_price !== '' ? parseFloat(values.cost_price) : null,
+      scheduled_price: !scheduleIsActive && values.scheduled_price !== ''
+        ? parseFloat(values.scheduled_price)
+        : null,
+      scheduled_wholesale_price: !scheduleIsActive && values.scheduled_wholesale_price !== ''
+        ? parseFloat(values.scheduled_wholesale_price)
+        : null,
+      price_effective_at: !scheduleIsActive && values.price_effective_at &&
+        (values.scheduled_price !== '' || values.scheduled_wholesale_price !== '')
+        ? new Date(values.price_effective_at).toISOString()
+        : null,
+      pack_sizes: values.pack_sizes
+        ? values.pack_sizes
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      rice_type: values.rice_type,
+      origin: values.origin,
+      grain_length: values.grain_length,
+      aroma: values.aroma,
+      texture: values.texture,
+      cooking_info: values.cooking_info,
+      best_used_for: values.best_used_for,
+      min_order_quantity: values.min_order_quantity
+        ? parseInt(values.min_order_quantity, 10)
+        : 1,
+      stock_status: values.stock_status,
+      is_featured: values.is_featured,
+      is_active: values.is_active,
+      seo_title: values.seo_title,
+      seo_description: values.seo_description,
+    };
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -545,7 +606,7 @@ export default function ProductForm({
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           <div>
             <label className="block text-sm font-semibold text-emerald-950 mb-2">
               Retail Price (₹/kg)
@@ -563,6 +624,9 @@ export default function ProductForm({
             {errors.price && (
               <p className="mt-1.5 text-xs text-red-500">{errors.price}</p>
             )}
+            <p className="mt-2 text-xs text-emerald-700/70">
+              Retail gross margin: {getMarginLabel(values.price, values.cost_price)}
+            </p>
           </div>
 
           <div>
@@ -584,6 +648,100 @@ export default function ProductForm({
                 {errors.wholesale_price}
               </p>
             )}
+            <p className="mt-2 text-xs text-emerald-700/70">
+              Wholesale gross margin: {getMarginLabel(values.wholesale_price, values.cost_price)}
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-emerald-950 mb-2">
+              Cost Price (₹/kg)
+            </label>
+            <input
+              type="number"
+              name="cost_price"
+              value={values.cost_price}
+              onChange={handleChange}
+              min={0}
+              step="0.01"
+              placeholder="Your purchase cost"
+              className={inputClass(!!errors.cost_price)}
+            />
+            {errors.cost_price && (
+              <p className="mt-1.5 text-xs text-red-500">{errors.cost_price}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 border-t border-cream-200 pt-5">
+          <h4 className="text-sm font-semibold text-emerald-950">Schedule new prices</h4>
+          <p className="mt-1 text-xs text-emerald-900/50">
+            Current prices stay live until this date and time. Cost and margin details are private.
+          </p>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-semibold text-emerald-950 mb-2">
+                New Retail Price (₹/kg)
+              </label>
+              <input
+                type="number"
+                name="scheduled_price"
+                value={values.scheduled_price}
+                onChange={handleChange}
+                min={0}
+                step="0.01"
+                placeholder="Leave blank to keep unchanged"
+                className={inputClass(!!errors.scheduled_price)}
+              />
+              {errors.scheduled_price && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.scheduled_price}</p>
+              )}
+              {values.scheduled_price && (
+                <p className="mt-2 text-xs text-emerald-700/70">
+                  Scheduled retail gross margin: {getMarginLabel(values.scheduled_price, values.cost_price)}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-emerald-950 mb-2">
+                New Wholesale Price (₹/kg)
+              </label>
+              <input
+                type="number"
+                name="scheduled_wholesale_price"
+                value={values.scheduled_wholesale_price}
+                onChange={handleChange}
+                min={0}
+                step="0.01"
+                placeholder="Leave blank to keep unchanged"
+                className={inputClass(!!errors.scheduled_wholesale_price)}
+              />
+              {errors.scheduled_wholesale_price && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.scheduled_wholesale_price}</p>
+              )}
+              {values.scheduled_wholesale_price && (
+                <p className="mt-2 text-xs text-emerald-700/70">
+                  Scheduled wholesale gross margin: {getMarginLabel(values.scheduled_wholesale_price, values.cost_price)}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-emerald-950 mb-2">
+                Prices Take Effect At
+              </label>
+              <input
+                type="datetime-local"
+                name="price_effective_at"
+                value={values.price_effective_at}
+                onChange={handleChange}
+                className={inputClass(!!errors.price_effective_at)}
+              />
+              {errors.price_effective_at && (
+                <p className="mt-1.5 text-xs text-red-500">
+                  {errors.price_effective_at}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

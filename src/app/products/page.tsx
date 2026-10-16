@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/server';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductSearchWrapper from '@/components/products/ProductSearchWrapper';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
+import { toPublicProduct } from '@/lib/products/pricing';
 import type { Product } from '@/types';
 
 export const metadata: Metadata = {
@@ -78,7 +79,7 @@ export default async function ProductsPage({
       if (error) throw error;
 
       totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1;
-      allProducts = (products as Product[]) ?? [];
+      allProducts = ((products as Product[]) ?? []).map(toPublicProduct);
     }
   } catch {
     catalogUnavailable = true;

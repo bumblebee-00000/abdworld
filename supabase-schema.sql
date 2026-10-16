@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS products (
   video_url TEXT,
   price NUMERIC,
   wholesale_price NUMERIC,
+  cost_price NUMERIC,
+  scheduled_price NUMERIC,
+  scheduled_wholesale_price NUMERIC,
+  price_effective_at TIMESTAMPTZ,
   pack_sizes TEXT[] NOT NULL DEFAULT '{}',
   rice_type TEXT NOT NULL DEFAULT '',
   origin TEXT NOT NULL DEFAULT '',
@@ -40,6 +44,12 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS cost_price NUMERIC,
+  ADD COLUMN IF NOT EXISTS scheduled_price NUMERIC,
+  ADD COLUMN IF NOT EXISTS scheduled_wholesale_price NUMERIC,
+  ADD COLUMN IF NOT EXISTS price_effective_at TIMESTAMPTZ;
+
 -- Orders table
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -56,9 +66,29 @@ CREATE TABLE IF NOT EXISTS orders (
   quantity INTEGER NOT NULL DEFAULT 1,
   message TEXT,
   status TEXT DEFAULT 'new',
+  unit_price NUMERIC(12,2),
+  total_amount NUMERIC(12,2),
+  currency TEXT NOT NULL DEFAULT 'INR',
+  payment_status TEXT NOT NULL DEFAULT 'not_required',
+  payment_expires_at TIMESTAMPTZ,
+  razorpay_payment_link_id TEXT,
+  razorpay_payment_id TEXT,
+  payment_link_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE orders
+  ADD COLUMN IF NOT EXISTS unit_price NUMERIC(12,2),
+  ADD COLUMN IF NOT EXISTS total_amount NUMERIC(12,2),
+  ADD COLUMN IF NOT EXISTS currency TEXT NOT NULL DEFAULT 'INR',
+  ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'not_required',
+  ADD COLUMN IF NOT EXISTS payment_expires_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS razorpay_payment_link_id TEXT,
+  ADD COLUMN IF NOT EXISTS razorpay_payment_id TEXT,
+  ADD COLUMN IF NOT EXISTS payment_link_url TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
 
 -- Wholesale enquiries
 CREATE TABLE IF NOT EXISTS wholesale_enquiries (

@@ -57,8 +57,12 @@ export const productSchema = z.object({
   main_image: z.string().url().or(z.literal('')),
   images: z.array(z.string().url()).optional(),
   video_url: z.string().url().optional().or(z.literal('')),
-  price: z.number().nullable().optional(),
-  wholesale_price: z.number().nullable().optional(),
+  price: z.number().nonnegative().nullable().optional(),
+  wholesale_price: z.number().nonnegative().nullable().optional(),
+  cost_price: z.number().nonnegative().nullable().optional(),
+  scheduled_price: z.number().nonnegative().nullable().optional(),
+  scheduled_wholesale_price: z.number().nonnegative().nullable().optional(),
+  price_effective_at: z.string().datetime().nullable().optional(),
   pack_sizes: z.array(z.string()).min(1),
   rice_type: z.string().min(1).max(100).trim(),
   origin: z.string().min(1).max(100).trim(),
@@ -73,4 +77,9 @@ export const productSchema = z.object({
   is_active: z.boolean().default(true),
   seo_title: z.string().max(200).trim().optional().or(z.literal('')),
   seo_description: z.string().max(500).trim().optional().or(z.literal('')),
-});
+}).refine(
+  (data) =>
+    (data.scheduled_price == null && data.scheduled_wholesale_price == null) ||
+    Boolean(data.price_effective_at),
+  { path: ['price_effective_at'], message: 'Set an effective date and time for scheduled prices.' },
+);

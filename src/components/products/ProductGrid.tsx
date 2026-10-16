@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Eye, ShoppingCart, Package } from 'lucide-react';
 import type { Product } from '@/types';
-import { calculateResaleMargin, formatPrice } from '@/lib/utils';
+import { calculateResaleMargin, formatExactPrice, formatPrice, formatPriceEffectiveAt } from '@/lib/utils';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
 
 interface ProductGridProps {
@@ -135,6 +135,12 @@ export default function ProductGrid({ products }: ProductGridProps) {
                     </p>
                   ) : null;
                 })()}
+                {product.scheduled_price != null && product.price_effective_at && (
+                  <p className="col-span-2 mt-1 text-xs font-medium text-amber-800">
+                    Retail price rises to {formatExactPrice(product.scheduled_price)}/kg on{' '}
+                    {formatPriceEffectiveAt(product.price_effective_at)}
+                  </p>
+                )}
               </div>
 
               {product.min_order_quantity > 0 && (
@@ -157,7 +163,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-emerald-800"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  Request Quote
+                  {product.price !== null ? 'Order & Pay' : 'Contact for Price'}
                 </Link>
               </div>
             </div>

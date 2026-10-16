@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
 import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/server';
+import { getEffectivePrices } from '@/lib/products/pricing';
 import { checkSubmissionRateLimit } from '@/lib/rate-limit';
 import { answerQuestion } from '@/lib/assistant/answer-engine';
 import type { Product } from '@/types';
@@ -25,6 +26,9 @@ type AssistantProduct = Pick<
   | 'min_order_quantity'
   | 'stock_status'
   | 'price'
+  | 'wholesale_price'
+  | 'scheduled_price'
+  | 'price_effective_at'
 >;
 
 const STOP_WORDS = new Set([
@@ -54,12 +58,17 @@ async function loadProducts(): Promise<AssistantProduct[]> {
       const supabase = getSupabaseAdmin();
       const { data, error } = await supabase
         .from('products')
-        .select('name, slug, category, short_description, pack_sizes, rice_type, origin, aroma, texture, best_used_for, cooking_info, min_order_quantity, stock_status, price')
+        .select('name, slug, category, short_description, pack_sizes, rice_type, origin, aroma, texture, best_used_for, cooking_info, min_order_quantity, stock_status, price, wholesale_price, scheduled_price, price_effective_at')
         .eq('is_active', true)
         .order('is_featured', { ascending: false })
         .limit(100);
 
-      if (!error && data?.length) return data as AssistantProduct[];
+      if (!error && data?.length) {
+        return (data as AssistantProduct[]).map((product) => ({
+          ...product,
+          ...getEffectivePrices(product),
+        }));
+      }
     } catch {
       // Use the same local catalogue shown when the database is unavailable.
     }

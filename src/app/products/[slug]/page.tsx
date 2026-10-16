@@ -7,6 +7,7 @@ import Footer from '@/components/footer/Footer';
 
 import ProductDetailClient from '@/components/products/ProductDetailClient';
 import { getFallbackProduct } from '@/lib/products/catalog';
+import { toPublicProduct } from '@/lib/products/pricing';
 import type { Product } from '@/types';
 
 interface Props {
@@ -23,9 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!data && !fallbackProduct) return { title: 'Product Not Found' };
 
-    const product = (data as Product | null) ?? fallbackProduct;
-
-    if (!product) return { title: 'Product Not Found' };
+    const rawProduct = (data as Product | null) ?? fallbackProduct;
+    if (!rawProduct) return { title: 'Product Not Found' };
+    const product = toPublicProduct(rawProduct);
 
     return {
       title: product.seo_title || product.name,
@@ -69,7 +70,12 @@ export default async function ProductDetailPage({ params }: Props) {
       .eq('is_active', true)
       .single();
 
-    product = data && !error ? (data as Product) : getFallbackProduct(slug);
+    const fallbackProduct = getFallbackProduct(slug);
+    product = data && !error
+      ? toPublicProduct(data as Product)
+      : fallbackProduct
+        ? toPublicProduct(fallbackProduct)
+        : null;
 
     if (!product) notFound();
 
@@ -82,10 +88,11 @@ export default async function ProductDetailPage({ params }: Props) {
         .neq('id', product.id)
         .limit(4);
 
-      relatedProducts = (relatedData as Product[]) ?? [];
+      relatedProducts = ((relatedData as Product[]) ?? []).map(toPublicProduct);
     }
   } catch {
-    product = getFallbackProduct(slug);
+    const fallbackProduct = getFallbackProduct(slug);
+    product = fallbackProduct ? toPublicProduct(fallbackProduct) : null;
   }
 
   if (!product) notFound();

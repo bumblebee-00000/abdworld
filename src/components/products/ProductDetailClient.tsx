@@ -8,7 +8,7 @@ import ImageGallery from '@/components/products/ImageGallery';
 import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
 import OrderForm from '@/components/products/OrderForm';
-import { calculateResaleMargin, formatPrice, generateWhatsAppUrl } from '@/lib/utils';
+import { calculateResaleMargin, formatExactPrice, formatPrice, formatPriceEffectiveAt, generateWhatsAppUrl } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
@@ -114,6 +114,12 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 </div>
               </div>
             </div>
+            {product.scheduled_price != null && product.price_effective_at && (
+              <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                Retail price changes to {formatExactPrice(product.scheduled_price)}/kg on{' '}
+                {formatPriceEffectiveAt(product.price_effective_at)}. Pay before then to secure today&apos;s price.
+              </p>
+            )}
             {(() => {
               const margin = calculateResaleMargin(product.price, product.wholesale_price);
               return margin ? (
@@ -172,7 +178,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-950/15 transition-all hover:bg-emerald-800 hover:shadow-xl"
               >
                 <ShoppingCart className="h-5 w-5" />
-                Request Quote
+                {product.price !== null ? 'Order & Pay Online' : 'Contact for Price'}
               </button>
               <a
                 href={whatsappUrl}
@@ -185,7 +191,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
               </a>
             </div>
             <p className="mt-3 text-sm text-emerald-800/70">
-              A quote request is not a confirmed order. We will contact you to answer questions and confirm availability, pricing, and delivery.
+              Online orders are confirmed after full payment of the rice subtotal. Delivery charges and arrangements are confirmed separately.
             </p>
 
             {/* Trust Badges */}

@@ -35,7 +35,7 @@ export default function TermsPage() {
     {
       title: '5. Payment',
       content:
-        'Payment terms are agreed upon between the customer and ABD WORLD for each order. We do not process online payments at this time unless otherwise agreed.',
+        'Online orders require full advance payment of the displayed rice subtotal through Razorpay. A scheduled price is available only until its stated effective time and is secured only after payment is successfully captured. Delivery charges and arrangements are confirmed separately before dispatch.',
     },
     {
       title: '6. Delivery and Shipping',

@@ -3,6 +3,7 @@ import { getSession } from '@/lib/auth/session';
 import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/server';
 import { productSchema } from '@/lib/validation';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
+import { getEffectivePrices } from '@/lib/products/pricing';
 
 export const runtime = 'nodejs';
 
@@ -30,7 +31,12 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ products: data });
+    return NextResponse.json({
+      products: data.map((product) => ({
+        ...product,
+        ...getEffectivePrices(product),
+      })),
+    });
   } catch {
     return NextResponse.json(
       { error: 'Something went wrong.' },
@@ -77,6 +83,10 @@ export async function POST(request: NextRequest) {
         video_url: parsed.data.video_url || null,
         price: parsed.data.price,
         wholesale_price: parsed.data.wholesale_price,
+        cost_price: parsed.data.cost_price,
+        scheduled_price: parsed.data.scheduled_price,
+        scheduled_wholesale_price: parsed.data.scheduled_wholesale_price,
+        price_effective_at: parsed.data.price_effective_at,
         pack_sizes: parsed.data.pack_sizes,
         rice_type: parsed.data.rice_type,
         origin: parsed.data.origin,
@@ -165,6 +175,10 @@ export async function PUT(request: NextRequest) {
         video_url: parsed.data.video_url || null,
         price: parsed.data.price,
         wholesale_price: parsed.data.wholesale_price,
+        cost_price: parsed.data.cost_price,
+        scheduled_price: parsed.data.scheduled_price,
+        scheduled_wholesale_price: parsed.data.scheduled_wholesale_price,
+        price_effective_at: parsed.data.price_effective_at,
         pack_sizes: parsed.data.pack_sizes,
         rice_type: parsed.data.rice_type,
         origin: parsed.data.origin,

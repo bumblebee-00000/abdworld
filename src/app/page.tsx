@@ -10,6 +10,7 @@ import Stats from '@/components/home/Stats';
 import CTASection from '@/components/home/CTASection';
 import { getSupabaseAdmin } from '@/lib/supabase/server';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
+import { toPublicProduct } from '@/lib/products/pricing';
 import { getWhatsAppMessageUrl } from '@/lib/business-config';
 import type { Product, SiteSettings } from '@/types';
 
@@ -36,7 +37,9 @@ export default async function Home() {
       .order('created_at', { ascending: false })
       .limit(3);
 
-    if (data && data.length > 0) featuredProducts = data as Product[];
+    if (data && data.length > 0) {
+      featuredProducts = (data as Product[]).map(toPublicProduct);
+    }
 
     const { data: settingsData } = await supabase
       .from('site_settings')
