@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Eye, ShoppingCart } from 'lucide-react';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
-import { calculateResaleMargin, formatPrice } from '@/lib/utils';
+import { calculateResaleMargin, formatExactPrice, formatPrice, formatPriceEffectiveAt } from '@/lib/utils';
 import type { Product } from '@/types';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
 
@@ -138,6 +138,12 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                       </p>
                     ) : null;
                   })()}
+                  {product.scheduled_price != null && product.price_effective_at && (
+                    <p className="col-span-2 text-xs font-medium text-amber-800">
+                      Retail price changes to {formatExactPrice(product.scheduled_price)}/kg on{' '}
+                      {formatPriceEffectiveAt(product.price_effective_at)}. Pay before then to secure today&apos;s price.
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-3">
@@ -153,7 +159,7 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                     className="gold-gradient inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold text-emerald-950 transition-all duration-300 hover:shadow-[0_10px_25px_rgba(234,179,8,0.45)]"
                   >
                     <ShoppingCart className="h-4 w-4" />
-                    Request Quote
+                    {product.price != null && product.price > 0 ? 'Order & Pay' : 'Contact for Price'}
                   </Link>
                 </div>
               </div>
