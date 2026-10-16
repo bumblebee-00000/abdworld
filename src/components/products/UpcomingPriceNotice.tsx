@@ -1,9 +1,11 @@
-import { ArrowRight, Clock3 } from 'lucide-react';
+import { Clock3 } from 'lucide-react';
 import { formatExactPrice, formatPriceEffectiveAt } from '@/lib/utils';
 
 interface UpcomingPriceNoticeProps {
   currentPrice: number | null;
-  upcomingPrice: number;
+  upcomingPrice?: number | null;
+  currentWholesalePrice: number | null;
+  upcomingWholesalePrice?: number | null;
   effectiveAt: string;
   compact?: boolean;
 }
@@ -11,6 +13,8 @@ interface UpcomingPriceNoticeProps {
 export default function UpcomingPriceNotice({
   currentPrice,
   upcomingPrice,
+  currentWholesalePrice,
+  upcomingWholesalePrice,
   effectiveAt,
   compact = false,
 }: UpcomingPriceNoticeProps) {
@@ -23,27 +27,39 @@ export default function UpcomingPriceNotice({
         <Clock3 className="h-4 w-4 shrink-0" />
         Retail price changes soon
       </div>
-      <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <div className="min-w-0">
-          <span className="block text-xs text-amber-900/70">Order by</span>
-          <strong className={`block truncate ${compact ? 'text-base' : 'text-lg'}`}>
-            {currentPrice != null ? `${formatExactPrice(currentPrice)}/kg` : 'Contact for price'}
-          </strong>
-        </div>
-        <ArrowRight className="h-4 w-4 text-amber-800" />
-        <div className="min-w-0">
-          <span className="block text-xs text-amber-900/70">
-            From {formatPriceEffectiveAt(effectiveAt)}
-          </span>
-          <strong className={`block truncate ${compact ? 'text-base' : 'text-lg'}`}>
-            {formatExactPrice(upcomingPrice)}/kg
-          </strong>
-        </div>
+      <div className="mt-3 grid grid-cols-[auto_1fr_1fr] items-baseline gap-x-3 gap-y-1.5">
+        <span />
+        <span className="text-xs font-semibold text-amber-900/70">Now</span>
+        <span className="text-xs font-semibold text-amber-900/70">
+          From {formatPriceEffectiveAt(effectiveAt)}
+        </span>
+        {upcomingPrice != null && (
+          <>
+            <span className="text-xs text-amber-900/70">Retail</span>
+            <strong className={`truncate ${compact ? 'text-sm' : 'text-base'}`}>
+              {currentPrice != null ? formatExactPrice(currentPrice) : 'On request'}
+            </strong>
+            <strong className={`truncate ${compact ? 'text-sm' : 'text-base'}`}>
+              {formatExactPrice(upcomingPrice)}
+            </strong>
+          </>
+        )}
+        {upcomingWholesalePrice != null && (
+          <>
+            <span className="text-xs text-amber-900/70">Wholesale</span>
+            <strong className={`truncate ${compact ? 'text-sm' : 'text-base'}`}>
+              {currentWholesalePrice != null ? formatExactPrice(currentWholesalePrice) : 'On request'}
+            </strong>
+            <strong className={`truncate ${compact ? 'text-sm' : 'text-base'}`}>
+              {formatExactPrice(upcomingWholesalePrice)}
+            </strong>
+          </>
+        )}
       </div>
       <p className="mt-2 text-xs leading-relaxed text-amber-950/80">
-        {currentPrice != null
-          ? 'Pay in full before the change to secure today\'s price. Delivery is confirmed separately.'
-          : 'Contact us before the change to confirm availability and the current price.'}
+        {upcomingPrice != null && currentPrice != null
+          ? 'Pay in full before the retail change to secure today\'s price. Delivery is confirmed separately.'
+          : 'Contact us before the change to confirm availability and pricing.'}
       </p>
     </aside>
   );

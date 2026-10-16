@@ -115,11 +115,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 </div>
               </div>
             </div>
-            {product.scheduled_price != null && product.price_effective_at && (
+            {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
               <div className="mt-3">
                 <UpcomingPriceNotice
                   currentPrice={product.price}
                   upcomingPrice={product.scheduled_price}
+                  currentWholesalePrice={product.wholesale_price}
+                  upcomingWholesalePrice={product.scheduled_wholesale_price}
                   effectiveAt={product.price_effective_at}
                 />
               </div>

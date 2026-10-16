@@ -139,12 +139,14 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                       </p>
                     ) : null;
                   })()}
-                  {product.scheduled_price != null && product.price_effective_at && (
+                  {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
                     <div className="col-span-2">
                       <UpcomingPriceNotice
                         compact
                         currentPrice={product.price}
                         upcomingPrice={product.scheduled_price}
+                        currentWholesalePrice={product.wholesale_price}
+                        upcomingWholesalePrice={product.scheduled_wholesale_price}
                         effectiveAt={product.price_effective_at}
                       />
                     </div>
