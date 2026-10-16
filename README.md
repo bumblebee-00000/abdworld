@@ -49,7 +49,7 @@ npm install
 3. Copy the entire contents and paste into the SQL Editor.
 4. Click **Run**.
 
-For an existing database, run `supabase-migrations/20261014_product_pricing_schedule.sql` and `supabase-migrations/20261016_order_payments.sql` in the Supabase SQL Editor before deploying the matching application changes.
+For an existing database, run `supabase-migrations/20261014_product_pricing_schedule.sql`, `supabase-migrations/20261016_order_payments.sql`, and `supabase-migrations/20261016_premium_basmati_upcoming_prices.sql` in the Supabase SQL Editor before deploying the matching application changes. The final migration schedules Premium Basmati Rice at ₹170/kg retail and ₹107/kg wholesale from October 17, 2026; the product page displays these prices while the schedule is upcoming.
 
 This creates all tables (`admins`, `products`, `orders`, `wholesale_enquiries`, `contact_messages`, `site_settings`), indexes, and **Row Level Security** policies.
 
