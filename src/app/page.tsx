@@ -24,7 +24,6 @@ export default async function Home() {
   await connection();
 
   let featuredProducts: Product[] = FALLBACK_PRODUCTS;
-  let upcomingProducts: Product[] = [];
   let certifications: string[] = [];
   let siteSettings: SiteSettings | null = null;
 
@@ -40,18 +39,6 @@ export default async function Home() {
 
     if (data && data.length > 0) {
       featuredProducts = (data as Product[]).map(toPublicProduct);
-    }
-
-    const { data: upcomingData } = await supabase
-      .from('products')
-      .select('*')
-      .eq('is_active', true)
-      .gt('price_effective_at', new Date().toISOString())
-      .or('scheduled_price.not.is.null,scheduled_wholesale_price.not.is.null')
-      .order('price_effective_at', { ascending: true });
-
-    if (upcomingData) {
-      upcomingProducts = (upcomingData as Product[]).map(toPublicProduct);
     }
 
     const { data: settingsData } = await supabase
@@ -183,7 +170,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <FeaturedProducts products={featuredProducts} upcomingProducts={upcomingProducts} />
+        <FeaturedProducts products={featuredProducts} />
 
         <section className="section-padding bg-white">
           <div className="mx-auto max-w-7xl">

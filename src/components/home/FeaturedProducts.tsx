@@ -11,7 +11,6 @@ import UpcomingPriceNotice from '@/components/products/UpcomingPriceNotice';
 
 interface FeaturedProductsProps {
   products?: Product[];
-  upcomingProducts?: Product[];
 }
 
 const containerVariants = {
@@ -39,10 +38,7 @@ const sectionVariants = {
   },
 };
 
-export default function FeaturedProducts({
-  products = FALLBACK_PRODUCTS,
-  upcomingProducts = [],
-}: FeaturedProductsProps) {
+export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: FeaturedProductsProps) {
   return (
     <section className="section-padding bg-cream-50">
       <div className="mx-auto max-w-7xl">
@@ -68,53 +64,6 @@ export default function FeaturedProducts({
           </p>
           <div className="gold-gradient mx-auto mt-6 h-1 w-16 rounded-full" />
         </motion.div>
-
-        {upcomingProducts.length > 0 && (
-          <motion.div
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            className="mt-10 border-y border-gold-300/60 py-6"
-          >
-            <div className="grid gap-5 lg:grid-cols-[minmax(12rem,0.7fr)_2fr] lg:items-start">
-              <div>
-                <h3 className="font-heading text-xl font-bold text-emerald-950">
-                  Scheduled price changes
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-emerald-900/70">
-                  Upcoming prices and when they take effect.
-                </p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {upcomingProducts.map((product) => (
-                  <div key={product.id}>
-                    <div className="mb-2 flex items-baseline justify-between gap-3">
-                      <h4 className="font-heading font-semibold text-emerald-950">
-                        {product.name}
-                      </h4>
-                      <Link
-                        href={`/products/${product.slug}`}
-                        className="shrink-0 text-xs font-semibold text-emerald-700 underline-offset-4 hover:underline"
-                      >
-                        View product
-                      </Link>
-                    </div>
-                    {product.price_effective_at && (
-                      <UpcomingPriceNotice
-                        currentPrice={product.price}
-                        upcomingPrice={product.scheduled_price}
-                        currentWholesalePrice={product.wholesale_price}
-                        upcomingWholesalePrice={product.scheduled_wholesale_price}
-                        effectiveAt={product.price_effective_at}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
 
         <motion.div
           variants={containerVariants}
@@ -190,6 +139,18 @@ export default function FeaturedProducts({
                       </p>
                     ) : null;
                   })()}
+                  {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
+                    <div className="col-span-2">
+                      <UpcomingPriceNotice
+                        compact
+                        currentPrice={product.price}
+                        upcomingPrice={product.scheduled_price}
+                        currentWholesalePrice={product.wholesale_price}
+                        upcomingWholesalePrice={product.scheduled_wholesale_price}
+                        effectiveAt={product.price_effective_at}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-3">
