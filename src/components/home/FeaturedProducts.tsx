@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Eye, ShoppingCart } from 'lucide-react';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
-import { calculateResaleMargin, formatExactPrice, formatPrice, formatPriceEffectiveAt } from '@/lib/utils';
+import { calculateResaleMargin, formatPrice } from '@/lib/utils';
 import type { Product } from '@/types';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
+import UpcomingPriceNotice from '@/components/products/UpcomingPriceNotice';
 
 interface FeaturedProductsProps {
   products?: Product[];
@@ -139,10 +140,14 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                     ) : null;
                   })()}
                   {product.scheduled_price != null && product.price_effective_at && (
-                    <p className="col-span-2 text-xs font-medium text-amber-800">
-                      Retail price changes to {formatExactPrice(product.scheduled_price)}/kg on{' '}
-                      {formatPriceEffectiveAt(product.price_effective_at)}. Pay before then to secure today&apos;s price.
-                    </p>
+                    <div className="col-span-2">
+                      <UpcomingPriceNotice
+                        compact
+                        currentPrice={product.price}
+                        upcomingPrice={product.scheduled_price}
+                        effectiveAt={product.price_effective_at}
+                      />
+                    </div>
                   )}
                 </div>
 

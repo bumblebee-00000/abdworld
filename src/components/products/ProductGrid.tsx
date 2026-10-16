@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Eye, ShoppingCart, Package } from 'lucide-react';
 import type { Product } from '@/types';
-import { calculateResaleMargin, formatExactPrice, formatPrice, formatPriceEffectiveAt } from '@/lib/utils';
+import { calculateResaleMargin, formatPrice } from '@/lib/utils';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
+import UpcomingPriceNotice from '@/components/products/UpcomingPriceNotice';
 
 interface ProductGridProps {
   products: Product[];
@@ -136,10 +137,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   ) : null;
                 })()}
                 {product.scheduled_price != null && product.price_effective_at && (
-                  <p className="col-span-2 mt-1 text-xs font-medium text-amber-800">
-                    Retail price rises to {formatExactPrice(product.scheduled_price)}/kg on{' '}
-                    {formatPriceEffectiveAt(product.price_effective_at)}
-                  </p>
+                  <div className="col-span-2 mt-1">
+                    <UpcomingPriceNotice
+                      compact
+                      currentPrice={product.price}
+                      upcomingPrice={product.scheduled_price}
+                      effectiveAt={product.price_effective_at}
+                    />
+                  </div>
                 )}
               </div>
 
