@@ -35,6 +35,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
       `Product: ${product.name}`,
       `Available pack sizes: ${product.pack_sizes.join(', ')}`,
       `Minimum order quantity: ${product.min_order_quantity} kg`,
+      'Quantity requested: (please specify packs or kg)',
+      'Delivery location: ',
+      'Area: ',
+      'District: ',
+      'State: ',
+      'PIN code: ',
+      'Please complete the requested quantity and delivery address before sending.',
       'Please share current availability, wholesale pricing, and delivery details.',
     ].join('\n'),
   );
