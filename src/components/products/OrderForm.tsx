@@ -623,6 +623,9 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 )}
               />
               {errors.pin_code && <p className="mt-1 text-xs text-red-500">{errors.pin_code}</p>}
+              <p className="mt-1 text-xs text-emerald-700/70">
+                Enter all 6 digits to see matching location suggestions.
+              </p>
               {activePostalField === 'pin_code' && (
                 <PostalSuggestionList
                   field="pin_code"
