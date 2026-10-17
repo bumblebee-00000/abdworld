@@ -49,7 +49,7 @@ npm install
 3. Copy the entire contents and paste into the SQL Editor.
 4. Click **Run**.
 
-For an existing database, run `supabase-migrations/20261014_product_pricing_schedule.sql`, `supabase-migrations/20261016_order_payments.sql`, and `supabase-migrations/20261016_premium_basmati_upcoming_prices.sql` in the Supabase SQL Editor before deploying the matching application changes. The final migration schedules Premium Basmati Rice at ₹170/kg retail and ₹107/kg wholesale from October 17, 2026; the product page displays these prices while the schedule is upcoming.
+For an existing database, run the SQL files in `supabase-migrations/` in date order before deploying the matching application changes. The October 17 migration creates the private table used for WhatsApp conversation history.
 
 This creates all tables (`admins`, `products`, `orders`, `wholesale_enquiries`, `contact_messages`, `site_settings`), indexes, and **Row Level Security** policies.
 
@@ -76,6 +76,12 @@ NEXT_PUBLIC_BUSINESS_EMAIL=info@yourdomain.com
 
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-3.8-flash
+
+WHATSAPP_ACCESS_TOKEN=your_meta_permanent_access_token
+WHATSAPP_PHONE_NUMBER_ID=your_meta_phone_number_id
+WHATSAPP_VERIFY_TOKEN=generate_a_long_random_verification_token
+WHATSAPP_APP_SECRET=your_meta_app_secret
+WHATSAPP_API_VERSION=v23.0
 ```
 
 The public business phone, WhatsApp number, and WhatsApp Channel URL are configured in `src/lib/business-config.ts`.
@@ -87,6 +93,18 @@ The public business phone, WhatsApp number, and WhatsApp Channel URL are configu
 > **Never commit `.env.local`.** It is already in `.gitignore`.
 
 > **Gemini assistant:** Create an API key in [Google AI Studio](https://aistudio.google.com/apikey) and set it as `GEMINI_API_KEY`. Keep it server-side; do not prefix it with `NEXT_PUBLIC_`. `GEMINI_MODEL` is optional. Gemini usage may be subject to Google's quotas and billing; check your account's current limits and pricing.
+
+### WhatsApp Cloud API
+
+The automated sales assistant uses Meta's WhatsApp Cloud API. It uses the product-aware assistant above, supports English, Hindi, and Bengali, and keeps the latest six conversation turns per customer in Supabase.
+
+1. In Meta for Developers, create or select an app, add the **WhatsApp** product, and connect the WhatsApp Business phone number you want to use.
+2. Set the WhatsApp environment variables above in `.env.local` for local server testing and in your hosting provider for production. Keep the access token, app secret, and verify token server-side; never use a `NEXT_PUBLIC_` prefix.
+3. Run `supabase-migrations/20261017_whatsapp_chat_sessions.sql` in the Supabase SQL Editor.
+4. Deploy the site to a public HTTPS domain. In the WhatsApp product's webhook settings, set the callback URL to `https://your-domain/api/whatsapp/webhook` and use the exact `WHATSAPP_VERIFY_TOKEN` value as the verify token.
+5. Subscribe the webhook to the `messages` field, then send a message to the connected business number to test the reply.
+
+Use a supported Graph API version for `WHATSAPP_API_VERSION`. The webhook verifies Meta's request signature and stores conversation history using the Supabase service-role client. The assistant can only provide current prices, stock, and delivery commitments after the sales team confirms them. Follow WhatsApp's opt-in, messaging-window, and approved-template requirements for business-initiated messages.
 
 > **Razorpay checkout:** Add Razorpay Test keys first. In the Razorpay Dashboard, configure a webhook at `https://your-domain/api/webhooks/razorpay` for `payment_link.paid` and `payment_link.expired`; set its secret as `RAZORPAY_WEBHOOK_SECRET`. Keep all three Razorpay values server-side.
 
@@ -145,6 +163,11 @@ In the project settings → **Environment Variables**, add the same values from 
 | `NEXT_PUBLIC_BUSINESS_EMAIL`  | `info@yourdomain.com`            |
 | `GEMINI_API_KEY`              | Secret from Google AI Studio (server only) |
 | `GEMINI_MODEL`                | `gemini-3.8-flash`               |
+| `WHATSAPP_ACCESS_TOKEN`       | Meta WhatsApp Cloud API token (server only) |
+| `WHATSAPP_PHONE_NUMBER_ID`    | Connected Meta phone number ID  |
+| `WHATSAPP_VERIFY_TOKEN`       | Your webhook verification secret (server only) |
+| `WHATSAPP_APP_SECRET`         | Meta app secret (server only)   |
+| `WHATSAPP_API_VERSION`        | Supported Graph API version, e.g. `v23.0` |
 
 > Add these to **Production**, and optionally **Preview** / **Development** environments too.
 

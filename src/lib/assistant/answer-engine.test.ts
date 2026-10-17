@@ -27,3 +27,20 @@ test('returns a business-style response for a general wholesale inquiry', () => 
   assert.ok(result.answer.toLowerCase().includes('retail') || result.answer.toLowerCase().includes('shop') || result.answer.toLowerCase().includes('business'));
   assert.ok(result.products.length > 0);
 });
+
+test('moves a price enquiry toward an accurate wholesale quote', () => {
+  const result = answerQuestion('What is the latest wholesale price?', '', FALLBACK_PRODUCTS);
+
+  assert.match(result.answer, /variety/i);
+  assert.match(result.answer, /quantity/i);
+  assert.match(result.answer, /city or PIN code/i);
+  assert.match(result.answer, /sales team confirms final pricing/i);
+});
+
+test('qualifies a bulk buyer without claiming the order is confirmed', () => {
+  const result = answerQuestion('I want to place a bulk rice order', '', FALLBACK_PRODUCTS);
+
+  assert.match(result.answer, /variety or intended use/i);
+  assert.match(result.answer, /roughly how many kilograms/i);
+  assert.match(result.answer, /does not confirm an order/i);
+});

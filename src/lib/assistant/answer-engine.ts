@@ -7,6 +7,7 @@ export type AssistantProduct = Pick<
   | 'slug'
   | 'category'
   | 'short_description'
+  | 'full_description'
   | 'pack_sizes'
   | 'rice_type'
   | 'origin'
@@ -21,8 +22,8 @@ export type AssistantProduct = Pick<
 >;
 
 const STOP_WORDS = new Set([
-  'about', 'and', 'are', 'can', 'for', 'from', 'help', 'how', 'i', 'in', 'is',
-  'me', 'of', 'our', 'please', 'the', 'this', 'to', 'what', 'which', 'with', 'you', 'your', 'rice',
+  'about', 'and', 'are', 'bulk', 'can', 'for', 'from', 'help', 'how', 'i', 'in', 'is',
+  'me', 'of', 'our', 'please', 'the', 'this', 'to', 'what', 'which', 'wholesale', 'with', 'you', 'your', 'rice', 'supply',
 ]);
 
 export function normalize(value: string) {
@@ -38,6 +39,7 @@ export function rankProducts(question: string, products: AssistantProduct[], lim
       const details = normalize([
         product.rice_type,
         product.origin,
+        product.full_description,
         product.aroma,
         product.texture,
         product.grain_length,
@@ -91,7 +93,8 @@ function isWholesaleInfoQuery(question: string, context: string) {
   const value = normalize(`${context} ${question}`);
   const hasWholesaleIntent = /\b(wholesale information|wholesale|bulk supply|business supply|supply requirements|minimum order|price and availability|pricing and availability)\b/.test(value);
   const hasSpecificProductIntent = /\b(help me choose|recommend|which rice|what rice|best rice|specific variety|basmati|sella|non basmati|golden rice|premium basmati|1121)\b/.test(value);
-  return hasWholesaleIntent && !hasSpecificProductIntent;
+  const hasQuoteIntent = /\b(price|pricing|rate|rates|cost|quote|quotation)\b/.test(value);
+  return hasWholesaleIntent && !hasSpecificProductIntent && !hasQuoteIntent;
 }
 
 function isBulkOrderQuery(question: string, context: string) {
@@ -109,14 +112,13 @@ function isBusinessInfoQuery(question: string, context: string) {
 function buildRecommendationSentence(primary: AssistantProduct | null, context: string, question: string) {
   const intent = inferBusinessIntent(`${context} ${question}`);
   if (!primary) {
-    return `For ${intent}, I’d start by narrowing your use case and quantity. Tell me whether you need rice for biryani, a restaurant, retail sales, or bulk supply, and I can point you to the right fit.`;
+    return `I can narrow down the right rice for ${intent}. What will you use it for? I’ll recommend a suitable option from our catalogue.`;
   }
 
-  const useCase = pickUseCaseLabel(primary);
   const shortDescription = primary.short_description || 'A dependable wholesale rice option.';
   const bestUse = primary.best_used_for ? `It is especially suited for ${primary.best_used_for.toLowerCase()}.` : '';
 
-  return `For ${intent}, ${primary.name} is a strong fit. ${shortDescription} ${bestUse} It’s available in ${primary.pack_sizes.join(', ')} and the minimum order is ${primary.min_order_quantity} kg.`;
+  return `${primary.name} looks like a strong fit for ${intent}. ${shortDescription} ${bestUse} It comes in ${primary.pack_sizes.join(', ')} with a ${primary.min_order_quantity} kg minimum. What approximate quantity are you considering?`;
 }
 
 export function answerQuestion(question: string, context: string, products: AssistantProduct[]) {
@@ -147,56 +149,58 @@ export function answerQuestion(question: string, context: string, products: Assi
 
   if (isContactQuery(question, context)) {
     return {
-      answer: 'For wholesale enquiries, pricing, and quotes, use the current Contact page or call and WhatsApp links on this site. Share your quantity, rice type, and delivery location so our team can guide you.',
+      answer: 'I can help you prepare a wholesale enquiry here. Which rice variety are you looking for, and roughly how much do you need? The sales team confirms current pricing and availability.',
       products: [],
     };
   }
 
   if (isDeliveryQuery(question, context)) {
     return {
-      answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      answer: 'I can help check the delivery requirements. Which city or PIN code is the order going to, and approximately how many kilograms do you need? The sales team confirms serviceability and timing.',
       products: [],
     };
   }
 
   if (isBulkOrderQuery(question, context)) {
     return {
-      answer: 'To enquire about a bulk order, share the rice variety (or intended use), estimated quantity, preferred pack size, and delivery location. ABD WORLD will confirm current pricing, availability, minimum order, and delivery details with you. A chat enquiry is not a confirmed order.',
+      answer: 'I can help you prepare a bulk enquiry. Which variety or intended use are you considering, and roughly how many kilograms do you need? Final pricing, availability, and delivery are confirmed by ABD WORLD’s sales team; this chat does not confirm an order.',
       products: [],
     };
   }
 
   if (isWholesaleInfoQuery(question, context)) {
     return {
-      answer: 'For wholesale information, ABD WORLD can support retailers, restaurants, hotels, caterers, and bulk buyers. Please share your quantity, rice type, and delivery location, and our team will guide you on the right supply option and quote.',
+      answer: 'ABD WORLD supplies rice to retailers, restaurants, hotels, caterers, and bulk buyers. What kind of business are you buying for, and roughly how much rice do you need?',
       products: [],
     };
   }
 
   if (isBusinessInfoQuery(question, context)) {
     return {
-      answer: 'ABD WORLD supplies rice for retailers, restaurants, hotels, caterers, and bulk buyers. If you want pricing, availability, or a quote for your requirement, contact ABD WORLD and our team will guide you based on your quantity, rice type, and delivery location.',
+      answer: 'ABD WORLD is a wholesale rice supplier for retailers, restaurants, hotels, caterers, and bulk buyers. What are you sourcing for: restaurant service, catering, retail resale, or another use?',
       products: [],
     };
   }
 
   if (primary && asksMinimum) {
     return {
-      answer: `${primary.name} is a good match for ${inferBusinessIntent(question)}. The minimum order is ${primary.min_order_quantity} kg, and it is available in ${primary.pack_sizes.join(', ')}. If you want, I can help you choose the right pack size for your business.`,
+      answer: `${primary.name} has a ${primary.min_order_quantity} kg minimum and comes in ${primary.pack_sizes.join(', ')}. What approximate quantity are you planning to order?`,
       products: suggestions,
     };
   }
 
   if (primary && asksPackSize) {
     return {
-      answer: `${primary.name} is available in ${primary.pack_sizes.join(', ')}. For ${inferBusinessIntent(question)}, that gives you flexibility for both smaller retail orders and larger business supply runs.`,
+      answer: `${primary.name} is available in ${primary.pack_sizes.join(', ')}. What approximate order quantity should I help you plan for?`,
       products: suggestions,
     };
   }
 
-  if (primary && asksPrice) {
+  if (asksPrice) {
     return {
-      answer: 'For the latest wholesale price and availability, please contact ABD WORLD. Final pricing depends on your quantity, rice type and delivery location, and our team can confirm the best option for your business.',
+      answer: primary
+        ? `For ${primary.name}, what approximate quantity and delivery city or PIN code should the quote cover? ABD WORLD’s sales team confirms final pricing and availability.`
+        : 'I can help you prepare a current wholesale quote. Which variety, approximate quantity, and delivery city or PIN code do you need? ABD WORLD’s sales team confirms final pricing and availability.',
       products: suggestions,
     };
   }
@@ -212,7 +216,7 @@ export function answerQuestion(question: string, context: string, products: Assi
     ].filter(Boolean);
 
     return {
-      answer: `${primary.name} is often chosen for ${pickUseCaseLabel(primary)} because it has ${details.slice(0, 3).join('; ')}. If you want, I can suggest the best option for your restaurant, retail shop, or catering business.`,
+      answer: `${primary.name} is often chosen for ${pickUseCaseLabel(primary)} because it has ${details.slice(0, 3).join('; ')}. What will you mainly use it for?`,
       products: suggestions,
     };
   }
@@ -226,41 +230,41 @@ export function answerQuestion(question: string, context: string, products: Assi
 
   if (isContactQuery(question, context)) {
     return {
-      answer: 'For wholesale enquiries, pricing, and quotes, use the current Contact page or call and WhatsApp links on this site. Share your quantity, rice type, and delivery location so our team can guide you.',
+      answer: 'I can help you prepare a wholesale enquiry here. Which rice variety are you looking for, and roughly how much do you need? The sales team confirms current pricing and availability.',
       products: [],
     };
   }
 
   if (isDeliveryQuery(question, context)) {
     return {
-      answer: 'For wholesale orders, we coordinate delivery based on your order quantity, rice type, destination, and packaging needs. Our team confirms the best delivery plan, dispatch arrangement, and logistics support for your requirement. For exact delivery details, contact ABD WORLD.',
+      answer: 'I can help check the delivery requirements. Which city or PIN code is the order going to, and approximately how many kilograms do you need? The sales team confirms serviceability and timing.',
       products: [],
     };
   }
 
   if (isWholesaleInfoQuery(question, context)) {
     return {
-      answer: 'For wholesale information, ABD WORLD can support retailers, restaurants, hotels, caterers, and bulk buyers. Please share your quantity, rice type, and delivery location, and our team will guide you on the right supply option and quote.',
+      answer: 'ABD WORLD supplies rice to retailers, restaurants, hotels, caterers, and bulk buyers. What kind of business are you buying for, and roughly how much rice do you need?',
       products: [],
     };
   }
 
   if (isBusinessInfoQuery(question, context)) {
     return {
-      answer: 'ABD WORLD supplies rice for retailers, restaurants, hotels, caterers, and bulk buyers. If you want pricing, availability, or a quote for your requirement, contact ABD WORLD and our team will guide you based on your quantity, rice type, and delivery location.',
+      answer: 'ABD WORLD is a wholesale rice supplier for retailers, restaurants, hotels, caterers, and bulk buyers. What are you sourcing for: restaurant service, catering, retail resale, or another use?',
       products: [],
     };
   }
 
   if (suggestions.length) {
     return {
-      answer: `I’d look at ${suggestions.map((product) => product.name).join(', ')} for your requirement. If you tell me whether you’re buying for a restaurant, retail shop, biryani business, or bulk supply, I can narrow this down to the best fit.`,
+      answer: `${suggestions.map((product) => product.name).join(', ')} may suit your requirement. What kind of business are you buying for? I can narrow the recommendation from there.`,
       products: suggestions,
     };
   }
 
   return {
-    answer: 'I can help you choose the right rice for your business, with the right quality, pack size, and minimum order to support your goals. Share your use case and quantity, and I’ll guide you toward the best option with confidence.',
+    answer: 'I can help you choose rice for your business. What will you use it for, and approximately how much do you need? I’ll guide you to a suitable catalogue option.',
     products: [],
   };
 }
