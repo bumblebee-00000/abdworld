@@ -112,26 +112,19 @@ export default function ProductGrid({ products }: ProductGridProps) {
               )}
 
               {/* Price */}
-              <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-cream-200 pt-3">
+              <div className="mt-4 border-t border-cream-200 pt-3">
                 <div>
-                  <p className="text-[11px] font-medium text-emerald-700/60">Our price / kg</p>
-                  <p className="text-lg font-bold text-emerald-950">
-                    {product.price !== null ? formatPrice(product.price) : 'On request'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-emerald-700/60">Wholesale / kg</p>
-                  <p className="text-lg font-bold text-emerald-950">
+                  <p className="text-[11px] font-medium text-emerald-700/60">Wholesale price / kg</p>
+                  <p className="text-xl font-bold text-emerald-950">
                     {product.wholesale_price !== null
                       ? formatPrice(product.wholesale_price)
                       : 'On request'}
                   </p>
                 </div>
-                {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
-                  <div className="col-span-2 mt-1">
+                {product.scheduled_wholesale_price != null && product.price_effective_at && (
+                  <div className="mt-2">
                     <UpcomingPriceNotice
                       compact
-                      upcomingPrice={product.scheduled_price}
                       upcomingWholesalePrice={product.scheduled_wholesale_price}
                       effectiveAt={product.price_effective_at}
                     />

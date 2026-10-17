@@ -8,7 +8,7 @@ import ImageGallery from '@/components/products/ImageGallery';
 import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
 import OrderForm from '@/components/products/OrderForm';
-import { calculateResaleMargin, formatPrice, generateWhatsAppUrl } from '@/lib/utils';
+import { formatPrice, generateWhatsAppUrl } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 import UpcomingPriceNotice from '@/components/products/UpcomingPriceNotice';
@@ -79,24 +79,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             </p>
 
             {/* Price */}
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700/60">
-                  Our price
-                </p>
-                <div className="mt-1 flex flex-wrap items-baseline gap-2">
-                  {product.price !== null ? (
-                    <>
-                      <span className="text-2xl font-bold text-emerald-950">
-                        {formatPrice(product.price)}
-                      </span>
-                      <span className="text-sm text-emerald-700/60">per kg</span>
-                    </>
-                  ) : (
-                    <span className="text-base font-semibold text-gold-600">Contact for price</span>
-                  )}
-                </div>
-              </div>
+            <div className="mt-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700/60">
                   Wholesale price
@@ -115,25 +98,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 </div>
               </div>
             </div>
-            {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
+            {product.scheduled_wholesale_price != null && product.price_effective_at && (
               <div className="mt-3">
                 <UpcomingPriceNotice
-                  upcomingPrice={product.scheduled_price}
                   upcomingWholesalePrice={product.scheduled_wholesale_price}
                   effectiveAt={product.price_effective_at}
                 />
               </div>
             )}
-            {(() => {
-              const margin = calculateResaleMargin(product.price, product.wholesale_price);
-              return margin ? (
-                <p className="mt-3 text-sm font-medium text-emerald-700">
-                  Potential reseller gross margin: {formatPrice(margin.profitPerKg)}/kg
-                  {' '}({margin.marginPercent.toFixed(1)}% of our price)
-                </p>
-              ) : null;
-            })()}
-
             {/* Pack Sizes */}
             {product.pack_sizes.length > 0 && (
               <div className="mt-6">

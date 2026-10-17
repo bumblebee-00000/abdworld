@@ -115,26 +115,19 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                   ))}
                 </div>
 
-                <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-cream-200 pt-4">
+                <div className="mt-5 border-t border-cream-200 pt-4">
                   <div>
-                    <p className="text-xs font-medium text-emerald-700/60">Our price / kg</p>
-                    <p className="font-heading text-lg font-semibold text-gold-600">
-                      {product.price != null ? formatPrice(product.price) : 'On request'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-emerald-700/60">Wholesale / kg</p>
-                    <p className="font-heading text-lg font-semibold text-gold-600">
+                    <p className="text-xs font-medium text-emerald-700/60">Wholesale price / kg</p>
+                    <p className="font-heading text-xl font-semibold text-gold-600">
                       {product.wholesale_price != null
                         ? formatPrice(product.wholesale_price)
                         : 'On request'}
                     </p>
                   </div>
-                  {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
-                    <div className="col-span-2">
+                  {product.scheduled_wholesale_price != null && product.price_effective_at && (
+                    <div className="mt-2">
                       <UpcomingPriceNotice
                         compact
-                        upcomingPrice={product.scheduled_price}
                         upcomingWholesalePrice={product.scheduled_wholesale_price}
                         effectiveAt={product.price_effective_at}
                       />

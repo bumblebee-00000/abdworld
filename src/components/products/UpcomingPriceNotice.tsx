@@ -5,14 +5,12 @@ import { useEffect, useState } from 'react';
 import { formatExactPrice } from '@/lib/utils';
 
 interface UpcomingPriceNoticeProps {
-  upcomingPrice?: number | null;
   upcomingWholesalePrice?: number | null;
   effectiveAt: string;
   compact?: boolean;
 }
 
 export default function UpcomingPriceNotice({
-  upcomingPrice,
   upcomingWholesalePrice,
   effectiveAt,
   compact = false,
@@ -37,12 +35,6 @@ export default function UpcomingPriceNotice({
   const remainingHours = remainingSeconds == null ? 0 : Math.floor((remainingSeconds % 86400) / 3600);
   const remainingMinutes = remainingSeconds == null ? 0 : Math.floor((remainingSeconds % 3600) / 60);
   const seconds = remainingSeconds == null ? 0 : remainingSeconds % 60;
-  const upcomingPrices = [
-    ...(upcomingPrice != null ? [{ label: 'Our new price', price: upcomingPrice }] : []),
-    ...(upcomingWholesalePrice != null
-      ? [{ label: 'New wholesale price', price: upcomingWholesalePrice }]
-      : []),
-  ];
 
   return (
     <aside
@@ -51,10 +43,10 @@ export default function UpcomingPriceNotice({
     >
       <div className="flex items-center gap-2 text-xs font-bold uppercase text-emerald-950">
         <Clock3 className="h-4 w-4 shrink-0 text-highlight-600" />
-        New prices coming soon
+        Wholesale price update
       </div>
       <p className="mt-1 text-xs leading-relaxed text-emerald-900/75">
-        Order before the timer ends to secure today&apos;s price.
+        Order before the timer ends to secure today&apos;s wholesale price.
       </p>
       {remainingMs != null && (
         <div
@@ -74,16 +66,17 @@ export default function UpcomingPriceNotice({
           ))}
         </div>
       )}
-      <div className={`mt-3 grid gap-2 ${upcomingPrices.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-        {upcomingPrices.map(({ label, price }) => (
-          <div key={label} className="rounded-md border border-gold-200 bg-white/80 p-2.5">
-            <p className="text-[10px] font-semibold uppercase text-emerald-700/70">{label}</p>
-            <p className="mt-1 text-sm font-bold text-emerald-950">
-              {formatExactPrice(price)}<span className="ml-1 text-xs font-medium text-emerald-700/70">/kg</span>
-            </p>
-          </div>
-        ))}
-      </div>
+      {upcomingWholesalePrice != null && (
+        <div className="mt-3 rounded-md border border-gold-200 bg-white/80 p-2.5">
+          <p className="text-[10px] font-semibold uppercase text-emerald-700/70">
+            New wholesale price
+          </p>
+          <p className="mt-1 text-sm font-bold text-emerald-950">
+            {formatExactPrice(upcomingWholesalePrice)}
+            <span className="ml-1 text-xs font-medium text-emerald-700/70">/kg</span>
+          </p>
+        </div>
+      )}
     </aside>
   );
 }
