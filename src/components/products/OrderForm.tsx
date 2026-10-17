@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageCircle, Loader2, AlertCircle, User, Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
-import { cn, generateWhatsAppUrl, parsePackWeightKg } from '@/lib/utils';
+import { cn, generateWhatsAppUrl, isValidIndianMobileNumber, parsePackWeightKg } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
@@ -36,12 +36,24 @@ interface FormErrors {
 }
 
 interface PostalSuggestion {
-  location: string;
-  area: string;
-  district: string;
-  state: string;
-  pin_code: string;
+  location?: string;
+  area?: string;
+  district?: string;
+  state?: string;
+  pin_code?: string;
 }
+
+type PostalField = 'location' | 'area' | 'district' | 'state' | 'pin_code';
+
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa',
+  'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala',
+  'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland',
+  'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+  'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands',
+  'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir',
+  'Ladakh', 'Lakshadweep', 'Puducherry',
+];
 
 const initialFormData: FormData = {
   pack_size: '',
@@ -62,6 +74,51 @@ function getMinimumPackCount(minimumOrderKg: number, packSize: string): number |
   return packWeightKg ? Math.ceil(minimumOrderKg / packWeightKg) : null;
 }
 
+function PostalSuggestionList({
+  field,
+  suggestions,
+  onSelect,
+}: {
+  field: PostalField;
+  suggestions: PostalSuggestion[];
+  onSelect: (suggestion: PostalSuggestion) => void;
+}) {
+  if (!suggestions.length) return null;
+
+  return (
+    <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-y-auto rounded-lg border border-cream-300 bg-white shadow-lg">
+      {suggestions.map((suggestion, index) => {
+        const title = suggestion[field] || suggestion.area || suggestion.location || '';
+        const details = (field === 'state'
+          ? [suggestion.district, suggestion.pin_code]
+          : field === 'district'
+            ? [suggestion.location, suggestion.state, suggestion.pin_code]
+            : field === 'pin_code'
+              ? [suggestion.area, suggestion.location, suggestion.district, suggestion.state]
+              : field === 'location'
+                ? [suggestion.area, suggestion.district, suggestion.state, suggestion.pin_code]
+                : [suggestion.location, suggestion.district, suggestion.state, suggestion.pin_code]
+        ).filter(Boolean).join(' · ');
+
+        return (
+          <button
+            key={`${suggestion.pin_code ?? ''}-${suggestion.area ?? suggestion.state ?? index}`}
+            type="button"
+            role="option"
+            aria-selected={false}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => onSelect(suggestion)}
+            className="block w-full border-b border-cream-100 px-3 py-2 text-left last:border-0 hover:bg-cream-50"
+          >
+            <span className="block text-xs font-semibold text-emerald-950">{title}</span>
+            {details && <span className="block text-[11px] text-emerald-700/75">{details}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function validateForm(data: FormData, minimumOrderKg: number): FormErrors {
   const errors: FormErrors = {};
   const minimumPackCount = getMinimumPackCount(minimumOrderKg, data.pack_size);
@@ -73,7 +130,7 @@ function validateForm(data: FormData, minimumOrderKg: number): FormErrors {
     errors.quantity = `Minimum order is ${minimumOrderKg} kg (${minimumPackCount} packs of ${data.pack_size}).`;
   }
   if (!data.customer_name || data.customer_name.length < 2) errors.customer_name = 'Name is required';
-  if (data.phone.replace(/\D/g, '').length < 10) errors.phone = 'Valid phone number is required';
+  if (!isValidIndianMobileNumber(data.phone)) errors.phone = 'Enter a valid Indian mobile number';
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = 'Invalid email address';
   if (!data.location || data.location.trim().length < 2) errors.location = 'Enter your location';
   if (!data.area || data.area.trim().length < 2) errors.area = 'Enter your area';
@@ -98,19 +155,28 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [activePostalField, setActivePostalField] = useState<'location' | 'area' | null>(null);
+  const [activePostalField, setActivePostalField] = useState<PostalField | null>(null);
   const [postalSuggestions, setPostalSuggestions] = useState<PostalSuggestion[]>([]);
   const postalQuery = activePostalField ? formData[activePostalField] : '';
+  const visiblePostalSuggestions = activePostalField === 'state'
+    ? INDIAN_STATES
+      .filter((state) => state.toLowerCase().includes(postalQuery.trim().toLowerCase()))
+      .map((state) => ({ state }))
+    : postalSuggestions;
 
   useEffect(() => {
-    if (!activePostalField || postalQuery.trim().length < 3) return;
+    if (!activePostalField || activePostalField === 'state') return;
+
+    const query = postalQuery.trim();
+    if (activePostalField === 'pin_code' ? !/^\d{6}$/.test(query) : query.length < 3) {
+      return;
+    }
 
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
       try {
-        const response = await fetch(`/api/postal-lookup?q=${encodeURIComponent(postalQuery.trim())}`, {
-          signal: controller.signal,
-        });
+        const searchParams = new URLSearchParams({ q: query, field: activePostalField });
+        const response = await fetch(`/api/postal-lookup?${searchParams}`, { signal: controller.signal });
         if (!response.ok) return;
 
         const data: { suggestions?: PostalSuggestion[] } = await response.json();
@@ -129,11 +195,11 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
   const selectPostalSuggestion = (suggestion: PostalSuggestion) => {
     setFormData((prev) => ({
       ...prev,
-      location: suggestion.location,
-      area: suggestion.area,
-      district: suggestion.district,
-      state: suggestion.state,
-      pin_code: suggestion.pin_code,
+      location: suggestion.location ?? prev.location,
+      area: suggestion.area ?? prev.area,
+      district: suggestion.district ?? prev.district,
+      state: suggestion.state ?? prev.state,
+      pin_code: suggestion.pin_code ?? prev.pin_code,
     }));
     setErrors((prev) => {
       const next = { ...prev };
@@ -163,7 +229,9 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
 
       return { ...prev, pack_size: nextPackSize, quantity };
     });
-    if (field === 'location' || field === 'area') setPostalSuggestions([]);
+    if (field === 'location' || field === 'area' || field === 'district' || field === 'state' || field === 'pin_code') {
+      setPostalSuggestions([]);
+    }
     if (errors[field] || (field === 'pack_size' && errors.quantity)) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -383,7 +451,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => updateField('phone', e.target.value)}
-                  placeholder="10-digit phone"
+                  placeholder="10-digit mobile number"
                   className={cn(
                     'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
                     errors.phone ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
@@ -418,7 +486,10 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   type="text"
                   value={formData.location}
                   onChange={(e) => updateField('location', e.target.value)}
-                  onFocus={() => setActivePostalField('location')}
+                  onFocus={() => {
+                    setPostalSuggestions([]);
+                    setActivePostalField('location');
+                  }}
                   onBlur={() => setActivePostalField((active) => active === 'location' ? null : active)}
                   placeholder="City or town"
                   autoComplete="address-level2"
@@ -428,25 +499,12 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   )}
                 />
                 {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
-                {activePostalField === 'location' && postalSuggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-y-auto rounded-lg border border-cream-300 bg-white shadow-lg">
-                    {postalSuggestions.map((suggestion) => (
-                      <button
-                        key={`${suggestion.area}-${suggestion.pin_code}`}
-                        type="button"
-                        role="option"
-                        aria-selected={false}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => selectPostalSuggestion(suggestion)}
-                        className="block w-full border-b border-cream-100 px-3 py-2 text-left last:border-0 hover:bg-cream-50"
-                      >
-                        <span className="block text-xs font-semibold text-emerald-950">{suggestion.location}</span>
-                        <span className="block text-[11px] text-emerald-700/75">
-                          {suggestion.area}, {suggestion.district}, {suggestion.state} · {suggestion.pin_code}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                {activePostalField === 'location' && (
+                  <PostalSuggestionList
+                    field="location"
+                    suggestions={visiblePostalSuggestions}
+                    onSelect={selectPostalSuggestion}
+                  />
                 )}
               </div>
               <div className="relative">
@@ -457,7 +515,10 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   type="text"
                   value={formData.area}
                   onChange={(e) => updateField('area', e.target.value)}
-                  onFocus={() => setActivePostalField('area')}
+                  onFocus={() => {
+                    setPostalSuggestions([]);
+                    setActivePostalField('area');
+                  }}
                   onBlur={() => setActivePostalField((active) => active === 'area' ? null : active)}
                   placeholder="Area or locality"
                   autoComplete="address-line2"
@@ -467,31 +528,18 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   )}
                 />
                 {errors.area && <p className="mt-1 text-xs text-red-500">{errors.area}</p>}
-                {activePostalField === 'area' && postalSuggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-y-auto rounded-lg border border-cream-300 bg-white shadow-lg">
-                    {postalSuggestions.map((suggestion) => (
-                      <button
-                        key={`${suggestion.area}-${suggestion.pin_code}`}
-                        type="button"
-                        role="option"
-                        aria-selected={false}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => selectPostalSuggestion(suggestion)}
-                        className="block w-full border-b border-cream-100 px-3 py-2 text-left last:border-0 hover:bg-cream-50"
-                      >
-                        <span className="block text-xs font-semibold text-emerald-950">{suggestion.area}</span>
-                        <span className="block text-[11px] text-emerald-700/75">
-                          {suggestion.location}, {suggestion.district}, {suggestion.state} · {suggestion.pin_code}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                {activePostalField === 'area' && (
+                  <PostalSuggestionList
+                    field="area"
+                    suggestions={visiblePostalSuggestions}
+                    onSelect={selectPostalSuggestion}
+                  />
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="relative">
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-emerald-800">
                   District *
                 </label>
@@ -499,6 +547,11 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   type="text"
                   value={formData.district}
                   onChange={(e) => updateField('district', e.target.value)}
+                  onFocus={() => {
+                    setPostalSuggestions([]);
+                    setActivePostalField('district');
+                  }}
+                  onBlur={() => setActivePostalField((active) => active === 'district' ? null : active)}
                   placeholder="District"
                   autoComplete="address-level3"
                   className={cn(
@@ -507,8 +560,15 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   )}
                 />
                 {errors.district && <p className="mt-1 text-xs text-red-500">{errors.district}</p>}
+                {activePostalField === 'district' && (
+                  <PostalSuggestionList
+                    field="district"
+                    suggestions={visiblePostalSuggestions}
+                    onSelect={selectPostalSuggestion}
+                  />
+                )}
               </div>
-              <div>
+              <div className="relative">
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-emerald-800">
                   State *
                 </label>
@@ -516,6 +576,11 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   type="text"
                   value={formData.state}
                   onChange={(e) => updateField('state', e.target.value)}
+                  onFocus={() => {
+                    setPostalSuggestions([]);
+                    setActivePostalField('state');
+                  }}
+                  onBlur={() => setActivePostalField((active) => active === 'state' ? null : active)}
                   placeholder="State"
                   autoComplete="address-level1"
                   className={cn(
@@ -524,6 +589,13 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                   )}
                 />
                 {errors.state && <p className="mt-1 text-xs text-red-500">{errors.state}</p>}
+                {activePostalField === 'state' && (
+                  <PostalSuggestionList
+                    field="state"
+                    suggestions={visiblePostalSuggestions}
+                    onSelect={selectPostalSuggestion}
+                  />
+                )}
               </div>
             </div>
 
@@ -538,6 +610,11 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 maxLength={6}
                 value={formData.pin_code}
                 onChange={(e) => updateField('pin_code', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onFocus={() => {
+                  setPostalSuggestions([]);
+                  setActivePostalField('pin_code');
+                }}
+                onBlur={() => setActivePostalField((active) => active === 'pin_code' ? null : active)}
                 placeholder="6-digit PIN code"
                 autoComplete="postal-code"
                 className={cn(
@@ -546,6 +623,13 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 )}
               />
               {errors.pin_code && <p className="mt-1 text-xs text-red-500">{errors.pin_code}</p>}
+              {activePostalField === 'pin_code' && (
+                <PostalSuggestionList
+                  field="pin_code"
+                  suggestions={visiblePostalSuggestions}
+                  onSelect={selectPostalSuggestion}
+                />
+              )}
             </div>
 
             {/* Message */}

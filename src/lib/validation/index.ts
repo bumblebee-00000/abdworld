@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidIndianMobileNumber } from '@/lib/utils';
 
 export const orderSchema = z.object({
   customer_name: z.string().min(2).max(100).trim(),
@@ -28,7 +29,7 @@ export const wholesaleSchema = z.object({
 
 export const productLeadSchema = z.object({
   name: z.string().min(2).max(100).trim(),
-  phone: z.string().min(10).max(20).trim(),
+  phone: z.string().max(20).trim().refine(isValidIndianMobileNumber, 'Enter a valid Indian mobile number.'),
   email: z.string().email().max(200).trim().optional().or(z.literal('')),
   location: z.string().min(2).max(100).trim(),
   area: z.string().min(2).max(100).trim(),

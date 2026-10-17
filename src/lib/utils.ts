@@ -21,6 +21,19 @@ export function formatExactPrice(price: number): string {
   }).format(price);
 }
 
+export function isValidIndianMobileNumber(value: string): boolean {
+  const digits = value.replace(/\D/g, '');
+  const nationalNumber = digits.length === 10
+    ? digits
+    : digits.length === 11 && digits.startsWith('0')
+      ? digits.slice(1)
+      : digits.length === 12 && digits.startsWith('91')
+        ? digits.slice(2)
+        : '';
+
+  return /^[6-9]\d{9}$/.test(nationalNumber);
+}
+
 export function formatPriceEffectiveAt(value: string): string {
   return new Intl.DateTimeFormat('en-IN', {
     dateStyle: 'medium',
