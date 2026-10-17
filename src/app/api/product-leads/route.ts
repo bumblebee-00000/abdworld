@@ -24,6 +24,39 @@ function escapeHtml(value: string) {
     .replaceAll("'", '&#039;');
 }
 
+interface PostalOffice {
+  Name?: string | null;
+  Block?: string | null;
+  Division?: string | null;
+  District?: string | null;
+  Region?: string | null;
+  State?: string | null;
+  Pincode?: string | null;
+}
+
+interface PostalLookupResult {
+  Status?: string;
+  PostOffice?: PostalOffice[] | null;
+}
+
+function normalizePlace(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function matchesPostalPlace(value: string, knownPlaces: Array<string | null | undefined>) {
+  const normalizedValue = normalizePlace(value);
+  return knownPlaces.some((place) => {
+    if (!place) return false;
+    const normalizedPlace = normalizePlace(place);
+    if (!normalizedPlace) return false;
+    return normalizedPlace === normalizedValue || (
+      normalizedValue.length >= 4 &&
+      normalizedPlace.length >= 4 &&
+      (normalizedPlace.includes(normalizedValue) || normalizedValue.includes(normalizedPlace))
+    );
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -37,6 +70,66 @@ export async function POST(request: NextRequest) {
     }
 
     const lead = parsed.data;
+    let postalResponse: Response;
+    try {
+      postalResponse = await fetch(`https://api.postalpincode.in/pincode/${lead.pin_code}`, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      return NextResponse.json(
+        { error: 'We could not verify this PIN code right now. Please try again.' },
+        { status: 503 }
+      );
+    }
+
+    if (!postalResponse.ok) {
+      return NextResponse.json(
+        { error: 'We could not verify this PIN code right now. Please try again.' },
+        { status: 503 }
+      );
+    }
+
+    let postalResults: PostalLookupResult[];
+    try {
+      postalResults = await postalResponse.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'We could not verify this PIN code right now. Please try again.' },
+        { status: 503 }
+      );
+    }
+
+    const postalOffices = postalResults
+      .flatMap((result) => result.PostOffice ?? [])
+      .filter((office) => office.Pincode === lead.pin_code);
+    if (!postalOffices.length) {
+      return NextResponse.json(
+        { error: 'This PIN code was not found. Please check it and try again.' },
+        { status: 400 }
+      );
+    }
+
+    const locationMatches = matchesPostalPlace(lead.location, postalOffices.flatMap((office) => [
+      office.Name,
+      office.Block,
+      office.Division,
+      office.District,
+      office.Region,
+      office.State,
+    ]));
+    const areaMatches = matchesPostalPlace(lead.area, postalOffices.flatMap((office) => [
+      office.Name,
+      office.Block,
+    ]));
+
+    if (!locationMatches || !areaMatches) {
+      return NextResponse.json(
+        { error: 'This PIN code does not match the entered location and area. Please check all three fields.' },
+        { status: 400 }
+      );
+    }
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #123;">
         <h2 style="margin-bottom: 12px;">New Wholesale Quote Request</h2>
