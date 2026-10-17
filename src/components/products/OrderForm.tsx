@@ -569,6 +569,17 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 <MapPin className="h-4 w-4" />
                 {isLocating ? 'Finding your address...' : 'Use my current location'}
               </button>
+              <p className="mt-1 text-[10px] text-emerald-700/60">
+                Address lookup by{' '}
+                <a
+                  href="https://www.openstreetmap.org/copyright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2"
+                >
+                  OpenStreetMap contributors
+                </a>
+              </p>
               {locationNotice && <p role="status" className="mt-1.5 text-xs text-emerald-700">{locationNotice}</p>}
               {locationError && <p role="alert" className="mt-1.5 text-xs text-red-600">{locationError}</p>}
             </div>
