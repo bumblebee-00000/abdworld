@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, ShoppingCart } from 'lucide-react';
+import { ArrowRight, Eye, FileText } from 'lucide-react';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
 import { formatPrice } from '@/lib/utils';
 import type { Product } from '@/types';
@@ -144,11 +144,11 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                     View Details
                   </Link>
                   <Link
-                    href={`/products/${product.slug}?order=1`}
+                    href={`/products/${product.slug}#order`}
                     className="gold-gradient inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold text-emerald-950 transition-all duration-300 hover:shadow-[0_10px_25px_rgba(234,179,8,0.45)]"
                   >
-                    <ShoppingCart className="h-4 w-4" />
-                    {product.price != null && product.price > 0 ? 'Order & Pay' : 'Contact for Price'}
+                    <FileText className="h-4 w-4" />
+                    Request Quote
                   </Link>
                 </div>
               </div>

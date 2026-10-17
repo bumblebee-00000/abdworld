@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShoppingCart, MessageCircle, Package, Shield, Truck } from 'lucide-react';
+import { FileText, MessageCircle, Package, Shield, Truck } from 'lucide-react';
 import ImageGallery from '@/components/products/ImageGallery';
 import ProductSpecs from '@/components/products/ProductSpecs';
 import ProductVideo from '@/components/products/ProductVideo';
@@ -153,8 +153,8 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 onClick={() => handleOrderClick()}
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-950/15 transition-all hover:bg-emerald-800 hover:shadow-xl"
               >
-                <ShoppingCart className="h-5 w-5" />
-                {product.price !== null ? 'Order & Pay Online' : 'Contact for Price'}
+                <FileText className="h-5 w-5" />
+                Request Quote
               </button>
               <a
                 href={whatsappUrl}
@@ -167,7 +167,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
               </a>
             </div>
             <p className="mt-3 text-sm text-emerald-800/70">
-              Online orders are confirmed after full payment of the rice subtotal. Delivery charges and arrangements are confirmed separately.
+              Share your requirement and our wholesale team will confirm pricing, availability, and delivery details.
             </p>
 
             {/* Trust Badges */}

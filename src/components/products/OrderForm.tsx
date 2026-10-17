@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, MessageCircle, Loader2, AlertCircle, User, Phone, Mail, MapPin } from 'lucide-react';
+import { Send, MessageCircle, Loader2, AlertCircle, User, Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
-import { cn, generateWhatsAppUrl, generateOrderMessage, formatExactPrice, formatPrice, parsePackWeightKg } from '@/lib/utils';
+import { cn, generateWhatsAppUrl, parsePackWeightKg } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
 
@@ -15,7 +15,7 @@ interface OrderFormProps {
   selectedPackSize?: string;
 }
 
-type FormStatus = 'idle' | 'loading' | 'error';
+type FormStatus = 'idle' | 'loading' | 'error' | 'success';
 
 interface FormData {
   pack_size: string;
@@ -75,10 +75,6 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
     quantity: initialMinimumPackCount || 1,
   }));
   const currentMinimumPackCount = getMinimumPackCount(minimumOrderKg, formData.pack_size);
-  const selectedPackWeightKg = parsePackWeightKg(formData.pack_size);
-  const orderSubtotal = product.price != null && selectedPackWeightKg
-    ? product.price * selectedPackWeightKg * formData.quantity
-    : null;
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -118,13 +114,19 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
 
     setStatus('loading');
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch('/api/product-leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          product_id: product.id,
+          name: formData.customer_name,
+          phone: formData.phone,
+          email: formData.email,
+          city: formData.city,
           product_name: product.name,
+          product_slug: product.slug,
+          pack_size: formData.pack_size,
+          quantity: formData.quantity,
+          message: formData.message,
         }),
       });
 
@@ -133,12 +135,10 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
         throw new Error(data.error || 'Something went wrong');
       }
 
-      const data = await res.json();
-      if (!data.paymentUrl) throw new Error('Payment checkout is unavailable. Please try again.');
-      window.location.assign(data.paymentUrl);
+      setStatus('success');
     } catch (err) {
       setStatus('error');
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to submit order');
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to send quote request');
     }
   };
 
@@ -154,13 +154,18 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       return;
     }
 
-    const message = generateOrderMessage({
-      product_name: product.name,
-      pack_size: formData.pack_size,
-      quantity: formData.quantity,
-      customer_name: formData.customer_name,
-      city: formData.city,
-    });
+    const message = [
+      'Hello ABD WORLD, I would like a wholesale quote.',
+      '',
+      `Product: ${product.name}`,
+      `Pack size: ${formData.pack_size}`,
+      `Quantity: ${formData.quantity} packs`,
+      formData.customer_name ? `Name: ${formData.customer_name}` : '',
+      formData.city ? `City: ${formData.city}` : '',
+      formData.message ? `Requirements: ${formData.message}` : '',
+      '',
+      'Please confirm wholesale pricing, availability, and delivery details.',
+    ].filter(Boolean).join('\n');
     const url = generateWhatsAppUrl(normalizePhoneNumber(settings.whatsapp_number), message);
     window.open(url, '_blank');
   };
@@ -169,8 +174,26 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
     <Modal
       open={isOpen}
       onClose={onClose}
-      title={`Order - ${product.name}`}
+      title={`Request a quote - ${product.name}`}
     >
+      {status === 'success' ? (
+        <div className="py-8 text-center" role="status">
+          <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
+          <h3 className="mt-4 font-heading text-xl font-bold text-emerald-950">
+            Quote request received
+          </h3>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-emerald-800/75">
+            Our team will confirm wholesale pricing, availability, and delivery details.
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="mt-6 rounded-lg bg-emerald-700 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800"
+          >
+            Done
+          </button>
+        </div>
+      ) : (
       <AnimatePresence mode="wait">
         <motion.form
           key="form"
@@ -202,18 +225,11 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               </div>
               <div>
                 <p className="font-heading text-sm font-bold text-emerald-950">{product.name}</p>
-                {product.price !== null && (
-                  <p className="text-xs text-emerald-700/70">{formatPrice(product.price)} / kg</p>
-                )}
-                {orderSubtotal !== null && (
-                  <p className="mt-1 text-sm font-semibold text-emerald-950">
-                    Full advance: {formatExactPrice(orderSubtotal)}
-                  </p>
-                )}
+                <p className="text-xs text-emerald-700/70">Wholesale quote</p>
               </div>
             </div>
             <p className="text-xs leading-relaxed text-emerald-800/70">
-              This payment covers the rice subtotal. Delivery charges and arrangements are confirmed separately. The price is secured only after successful payment.
+              Share your requirement and our team will confirm wholesale pricing and delivery details.
             </p>
 
             {/* Pack Size & Quantity */}
@@ -345,26 +361,22 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               />
             </div>
 
-            <p className="text-xs leading-relaxed text-emerald-800/70">
-              Your payment link uses the displayed retail price and expires when a scheduled increase takes effect.
-            </p>
-
             {/* Submit Buttons */}
             <div className="flex flex-col gap-3 pt-2">
               <button
                 type="submit"
-                disabled={status === 'loading' || orderSubtotal === null || orderSubtotal < 1}
+                disabled={status === 'loading'}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Opening secure checkout...
+                    Sending quote request...
                   </>
                 ) : (
                   <>
                     <Send className="h-4 w-4" />
-                    {orderSubtotal !== null && orderSubtotal >= 1 ? 'Pay full amount' : 'Price unavailable online'}
+                    Request Quote
                   </>
                 )}
               </button>
@@ -375,11 +387,12 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-emerald-600 bg-transparent px-6 py-3 text-sm font-semibold text-emerald-700 transition-all hover:bg-emerald-50 disabled:opacity-60"
               >
                 <MessageCircle className="h-4 w-4" />
-                Order via WhatsApp
+                Request Quote via WhatsApp
               </button>
             </div>
         </motion.form>
       </AnimatePresence>
+      )}
     </Modal>
   );
 }

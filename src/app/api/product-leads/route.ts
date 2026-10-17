@@ -39,12 +39,15 @@ export async function POST(request: NextRequest) {
     const lead = parsed.data;
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #123;">
-        <h2 style="margin-bottom: 12px;">New Product Interest</h2>
+        <h2 style="margin-bottom: 12px;">New Wholesale Quote Request</h2>
         <p><strong>Product:</strong> ${escapeHtml(lead.product_name)}</p>
+        ${lead.pack_size ? `<p><strong>Pack size:</strong> ${escapeHtml(lead.pack_size)}</p>` : ''}
+        ${lead.quantity ? `<p><strong>Quantity:</strong> ${lead.quantity} packs</p>` : ''}
         <p><strong>Name:</strong> ${escapeHtml(lead.name)}</p>
         <p><strong>Phone:</strong> ${escapeHtml(lead.phone)}</p>
         <p><strong>Email:</strong> ${escapeHtml(lead.email || 'Not provided')}</p>
         <p><strong>City:</strong> ${escapeHtml(lead.city || 'Not provided')}</p>
+        ${lead.message ? `<p><strong>Requirements:</strong> ${escapeHtml(lead.message)}</p>` : ''}
       </div>
     `;
 
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
       from: gmailUser,
       to: gmailUser,
       replyTo: lead.email || lead.phone,
-      subject: `Product Interest: ${lead.product_name}`,
+      subject: `Wholesale Quote Request: ${lead.product_name}`,
       html: emailHtml,
     });
 

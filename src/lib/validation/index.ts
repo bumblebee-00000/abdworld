@@ -33,6 +33,9 @@ export const productLeadSchema = z.object({
   city: z.string().max(100).trim().optional().or(z.literal('')),
   product_name: z.string().min(1).max(200).trim(),
   product_slug: z.string().min(1).max(200).trim(),
+  pack_size: z.string().min(1).max(50).trim().optional(),
+  quantity: z.number().int().min(1).max(10000).optional(),
+  message: z.string().max(1000).trim().optional().or(z.literal('')),
 });
 
 export const contactSchema = z.object({

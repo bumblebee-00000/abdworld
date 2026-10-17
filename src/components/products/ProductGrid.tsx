@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Eye, ShoppingCart, Package } from 'lucide-react';
+import { Eye, FileText, Package } from 'lucide-react';
 import type { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
@@ -151,8 +151,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   href={`/products/${product.slug}#order`}
                   className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-emerald-800"
                 >
-                  <ShoppingCart className="h-4 w-4" />
-                  {product.price !== null ? 'Order & Pay' : 'Contact for Price'}
+                  <FileText className="h-4 w-4" />
+                  Request Quote
                 </Link>
               </div>
             </div>
