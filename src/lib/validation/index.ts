@@ -37,6 +37,8 @@ export const productLeadSchema = z.object({
   product_slug: z.string().min(1).max(200).trim(),
   pack_size: z.string().min(1).max(50).trim().optional(),
   quantity: z.number().int().min(1).max(10000).optional(),
+  district: z.string().min(2).max(100).trim(),
+  state: z.string().min(2).max(100).trim(),
   message: z.string().max(1000).trim().optional().or(z.literal('')),
 });
 

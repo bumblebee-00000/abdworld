@@ -122,10 +122,18 @@ export async function POST(request: NextRequest) {
       office.Name,
       office.Block,
     ]));
+    const districtMatches = matchesPostalPlace(
+      lead.district,
+      postalOffices.map((office) => office.District)
+    );
+    const stateMatches = matchesPostalPlace(
+      lead.state,
+      postalOffices.map((office) => office.State)
+    );
 
-    if (!locationMatches || !areaMatches) {
+    if (!locationMatches || !areaMatches || !districtMatches || !stateMatches) {
       return NextResponse.json(
-        { error: 'This PIN code does not match the entered location and area. Please check all three fields.' },
+        { error: 'The PIN code does not match the entered location details. Please select a suggestion or correct the address.' },
         { status: 400 }
       );
     }
@@ -141,6 +149,8 @@ export async function POST(request: NextRequest) {
         <p><strong>Email:</strong> ${escapeHtml(lead.email || 'Not provided')}</p>
         <p><strong>Location:</strong> ${escapeHtml(lead.location)}</p>
         <p><strong>Area:</strong> ${escapeHtml(lead.area)}</p>
+        <p><strong>District:</strong> ${escapeHtml(lead.district)}</p>
+        <p><strong>State:</strong> ${escapeHtml(lead.state)}</p>
         <p><strong>PIN code:</strong> ${escapeHtml(lead.pin_code)}</p>
         ${lead.message ? `<p><strong>Requirements:</strong> ${escapeHtml(lead.message)}</p>` : ''}
       </div>
