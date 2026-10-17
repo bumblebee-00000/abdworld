@@ -176,6 +176,12 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
     const timeout = window.setTimeout(async () => {
       try {
         const searchParams = new URLSearchParams({ q: query, field: activePostalField });
+        if (formData.state) {
+          searchParams.set('state', formData.state);
+        }
+        if (activePostalField !== 'district' && formData.district) {
+          searchParams.set('district', formData.district);
+        }
         const response = await fetch(`/api/postal-lookup?${searchParams}`, { signal: controller.signal });
         if (!response.ok) return;
 
@@ -190,7 +196,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       window.clearTimeout(timeout);
       controller.abort();
     };
-  }, [activePostalField, postalQuery]);
+  }, [activePostalField, formData.district, formData.state, postalQuery]);
 
   const selectPostalSuggestion = (suggestion: PostalSuggestion) => {
     setFormData((prev) => ({
@@ -599,7 +605,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               </div>
             </div>
 
-            <div>
+            <div className="relative">
               <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
                 <MapPin className="h-3.5 w-3.5" /> PIN Code *
               </label>

@@ -16,12 +16,32 @@ interface PostalLookupResult {
 }
 
 function normalizePlace(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const aliases: Record<string, string> = {
+    north24pgs: 'north24parganas',
+    north24pg: 'north24parganas',
+    south24pgs: 'south24parganas',
+    south24pg: 'south24parganas',
+  };
+  return aliases[normalized] ?? normalized;
+}
+
+function matchesPlaceFilter(value: string | null, postalValue?: string | null) {
+  if (!value) return true;
+  if (!postalValue) return false;
+
+  const normalizedValue = normalizePlace(value);
+  const normalizedPostalValue = normalizePlace(postalValue);
+  return normalizedValue === normalizedPostalValue || (
+    normalizedValue.length >= 4 && normalizedPostalValue.includes(normalizedValue)
+  );
 }
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
   const searchByPin = request.nextUrl.searchParams.get('field') === 'pin_code';
+  const selectedState = request.nextUrl.searchParams.get('state')?.trim() ?? '';
+  const selectedDistrict = request.nextUrl.searchParams.get('district')?.trim() ?? '';
   if (searchByPin && !/^\d{6}$/.test(query)) {
     return NextResponse.json({ suggestions: [] });
   }
@@ -54,6 +74,8 @@ export async function GET(request: NextRequest) {
       .flatMap((result) => result.PostOffice ?? [])
       .filter((office) => office.Name && office.Pincode && office.District && office.State)
       .filter((office) => !searchByPin || office.Pincode === query)
+      .filter((office) => matchesPlaceFilter(selectedState, office.State))
+      .filter((office) => matchesPlaceFilter(selectedDistrict, office.District))
       .map((office) => ({
         location: office.Division || office.Block || office.Name || '',
         area: office.Name || '',
