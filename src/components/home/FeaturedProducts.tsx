@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Eye, ShoppingCart } from 'lucide-react';
 import { FALLBACK_PRODUCTS } from '@/lib/products/catalog';
-import { calculateResaleMargin, formatPrice } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 import type { Product } from '@/types';
 import ProductImageShowcase from '@/components/products/ProductImageShowcase';
 import UpcomingPriceNotice from '@/components/products/UpcomingPriceNotice';
@@ -117,7 +117,7 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
 
                 <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-cream-200 pt-4">
                   <div>
-                    <p className="text-xs font-medium text-emerald-700/60">Retail / kg</p>
+                    <p className="text-xs font-medium text-emerald-700/60">Our price / kg</p>
                     <p className="font-heading text-lg font-semibold text-gold-600">
                       {product.price != null ? formatPrice(product.price) : 'On request'}
                     </p>
@@ -130,22 +130,11 @@ export default function FeaturedProducts({ products = FALLBACK_PRODUCTS }: Featu
                         : 'On request'}
                     </p>
                   </div>
-                  {(() => {
-                    const margin = calculateResaleMargin(product.price, product.wholesale_price);
-                    return margin ? (
-                      <p className="col-span-2 text-xs font-medium text-emerald-700">
-                        Potential reseller gross margin: {formatPrice(margin.profitPerKg)}/kg
-                        {' '}({margin.marginPercent.toFixed(1)}% of retail)
-                      </p>
-                    ) : null;
-                  })()}
                   {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
                     <div className="col-span-2">
                       <UpcomingPriceNotice
                         compact
-                        currentPrice={product.price}
                         upcomingPrice={product.scheduled_price}
-                        currentWholesalePrice={product.wholesale_price}
                         upcomingWholesalePrice={product.scheduled_wholesale_price}
                         effectiveAt={product.price_effective_at}
                       />

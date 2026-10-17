@@ -82,7 +82,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700/60">
-                  Retail price
+                  Our price
                 </p>
                 <div className="mt-1 flex flex-wrap items-baseline gap-2">
                   {product.price !== null ? (
@@ -118,9 +118,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             {(product.scheduled_price != null || product.scheduled_wholesale_price != null) && product.price_effective_at && (
               <div className="mt-3">
                 <UpcomingPriceNotice
-                  currentPrice={product.price}
                   upcomingPrice={product.scheduled_price}
-                  currentWholesalePrice={product.wholesale_price}
                   upcomingWholesalePrice={product.scheduled_wholesale_price}
                   effectiveAt={product.price_effective_at}
                 />
@@ -131,7 +129,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
               return margin ? (
                 <p className="mt-3 text-sm font-medium text-emerald-700">
                   Potential reseller gross margin: {formatPrice(margin.profitPerKg)}/kg
-                  {' '}({margin.marginPercent.toFixed(1)}% of retail price)
+                  {' '}({margin.marginPercent.toFixed(1)}% of our price)
                 </p>
               ) : null;
             })()}
