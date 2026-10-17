@@ -349,6 +349,14 @@ export async function POST(request: NextRequest) {
   }
 
   const normalizedQuestion = normalize(question);
+  const isQuoteRequest = /\b(price|pricing|rate|rates|cost|quote|quotation)\b/.test(normalizedQuestion);
+  if (isWhatsApp && isQuoteRequest) {
+    return NextResponse.json({
+      ...answerQuestion(question.trim(), plainContext, products),
+      provider: 'catalogue',
+    });
+  }
+
   const isContactRequest = /\b(contact|call|phone|whatsapp|email|reach|talk to|quote|quotation|how can i contact|how to contact|reach us)\b/.test(normalizedQuestion)
     && !/\b(rice|basmati|sella|grain|variety|varieties|pack|quantity|moq|price|pricing)\b/.test(normalizedQuestion);
   const isDeliveryRequest = /\b(delivery|deliver|dispatch|shipping|transport|logistics|how do you deliver|how is delivery|delivery process)\b/.test(normalizedQuestion);

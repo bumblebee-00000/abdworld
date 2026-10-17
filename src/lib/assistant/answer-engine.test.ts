@@ -35,6 +35,7 @@ test('moves a price enquiry toward an accurate wholesale quote', () => {
   assert.match(result.answer, /quantity/i);
   assert.match(result.answer, /city or PIN code/i);
   assert.match(result.answer, /sales team confirms final pricing/i);
+  assert.doesNotMatch(result.answer, /₹|\d/);
 });
 
 test('qualifies a bulk buyer without claiming the order is confirmed', () => {
