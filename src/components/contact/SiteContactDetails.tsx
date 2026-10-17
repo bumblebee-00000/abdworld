@@ -6,6 +6,7 @@ import {
   Mail,
   MapPin,
   MessageCircle,
+  Navigation,
   Phone,
 } from 'lucide-react';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
@@ -25,6 +26,9 @@ export default function SiteContactDetails({ variant }: SiteContactDetailsProps)
   const mapsCoordinates = '22.6717722,88.579711';
   const mapsHref = address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsCoordinates)}`
+    : '';
+  const directionsHref = address
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapsCoordinates)}`
     : '';
   const whatsappHref = getWhatsAppMessageUrl(
     'Hello! I want to enquire about your rice products.',
@@ -98,6 +102,15 @@ export default function SiteContactDetails({ variant }: SiteContactDetailsProps)
                 allowFullScreen
               />
             </div>
+            <a
+              href={directionsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800"
+            >
+              <Navigation className="h-4 w-4" />
+              Get Directions
+            </a>
             <a
               href={mapsHref}
               target="_blank"
