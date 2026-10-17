@@ -44,7 +44,7 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   { label: "Wholesale", href: "/wholesale" },
-  { label: "Why Us", href: "/#why-us" },
+  { label: "Why Us", href: "/why-us" },
   { label: "Contact", href: "/contact" },
 ];
 

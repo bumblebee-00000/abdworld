@@ -11,7 +11,7 @@ const QUICK_LINKS = [
   { label: "About Us", href: "/about" },
   { label: "Rice Collection", href: "/products" },
   { label: "Wholesale", href: "/wholesale" },
-  { label: "Why Choose Us", href: "/#why-us" },
+  { label: "Why Choose Us", href: "/why-us" },
   { label: "Contact", href: "/contact" },
 ];
 
