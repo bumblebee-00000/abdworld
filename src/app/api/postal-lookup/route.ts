@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     const results: PostalLookupResult[] = await response.json();
     const seen = new Set<string>();
-    const suggestions = results
+    const matchingSuggestions = results
       .flatMap((result) => result.PostOffice ?? [])
       .filter((office) => office.Name && office.Pincode && office.District && office.State)
       .filter((office) => !searchByPin || office.Pincode === query)
@@ -89,8 +89,8 @@ export async function GET(request: NextRequest) {
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
-      })
-      .slice(0, searchByPin ? 50 : 8);
+      });
+    const suggestions = searchByPin ? matchingSuggestions : matchingSuggestions.slice(0, 8);
 
     return NextResponse.json({ suggestions });
   } catch {
