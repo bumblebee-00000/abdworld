@@ -43,13 +43,6 @@ const values = [
   },
 ];
 
-const owner = {
-  name: 'ABDUR JOHIR ALOM',
-  role: 'Owner',
-  description:
-    'The visionary behind ABD WORLD, leading the brand with hands-on direction and a commitment to honest, reliable service.',
-};
-
 export default function AboutPage() {
   return (
     <>
@@ -187,45 +180,6 @@ export default function AboutPage() {
                 </ul>
               </div>
               </ScrollReveal>
-            </div>
-          </div>
-        </section>
-
-        {/* Owner */}
-        <section id="values" className="section-padding bg-cream-100">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-14 text-center">
-              <p className="section-kicker mb-3">
-                Brand Owner
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold text-emerald-950 font-[var(--font-heading)] mb-4">
-                Guided by the Vision of ABDUR JOHIR ALOM
-              </h2>
-            </div>
-
-            <div className="rounded-[2rem] border border-cream-200 bg-white p-6 shadow-lg shadow-emerald-900/5 sm:p-8 lg:p-10">
-              <div className="flex flex-col items-center gap-8 text-center lg:flex-row lg:text-left">
-                <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-gold-300 bg-emerald-50 shadow-lg shadow-emerald-900/10 sm:h-48 sm:w-48">
-                  <img
-                    src="/ownerimg.jpeg"
-                    alt="ABDUR JOHIR ALOM"
-                    className="h-full w-full object-cover object-center"
-                    style={{ objectPosition: 'center 18%' }}
-                  />
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold-700">
-                    {owner.role}
-                  </p>
-                  <h3 className="mt-3 text-3xl font-bold text-emerald-950 font-[var(--font-heading)] md:text-4xl">
-                    {owner.name}
-                  </h3>
-                  <p className="mt-4 max-w-2xl text-lg leading-relaxed text-emerald-900/70">
-                    {owner.description}
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
