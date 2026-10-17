@@ -23,7 +23,9 @@ interface FormData {
   customer_name: string;
   phone: string;
   email: string;
-  city: string;
+  location: string;
+  area: string;
+  pin_code: string;
   message: string;
 }
 
@@ -37,7 +39,9 @@ const initialFormData: FormData = {
   customer_name: '',
   phone: '',
   email: '',
-  city: '',
+  location: '',
+  area: '',
+  pin_code: '',
   message: '',
 };
 
@@ -59,7 +63,9 @@ function validateForm(data: FormData, minimumOrderKg: number): FormErrors {
   if (!data.customer_name || data.customer_name.length < 2) errors.customer_name = 'Name is required';
   if (data.phone.replace(/\D/g, '').length < 10) errors.phone = 'Valid phone number is required';
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = 'Invalid email address';
-  if (data.city && data.city.length < 2) errors.city = 'Enter a valid city';
+  if (!data.location || data.location.trim().length < 2) errors.location = 'Enter your location';
+  if (!data.area || data.area.trim().length < 2) errors.area = 'Enter your area';
+  if (!/^\d{6}$/.test(data.pin_code)) errors.pin_code = 'Enter a valid 6-digit PIN code';
 
   return errors;
 }
@@ -121,7 +127,9 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
           name: formData.customer_name,
           phone: formData.phone,
           email: formData.email,
-          city: formData.city,
+          location: formData.location,
+          area: formData.area,
+          pin_code: formData.pin_code,
           product_name: product.name,
           product_slug: product.slug,
           pack_size: formData.pack_size,
@@ -161,7 +169,9 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       `Pack size: ${formData.pack_size}`,
       `Quantity: ${formData.quantity} packs`,
       formData.customer_name ? `Name: ${formData.customer_name}` : '',
-      formData.city ? `City: ${formData.city}` : '',
+      `Location: ${formData.location}`,
+      `Area: ${formData.area}`,
+      `PIN code: ${formData.pin_code}`,
       formData.message ? `Requirements: ${formData.message}` : '',
       '',
       'Please confirm wholesale pricing, availability, and delivery details.',
@@ -330,21 +340,62 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
+                  <MapPin className="h-3.5 w-3.5" /> Location *
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => updateField('location', e.target.value)}
+                  placeholder="City or town"
+                  autoComplete="address-level2"
+                  className={cn(
+                    'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
+                    errors.location ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
+                  )}
+                />
+                {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
+              </div>
+              <div>
+                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
+                  <MapPin className="h-3.5 w-3.5" /> Area *
+                </label>
+                <input
+                  type="text"
+                  value={formData.area}
+                  onChange={(e) => updateField('area', e.target.value)}
+                  placeholder="Area or locality"
+                  autoComplete="address-line2"
+                  className={cn(
+                    'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
+                    errors.area ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
+                  )}
+                />
+                {errors.area && <p className="mt-1 text-xs text-red-500">{errors.area}</p>}
+              </div>
+            </div>
+
             <div>
               <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                <MapPin className="h-3.5 w-3.5" /> City (Optional)
+                <MapPin className="h-3.5 w-3.5" /> PIN Code *
               </label>
               <input
                 type="text"
-                value={formData.city}
-                onChange={(e) => updateField('city', e.target.value)}
-                placeholder="Your city"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                value={formData.pin_code}
+                onChange={(e) => updateField('pin_code', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="6-digit PIN code"
+                autoComplete="postal-code"
                 className={cn(
                   'w-full rounded-xl border-2 bg-white px-4 py-2.5 text-sm text-emerald-950 outline-none transition-all placeholder:text-cream-400',
-                  errors.city ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
+                  errors.pin_code ? 'border-red-300 focus:border-red-500' : 'border-cream-300 focus:border-emerald-500'
                 )}
               />
-              {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
+              {errors.pin_code && <p className="mt-1 text-xs text-red-500">{errors.pin_code}</p>}
             </div>
 
             {/* Message */}

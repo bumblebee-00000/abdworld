@@ -46,7 +46,9 @@ export async function POST(request: NextRequest) {
         <p><strong>Name:</strong> ${escapeHtml(lead.name)}</p>
         <p><strong>Phone:</strong> ${escapeHtml(lead.phone)}</p>
         <p><strong>Email:</strong> ${escapeHtml(lead.email || 'Not provided')}</p>
-        <p><strong>City:</strong> ${escapeHtml(lead.city || 'Not provided')}</p>
+        <p><strong>Location:</strong> ${escapeHtml(lead.location)}</p>
+        <p><strong>Area:</strong> ${escapeHtml(lead.area)}</p>
+        <p><strong>PIN code:</strong> ${escapeHtml(lead.pin_code)}</p>
         ${lead.message ? `<p><strong>Requirements:</strong> ${escapeHtml(lead.message)}</p>` : ''}
       </div>
     `;
