@@ -37,6 +37,7 @@ interface FormErrors {
 
 interface PostalSuggestion {
   location?: string;
+  block?: string;
   area?: string;
   district?: string;
   state?: string;
@@ -87,14 +88,21 @@ function PostalSuggestionList({
 
   return (
     <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-y-auto rounded-lg border border-cream-300 bg-white shadow-lg">
+      {field === 'pin_code' && (
+        <p className="sticky top-0 border-b border-cream-200 bg-cream-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-800">
+          {suggestions.length} postal locations for this PIN
+        </p>
+      )}
       {suggestions.map((suggestion, index) => {
-        const title = suggestion[field] || suggestion.area || suggestion.location || '';
+        const title = field === 'pin_code'
+          ? suggestion.area || suggestion.location || suggestion.pin_code || ''
+          : suggestion[field] || suggestion.area || suggestion.location || '';
         const details = (field === 'state'
           ? [suggestion.district, suggestion.pin_code]
           : field === 'district'
             ? [suggestion.location, suggestion.state, suggestion.pin_code]
             : field === 'pin_code'
-              ? [suggestion.area, suggestion.location, suggestion.district, suggestion.state]
+              ? [suggestion.block, suggestion.location, suggestion.district, suggestion.state, suggestion.pin_code]
               : field === 'location'
                 ? [suggestion.area, suggestion.district, suggestion.state, suggestion.pin_code]
                 : [suggestion.location, suggestion.district, suggestion.state, suggestion.pin_code]

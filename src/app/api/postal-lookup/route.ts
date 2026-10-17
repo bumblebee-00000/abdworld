@@ -77,7 +77,8 @@ export async function GET(request: NextRequest) {
       .filter((office) => matchesPlaceFilter(selectedState, office.State))
       .filter((office) => matchesPlaceFilter(selectedDistrict, office.District))
       .map((office) => ({
-        location: office.Division || office.Block || office.Name || '',
+        location: office.Block || office.Division || office.Name || '',
+        block: office.Block || '',
         area: office.Name || '',
         district: office.District || '',
         state: office.State || '',
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
         seen.add(key);
         return true;
       })
-      .slice(0, 8);
+      .slice(0, searchByPin ? 50 : 8);
 
     return NextResponse.json({ suggestions });
   } catch {
