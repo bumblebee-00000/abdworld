@@ -172,7 +172,7 @@ export default async function Home() {
 
         <FeaturedProducts products={featuredProducts} />
 
-        <section className="section-padding bg-white">
+        <section id="why-us" className="section-padding bg-white scroll-mt-24">
           <div className="mx-auto max-w-7xl">
             <div className="mx-auto max-w-3xl text-center">
               <span className="inline-flex items-center gap-3">
