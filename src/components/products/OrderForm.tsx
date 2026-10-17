@@ -205,7 +205,8 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       });
 
       if (!res.ok) {
-        const data = await res.json();
+        const data: { error?: string; fieldErrors?: FormErrors } = await res.json();
+        if (data.fieldErrors) setErrors(data.fieldErrors);
         throw new Error(data.error || 'Something went wrong');
       }
 

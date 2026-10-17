@@ -40,7 +40,12 @@ interface PostalLookupResult {
 }
 
 function normalizePlace(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const aliases: Record<string, string> = {
+    north24pgs: 'north24parganas',
+    south24pgs: 'south24parganas',
+  };
+  return aliases[normalized] ?? normalized;
 }
 
 function matchesPostalPlace(value: string, knownPlaces: Array<string | null | undefined>) {
@@ -105,7 +110,10 @@ export async function POST(request: NextRequest) {
       .filter((office) => office.Pincode === lead.pin_code);
     if (!postalOffices.length) {
       return NextResponse.json(
-        { error: 'This PIN code was not found. Please check it and try again.' },
+        {
+          error: 'This PIN code was not found. Please check it and try again.',
+          fieldErrors: { pin_code: 'PIN code not found.' },
+        },
         { status: 400 }
       );
     }
@@ -118,10 +126,6 @@ export async function POST(request: NextRequest) {
       office.Region,
       office.State,
     ]));
-    const areaMatches = matchesPostalPlace(lead.area, postalOffices.flatMap((office) => [
-      office.Name,
-      office.Block,
-    ]));
     const districtMatches = matchesPostalPlace(
       lead.district,
       postalOffices.map((office) => office.District)
@@ -131,9 +135,17 @@ export async function POST(request: NextRequest) {
       postalOffices.map((office) => office.State)
     );
 
-    if (!locationMatches || !areaMatches || !districtMatches || !stateMatches) {
+    const fieldErrors: Record<string, string> = {};
+    if (!locationMatches) fieldErrors.location = 'Location does not match this PIN code.';
+    if (!districtMatches) fieldErrors.district = 'District does not match this PIN code.';
+    if (!stateMatches) fieldErrors.state = 'State does not match this PIN code.';
+
+    if (Object.keys(fieldErrors).length > 0) {
       return NextResponse.json(
-        { error: 'The PIN code does not match the entered location details. Please select a suggestion or correct the address.' },
+        {
+          error: 'Some address details do not match this PIN code. Please check the fields marked in red.',
+          fieldErrors,
+        },
         { status: 400 }
       );
     }
