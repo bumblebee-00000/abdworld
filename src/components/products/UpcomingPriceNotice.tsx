@@ -1,4 +1,7 @@
+'use client';
+
 import { Clock3 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { formatExactPrice, formatPriceEffectiveAt } from '@/lib/utils';
 
 interface UpcomingPriceNoticeProps {
@@ -18,6 +21,27 @@ export default function UpcomingPriceNotice({
   effectiveAt,
   compact = false,
 }: UpcomingPriceNoticeProps) {
+  const [remainingMs, setRemainingMs] = useState<number | null>(null);
+
+  useEffect(() => {
+    const effectiveTime = Date.parse(effectiveAt);
+    if (!Number.isFinite(effectiveTime)) return;
+
+    const updateRemainingTime = () => {
+      setRemainingMs(Math.max(0, effectiveTime - Date.now()));
+    };
+
+    updateRemainingTime();
+    const interval = window.setInterval(updateRemainingTime, 1000);
+    return () => window.clearInterval(interval);
+  }, [effectiveAt]);
+
+  const remainingSeconds = remainingMs == null ? null : Math.floor(remainingMs / 1000);
+  const remainingDays = remainingSeconds == null ? 0 : Math.floor(remainingSeconds / 86400);
+  const remainingHours = remainingSeconds == null ? 0 : Math.floor((remainingSeconds % 86400) / 3600);
+  const remainingMinutes = remainingSeconds == null ? 0 : Math.floor((remainingSeconds % 3600) / 60);
+  const seconds = remainingSeconds == null ? 0 : remainingSeconds % 60;
+
   return (
     <aside
       className={`rounded-lg border border-amber-300 bg-amber-50 text-amber-950 ${compact ? 'p-3' : 'p-4'}`}
@@ -27,6 +51,13 @@ export default function UpcomingPriceNotice({
         <Clock3 className="h-4 w-4 shrink-0" />
         Retail price changes soon
       </div>
+      {remainingMs != null && (
+        <p role="timer" className="mt-1 text-xs font-semibold text-amber-900">
+          {remainingMs === 0
+            ? 'Price change is now in effect.'
+            : `Price changes in ${remainingDays > 0 ? `${remainingDays}d ` : ''}${remainingHours > 0 || remainingDays > 0 ? `${remainingHours}h ` : ''}${remainingMinutes > 0 || remainingHours > 0 || remainingDays > 0 ? `${remainingMinutes}m ` : ''}${seconds}s`}
+        </p>
+      )}
       <div className="mt-3 grid grid-cols-[auto_1fr_1fr] items-baseline gap-x-3 gap-y-1.5">
         <span />
         <span className="text-xs font-semibold text-amber-900/70">Now</span>
