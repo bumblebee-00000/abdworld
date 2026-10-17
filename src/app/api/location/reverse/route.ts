@@ -15,11 +15,24 @@ interface ReverseGeocodeResult {
     quarter?: string;
     hamlet?: string;
     road?: string;
+    residential?: string;
+    subdistrict?: string;
     state_district?: string;
     district?: string;
     state?: string;
     postcode?: string;
   };
+}
+
+interface PostalLookupResult {
+  PostOffice?: Array<{
+    Name?: string | null;
+    Block?: string | null;
+    Division?: string | null;
+    District?: string | null;
+    State?: string | null;
+    Pincode?: string | null;
+  }> | null;
 }
 
 export async function POST(request: NextRequest) {
@@ -68,26 +81,68 @@ export async function POST(request: NextRequest) {
 
     const result: ReverseGeocodeResult = await response.json();
     const address = result.address;
-    const location = address?.city || address?.town || address?.village || address?.municipality || '';
-    const area = address?.suburb || address?.neighbourhood || address?.quarter || address?.hamlet || address?.road || location;
-    const district = address?.state_district || address?.district || address?.county || '';
-    const state = address?.state || '';
-    const pinCode = address?.postcode?.replace(/\D/g, '').slice(0, 6) || '';
+    let location = address?.city || address?.town || address?.village || address?.municipality || address?.county || '';
+    let area = address?.suburb || address?.neighbourhood || address?.quarter || address?.hamlet || address?.residential || address?.road || address?.village || location;
+    let district = address?.state_district || address?.district || address?.subdistrict || address?.county || '';
+    let state = address?.state || '';
+    const rawPinCode = address?.postcode?.replace(/\D/g, '') || '';
+    const pinCode = /^\d{6}$/.test(rawPinCode) ? rawPinCode : '';
 
-    if (!location || !district || !state) {
+    if (pinCode && (!district || !state)) {
+      try {
+        const postalResponse = await fetch(`https://api.postalpincode.in/pincode/${pinCode}`, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(5000),
+        });
+        if (postalResponse.ok) {
+          const postalResults: PostalLookupResult[] = await postalResponse.json();
+          const offices = postalResults
+            .flatMap((postalResult) => postalResult.PostOffice ?? [])
+            .filter((office) => office.Pincode === pinCode);
+          const matchingOffice = offices.find((office) => {
+            const placeNames = [office.Name, office.Block, office.Division]
+              .filter(Boolean)
+              .map((place) => place!.toLowerCase());
+            return [location, area].filter(Boolean).some((place) =>
+              placeNames.some((name) => name.includes(place!.toLowerCase()) || place!.toLowerCase().includes(name))
+            );
+          }) ?? offices[0];
+
+          district ||= matchingOffice?.District || '';
+          state ||= matchingOffice?.State || '';
+          location ||= matchingOffice?.Block || matchingOffice?.Division || '';
+          area ||= matchingOffice?.Name || location;
+        }
+      } catch {}
+    }
+
+    location ||= area || district;
+    area ||= location;
+
+    if (!location && !district && !state && !pinCode) {
       return NextResponse.json(
-        { error: 'Could not determine your full address. Please enter it manually.' },
+        { error: 'Could not determine your address. Please enter it manually.' },
         { status: 404 }
       );
     }
 
+    const missingFields = [
+      !location && 'location',
+      !area && 'area',
+      !district && 'district',
+      !state && 'state',
+      !pinCode && 'PIN code',
+    ].filter(Boolean);
+
     return NextResponse.json({
-      location,
-      area,
-      district,
-      state,
+      location: location || undefined,
+      area: area || undefined,
+      district: district || undefined,
+      state: state || undefined,
       pin_code: pinCode,
-      notice: pinCode ? '' : 'Your PIN could not be detected. Please enter it manually.',
+      notice: missingFields.length
+        ? `We filled the detected details. Please complete: ${missingFields.join(', ')}.`
+        : 'Address filled from your current location. Please confirm it before submitting.',
     });
   } catch {
     return NextResponse.json(
