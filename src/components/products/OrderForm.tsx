@@ -44,6 +44,11 @@ interface PostalSuggestion {
   pin_code?: string;
 }
 
+interface ReverseGeocodeResponse extends PostalSuggestion {
+  error?: string;
+  notice?: string;
+}
+
 type PostalField = 'location' | 'area' | 'district' | 'state' | 'pin_code';
 
 const INDIAN_STATES = [
@@ -163,6 +168,9 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationNotice, setLocationNotice] = useState('');
+  const [locationError, setLocationError] = useState('');
   const [activePostalField, setActivePostalField] = useState<PostalField | null>(null);
   const [postalSuggestions, setPostalSuggestions] = useState<PostalSuggestion[]>([]);
   const postalQuery = activePostalField ? formData[activePostalField] : '';
@@ -226,6 +234,66 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
     });
     setPostalSuggestions([]);
     setActivePostalField(null);
+  };
+
+  const useCurrentLocation = () => {
+    setLocationError('');
+    setLocationNotice('');
+
+    if (!navigator.geolocation) {
+      setLocationError('Location access is not available in this browser. Enter your address manually.');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const response = await fetch('/api/location/reverse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            }),
+          });
+          const data: ReverseGeocodeResponse = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Could not look up your current location.');
+
+          setFormData((prev) => ({
+            ...prev,
+            location: data.location ?? '',
+            area: data.area ?? '',
+            district: data.district ?? '',
+            state: data.state ?? '',
+            pin_code: data.pin_code ?? '',
+          }));
+          setErrors((prev) => {
+            const next = { ...prev };
+            delete next.location;
+            delete next.area;
+            delete next.district;
+            delete next.state;
+            delete next.pin_code;
+            return next;
+          });
+          setPostalSuggestions([]);
+          setActivePostalField(null);
+          setLocationNotice(data.notice || 'Address filled from your current location. Please confirm it before submitting.');
+        } catch (error) {
+          setLocationError(error instanceof Error ? error.message : 'Could not look up your current location.');
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        setLocationError(error.code === error.PERMISSION_DENIED
+          ? 'Location permission was denied. Allow access or enter your address manually.'
+          : 'Could not detect your location. Try again or enter your address manually.');
+      },
+      { enableHighAccuracy: false, maximumAge: 60000, timeout: 15000 }
+    );
   };
 
   const updateField = (field: keyof FormData, value: string | number) => {
@@ -489,6 +557,20 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
                 />
                 {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
               </div>
+            </div>
+
+            <div>
+              <button
+                type="button"
+                onClick={useCurrentLocation}
+                disabled={isLocating}
+                className="inline-flex items-center gap-2 rounded-lg border border-emerald-700/25 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 disabled:cursor-wait disabled:opacity-60"
+              >
+                <MapPin className="h-4 w-4" />
+                {isLocating ? 'Finding your address...' : 'Use my current location'}
+              </button>
+              {locationNotice && <p role="status" className="mt-1.5 text-xs text-emerald-700">{locationNotice}</p>}
+              {locationError && <p role="alert" className="mt-1.5 text-xs text-red-600">{locationError}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
