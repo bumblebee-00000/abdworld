@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, MessageCircle, Loader2, AlertCircle, User, Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
+import { Send, MessageCircle, Loader2, AlertCircle, User, Phone, Mail, MapPin } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
+import SuccessMark from '@/components/animations/SuccessMark';
 import { cn, generateWhatsAppUrl, isValidIndianMobileNumber, parsePackWeightKg } from '@/lib/utils';
 import { normalizePhoneNumber, useSiteSettings } from '@/components/settings/SiteSettingsProvider';
 import type { Product } from '@/types';
@@ -408,8 +409,13 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
       title={`Request a quote - ${product.name}`}
     >
       {status === 'success' ? (
-        <div className="py-8 text-center" role="status">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
+        <motion.div
+          className="py-8 text-center"
+          role="status"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <SuccessMark className="h-16 w-16 bg-transparent" />
           <h3 className="mt-4 font-heading text-xl font-bold text-emerald-950">
             Quote request received
           </h3>
@@ -423,7 +429,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
           >
             Done
           </button>
-        </div>
+        </motion.div>
       ) : (
       <AnimatePresence mode="wait">
         <motion.form

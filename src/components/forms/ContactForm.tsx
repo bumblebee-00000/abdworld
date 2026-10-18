@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Send,
-  CheckCircle2,
   AlertCircle,
   Loader2,
   User,
@@ -13,6 +12,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { contactSchema } from '@/lib/validation';
+import SuccessMark from '@/components/animations/SuccessMark';
 
 type Errors = Record<string, string>;
 
@@ -117,10 +117,9 @@ export default function ContactForm() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl border border-cream-200 shadow-xl shadow-emerald-900/5 p-8 text-center"
+        role="status"
       >
-        <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-10 h-10 text-emerald-600" />
-        </div>
+        <SuccessMark className="mb-6" />
         <h3 className="text-2xl font-bold text-emerald-950 font-[var(--font-heading)] mb-3">
           Message Sent!
         </h3>
