@@ -9,6 +9,7 @@ interface ReverseGeocodeResult {
     town?: string;
     village?: string;
     municipality?: string;
+    city_district?: string;
     county?: string;
     suburb?: string;
     neighbourhood?: string;
@@ -45,14 +46,16 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body: { latitude?: unknown; longitude?: unknown } = await request.json();
+    const body: { latitude?: unknown; longitude?: unknown; accuracy?: unknown } = await request.json();
     const latitude = Number(body.latitude);
     const longitude = Number(body.longitude);
+    const accuracy = body.accuracy === undefined ? null : Number(body.accuracy);
     if (
       !Number.isFinite(latitude) ||
       !Number.isFinite(longitude) ||
       latitude < -90 || latitude > 90 ||
-      longitude < -180 || longitude > 180
+      longitude < -180 || longitude > 180 ||
+      (accuracy !== null && (!Number.isFinite(accuracy) || accuracy < 0))
     ) {
       return NextResponse.json({ error: 'Invalid location coordinates.' }, { status: 400 });
     }
@@ -81,8 +84,8 @@ export async function POST(request: NextRequest) {
 
     const result: ReverseGeocodeResult = await response.json();
     const address = result.address;
-    let location = address?.city || address?.town || address?.village || address?.municipality || address?.county || '';
-    let area = address?.suburb || address?.neighbourhood || address?.quarter || address?.hamlet || address?.residential || address?.road || address?.village || location;
+    let location = address?.city || address?.town || address?.municipality || address?.village || address?.suburb || address?.neighbourhood || address?.quarter || address?.hamlet || address?.residential || '';
+    let area = address?.neighbourhood || address?.suburb || address?.quarter || address?.hamlet || address?.residential || address?.city_district || address?.road || address?.village || location;
     let district = address?.state_district || address?.district || address?.subdistrict || address?.county || '';
     let state = address?.state || '';
     const rawPinCode = address?.postcode?.replace(/\D/g, '') || '';
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
             return [location, area].filter(Boolean).some((place) =>
               placeNames.some((name) => name.includes(place!.toLowerCase()) || place!.toLowerCase().includes(name))
             );
-          }) ?? offices[0];
+          });
 
           district ||= matchingOffice?.District || '';
           state ||= matchingOffice?.State || '';
@@ -132,15 +135,20 @@ export async function POST(request: NextRequest) {
       !pinCode && 'PIN code',
     ].filter(Boolean);
 
+    const notices = missingFields.length
+      ? [`We filled the detected details. Please complete: ${missingFields.join(', ')}.`]
+      : [];
+    if (accuracy !== null && accuracy > 250) {
+      notices.push(`Your device reported an accuracy of about ${Math.round(accuracy)} m. Please confirm this location or enter it manually.`);
+    }
+
     return NextResponse.json({
       location: location || undefined,
       area: area || undefined,
       district: district || undefined,
       state: state || undefined,
       pin_code: pinCode,
-      notice: missingFields.length
-        ? `We filled the detected details. Please complete: ${missingFields.join(', ')}.`
-        : 'Address filled from your current location. Please confirm it before submitting.',
+      notice: notices.join(' ') || 'Address filled from your current location. Please confirm it before submitting.',
     });
   } catch {
     return NextResponse.json(

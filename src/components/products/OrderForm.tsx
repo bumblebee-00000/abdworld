@@ -256,6 +256,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
             body: JSON.stringify({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
             }),
           });
           const data: ReverseGeocodeResponse = await response.json();
@@ -293,7 +294,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
           ? 'Location permission was denied. Allow access or enter your address manually.'
           : 'Could not detect your location. Try again or enter your address manually.');
       },
-      { enableHighAccuracy: false, maximumAge: 60000, timeout: 15000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
     );
   };
 
