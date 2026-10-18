@@ -110,8 +110,6 @@ export async function POST(request: NextRequest) {
 
           district ||= matchingOffice?.District || '';
           state ||= matchingOffice?.State || '';
-          location ||= matchingOffice?.Block || matchingOffice?.Division || '';
-          area ||= matchingOffice?.Name || location;
         }
       } catch {}
     }

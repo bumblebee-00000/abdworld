@@ -202,6 +202,7 @@ export default function OrderForm({ product, isOpen, onClose, selectedPackSize }
         if (!response.ok) return;
 
         const data: { suggestions?: PostalSuggestion[] } = await response.json();
+        if (controller.signal.aborted) return;
         setPostalSuggestions(data.suggestions ?? []);
       } catch {
         if (!controller.signal.aborted) setPostalSuggestions([]);
