@@ -238,14 +238,22 @@ export default function SiteMotion({ children }: { children: ReactNode }) {
             exit={{ opacity: 0, transition: { duration: 0.35 } }}
           >
             <div className="site-intro-content">
-              <motion.img
-                className="site-intro-mark"
-                src="/company-logo.png"
-                alt=""
-                initial={{ scale: 0.75, rotate: -18 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 180, damping: 14 }}
-              />
+              <motion.div
+                className="site-intro-card"
+                initial={{ opacity: 0, scale: 0.96, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+              >
+                <motion.img
+                  className="site-intro-mark"
+                  src="/company-logo.png"
+                  alt="ABD WORLD"
+                  initial={{ scale: 0.96 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.65, ease: "easeOut" }}
+                />
+              </motion.div>
+              <span className="site-intro-caption">PREPARING YOUR EXPERIENCE</span>
               <span className="site-intro-track" aria-hidden="true">
                 <motion.span
                   className="site-intro-progress"

@@ -439,28 +439,51 @@ a.inline-flex:active {
   z-index: 9999;
   display: grid;
   place-items: center;
-  background: #022c22;
-  color: #fffdf8;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 44%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0) 48%),
+    #f5f7f3;
+  color: #123b2d;
 }
 
 .site-intro-content {
   display: grid;
   justify-items: center;
-  gap: 1rem;
+  gap: 1.15rem;
+}
+
+.site-intro-card {
+  display: grid;
+  width: min(72vw, 15rem);
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(18, 59, 45, 0.06);
+  border-radius: 2rem;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(18, 59, 45, 0.1), 0 4px 14px rgba(18, 59, 45, 0.04);
 }
 
 .site-intro-mark {
   display: block;
-  width: 8rem;
-  height: 8rem;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
+.site-intro-caption {
+  color: rgba(18, 59, 45, 0.62);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
 .site-intro-track {
-  width: 7rem;
-  height: 2px;
+  width: 8rem;
+  height: 3px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  background: rgba(18, 59, 45, 0.12);
 }
 
 .site-intro-progress {
@@ -468,7 +491,8 @@ a.inline-flex:active {
   width: 100%;
   height: 100%;
   transform-origin: left;
-  background: #facc15;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0f5a45, #c69b3c);
 }
 
 .success-mark-spark {
