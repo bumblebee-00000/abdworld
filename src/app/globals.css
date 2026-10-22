@@ -451,16 +451,9 @@ a.inline-flex:active {
 
 .site-intro-mark {
   display: block;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 8rem;
+  height: 8rem;
   object-fit: contain;
-}
-
-.site-intro-name {
-  font-family: var(--font-heading);
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
 }
 
 .site-intro-track {

@@ -240,20 +240,12 @@ export default function SiteMotion({ children }: { children: ReactNode }) {
             <div className="site-intro-content">
               <motion.img
                 className="site-intro-mark"
-                src="/abd-world-logo.svg"
+                src="/company-logo.png"
                 alt=""
                 initial={{ scale: 0.75, rotate: -18 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 180, damping: 14 }}
               />
-              <motion.span
-                className="site-intro-name"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.16, duration: 0.35 }}
-              >
-                ABD WORLD
-              </motion.span>
               <span className="site-intro-track" aria-hidden="true">
                 <motion.span
                   className="site-intro-progress"
