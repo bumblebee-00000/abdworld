@@ -128,7 +128,6 @@ export default function WholesaleForm() {
 
       setReference(data.reference || '');
       setStatus('success');
-      setValues(initialValues);
     } catch {
       setStatus('error');
       setServerError('Network error. Please check your connection and try again.');
@@ -175,7 +174,13 @@ export default function WholesaleForm() {
               Send via WhatsApp for Faster Response
             </a>
             <button
-              onClick={() => setStatus('idle')}
+              onClick={() => {
+                setValues(initialValues);
+                setErrors({});
+                setServerError('');
+                setReference('');
+                setStatus('idle');
+              }}
               className="px-6 py-3 border border-cream-300 text-emerald-900 font-semibold rounded-xl hover:bg-cream-50 transition-colors"
             >
               Submit Another Enquiry
