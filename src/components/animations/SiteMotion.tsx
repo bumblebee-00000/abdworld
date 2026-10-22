@@ -2,7 +2,6 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Wheat } from "lucide-react";
 
 const REVEAL_SELECTOR = "main h1, main h2, main h3, main h4, main p, main li";
 
@@ -239,14 +238,14 @@ export default function SiteMotion({ children }: { children: ReactNode }) {
             exit={{ opacity: 0, transition: { duration: 0.35 } }}
           >
             <div className="site-intro-content">
-              <motion.span
+              <motion.img
                 className="site-intro-mark"
+                src="/abd-world-logo.svg"
+                alt=""
                 initial={{ scale: 0.75, rotate: -18 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 180, damping: 14 }}
-              >
-                <Wheat size={30} strokeWidth={1.4} aria-hidden="true" />
-              </motion.span>
+              />
               <motion.span
                 className="site-intro-name"
                 initial={{ opacity: 0, y: 8 }}

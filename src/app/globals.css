@@ -450,13 +450,10 @@ a.inline-flex:active {
 }
 
 .site-intro-mark {
-  display: grid;
+  display: block;
   width: 4.5rem;
   height: 4.5rem;
-  place-items: center;
-  border: 1px solid rgba(250, 204, 21, 0.45);
-  border-radius: 50%;
-  color: #facc15;
+  object-fit: contain;
 }
 
 .site-intro-name {
