@@ -46,7 +46,7 @@ const ctaVariants = {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-emerald-950 grain-grid">
+    <section data-no-scroll-reveal className="relative min-h-screen w-full overflow-hidden bg-emerald-950 grain-grid">
       <motion.div
         className="absolute inset-0"
         style={{
