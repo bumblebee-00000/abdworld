@@ -454,14 +454,14 @@ a.inline-flex:active {
 
 .site-intro-card {
   display: grid;
-  width: min(72vw, 15rem);
+  width: min(56vw, 8rem);
   aspect-ratio: 1;
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(18, 59, 45, 0.06);
-  border-radius: 2rem;
+  border-radius: 50%;
   background: #fff;
-  box-shadow: 0 24px 70px rgba(18, 59, 45, 0.1), 0 4px 14px rgba(18, 59, 45, 0.04);
+  box-shadow: 0 16px 40px rgba(18, 59, 45, 0.1), 0 3px 10px rgba(18, 59, 45, 0.04);
 }
 
 .site-intro-mark {
